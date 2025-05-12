@@ -25,7 +25,7 @@ export default function TopBarLayout() {
   )
 }
 
-function UserAvatar() {
+export function UserAvatar() {
   return (
     <div className="flex items-center gap-4">
       <Popover placement="bottom">

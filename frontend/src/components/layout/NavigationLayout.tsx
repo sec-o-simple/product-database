@@ -70,7 +70,7 @@ function SubSection({ title, to }: { title: string; to: string }) {
   return (
     <NavLink
       to={to}
-      className={({ isActive }) =>
+      className={({ isActive }: { isActive: boolean }) =>
         `cursor-pointer pl-12 transition-colors hover:text-primary ${
           isActive ? 'text-primary font-bold' : ''
         }`

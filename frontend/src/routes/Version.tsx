@@ -2,12 +2,10 @@ import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import Pagination from '@/components/table/Pagination'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
-export default function Product() {
+export default function Version() {
   const { productId } = useParams()
-  const navigate = useNavigate()
-
   // find the correct product by id
   const product = fakeVendors
     .find((vendor) =>
@@ -25,9 +23,6 @@ export default function Product() {
         {product?.versions?.map((version) => (
           <ListItem
             key={version.id}
-            onClick={() =>
-              navigate(`/products/${productId}/versions/${version.id}`)
-            }
             title={
               <div className="flex gap-2 items-center">
                 {version.id === 1 && <LatestChip />}

@@ -1,10 +1,57 @@
 import ListItem from '@/components/forms/ListItem'
 import Pagination from '@/components/table/Pagination'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import {
+  faDeleteLeft,
+  faEdit,
+  faSearch,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Chip, Divider, Input } from '@heroui/react'
+import { Chip, cn, Divider, Input, Listbox, ListboxItem } from '@heroui/react'
 import { Tab, Tabs } from '@heroui/tabs'
 import { useNavigate } from 'react-router-dom'
+
+export function EditPopover({ itemId }: { itemId?: string }) {
+  const navigate = useNavigate()
+  const iconClasses = 'text-default-500 pointer-events-none flex-shrink-0'
+
+  return (
+    <Listbox
+      aria-label="Listbox menu with icons"
+      className="p-0 gap-0 bg-content1 max-w-[300px] overflow-visible shadow-small rounded-medium"
+      itemClasses={{
+        base: 'px-3 first:rounded-t-medium last:rounded-b-medium rounded-none gap-3 h-8 data-[hover=true]:bg-default-100/80',
+      }}
+      variant="flat"
+    >
+      <ListboxItem
+        key="new"
+        onClick={() => {
+          navigate(`/vendors/${itemId}/edit`)
+        }}
+        startContent={<FontAwesomeIcon className={iconClasses} icon={faEdit} />}
+      >
+        Edit
+      </ListboxItem>
+      <ListboxItem
+        key="delete"
+        color="danger"
+        className="text-danger"
+        onClick={() => {
+          navigate(`/vendors/${itemId}/delete`)
+        }}
+        startContent={
+          <FontAwesomeIcon
+            className={cn(iconClasses, 'text-danger')}
+            icon={faTrash}
+          />
+        }
+      >
+        Delete
+      </ListboxItem>
+    </Listbox>
+  )
+}
 
 export default function Vendors() {
   const navigate = useNavigate()
@@ -45,6 +92,7 @@ export default function Vendors() {
           onClick={() => navigate('/vendors/1')}
           title="Microsoft"
           description="This product is the latest release of this series."
+          menu={<EditPopover itemId="1" />}
           chips={
             <div className="flex gap-2">
               <Chip color="primary" radius="sm" variant="flat">
@@ -55,9 +103,10 @@ export default function Vendors() {
         />
 
         <ListItem
-          onClick={() => navigate('/vendors/1')}
+          onClick={() => navigate('/vendors/2')}
           title="Microsoft"
           description="This product is the latest release of this series."
+          menu={<EditPopover itemId="2" />}
           chips={
             <div className="flex gap-2">
               <Chip color="primary" radius="sm" variant="flat">

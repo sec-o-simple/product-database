@@ -1,13 +1,33 @@
+import ListItem from '@/components/forms/ListItem'
+import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import Pagination from '@/components/table/Pagination'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Divider, Input } from '@heroui/react'
-import { Tab, Tabs } from '@heroui/tabs'
+import { useMemo } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 export default function Products() {
+  const { vendorId } = useParams()
+  const navigate = useNavigate()
+
+  const vendor = useMemo(() => {
+    return fakeVendors.find((vendor) => vendor.id === Number(vendorId))
+  }, [vendorId])
+
   return (
-    <div className="flex grow flex-col items-center gap-4">
-      <p>Vendor: 1</p>
+    <div className="flex grow flex-col w-full gap-4 p-2">
+      <p className="font-semibold text-xl">
+        Products ({vendor?.products?.length ?? 0})
+      </p>
+
+      <div className="flex w-full flex-col items-center gap-4">
+        {vendor?.products?.map((product) => (
+          <ListItem
+            onClick={() => navigate(`/products/${product.id}`)}
+            title={vendor?.name ?? 'Vendor Name'}
+            description={vendor?.description ?? 'Vendor Description'}
+          />
+        ))}
+        <Pagination />
+      </div>
     </div>
   )
 }

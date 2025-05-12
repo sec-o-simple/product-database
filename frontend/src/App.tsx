@@ -1,14 +1,18 @@
 import {
+  Navigate,
+  Route,
   BrowserRouter as Router,
   Routes,
-  Route,
-  Navigate,
 } from 'react-router-dom'
+import ProductLayout from './components/layout/product/ProductLayout'
 import TopBarLayout from './components/layout/TopBarLayout'
-import Vendors from './routes/Vendors'
-import Products from './routes/Products'
+import VendorLayout from './components/layout/vendor/VendorLayout'
+import VersionLayout from './components/layout/version/VersionLayout'
 import Product from './routes/Product'
+import Products from './routes/Products'
 import Vendor from './routes/Vendor'
+import Vendors from './routes/Vendors'
+import Version from './routes/Version'
 
 function App() {
   return (
@@ -19,12 +23,28 @@ function App() {
         <Route element={<TopBarLayout />}>
           <Route path="vendors">
             <Route index element={<Vendors />} />
-            <Route path=":id" element={<Vendor />} />
           </Route>
 
           <Route path="products">
             <Route index element={<Products />} />
-            <Route path=":id" element={<Product />} />
+          </Route>
+        </Route>
+
+        <Route element={<VendorLayout />}>
+          <Route path="vendors">
+            <Route path=":vendorId" element={<Vendor />} />
+          </Route>
+        </Route>
+
+        <Route element={<ProductLayout />}>
+          <Route path="products">
+            <Route path=":productId" element={<Product />} />
+          </Route>
+        </Route>
+
+        <Route element={<VersionLayout />}>
+          <Route path="products/:productId/versions">
+            <Route path=":versionId" element={<Version />} />
           </Route>
         </Route>
       </Routes>
