@@ -1,7 +1,9 @@
+import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import Pagination from '@/components/table/Pagination'
+import { BreadcrumbItem } from '@heroui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export default function Product() {
@@ -17,6 +19,12 @@ export default function Product() {
 
   return (
     <div className="flex grow flex-col w-full gap-4 p-2">
+      <Breadcrumbs>
+        <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
+        <BreadcrumbItem href="/vendors/1">Products</BreadcrumbItem>
+        <BreadcrumbItem>Versions</BreadcrumbItem>
+      </Breadcrumbs>
+
       <p className="font-semibold text-xl">
         Versions ({product?.versions?.length ?? 0})
       </p>

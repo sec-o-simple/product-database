@@ -1,4 +1,5 @@
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faDatabase } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import IconButton from '../../forms/IconButton'
@@ -92,6 +93,12 @@ export default function VendorLayout() {
     <div className="flex h-screen flex-col bg-[#F9FAFB]">
       <div className="flex w-full items-center justify-between gap-8 border-b px-6 py-4 bg-white">
         <span className="flex items-center gap-2 text-2xl font-bold">
+          <FontAwesomeIcon
+            icon={faDatabase}
+            className="cursor-pointer text-primary"
+            onClick={() => navigate('/vendors')}
+          />
+
           <IconButton
             icon={faArrowLeft}
             color="primary"
