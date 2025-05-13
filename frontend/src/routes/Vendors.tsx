@@ -1,15 +1,11 @@
 import ListItem from '@/components/forms/ListItem'
+import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import Pagination from '@/components/table/Pagination'
-import {
-  faDeleteLeft,
-  faEdit,
-  faSearch,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Chip, cn, Divider, Input, Listbox, ListboxItem } from '@heroui/react'
-import { Tab, Tabs } from '@heroui/tabs'
+import { cn, Input, Listbox, ListboxItem } from '@heroui/react'
 import { useNavigate } from 'react-router-dom'
+import { DashboardTabs } from './Products'
 
 export function EditPopover({ itemId }: { itemId?: string }) {
   const navigate = useNavigate()
@@ -58,63 +54,36 @@ export default function Vendors() {
 
   return (
     <div className="flex grow flex-col items-center gap-4">
-      <div className="flex w-full items-center justify-between">
-        <Tabs
-          selectedKey="vendors"
-          className="w-full"
-          color="primary"
-          variant="light"
-        >
-          <Tab key="vendors" title="Vendors" href="/vendors" />
-          <Tab key="products" title="Products" href="/products" />
-        </Tabs>
-
-        <Input
-          classNames={{
-            base: 'max-w-full sm:max-w-[16rem] h-10',
-            mainWrapper: 'h-full',
-            input: 'text-small',
-            inputWrapper:
-              'h-full font-normal text-default-500 bg-white rounded-lg',
-          }}
-          placeholder="Type to search..."
-          size="sm"
-          startContent={<FontAwesomeIcon icon={faSearch} />}
-          variant="bordered"
-          type="search"
-        />
-      </div>
-
-      <Divider />
+      <DashboardTabs
+        selectedKey="vendors"
+        endContent={
+          <Input
+            classNames={{
+              base: 'max-w-full sm:max-w-[16rem] h-10',
+              mainWrapper: 'h-full',
+              input: 'text-small',
+              inputWrapper:
+                'h-full font-normal text-default-500 bg-white rounded-lg',
+            }}
+            placeholder="Type to search..."
+            size="sm"
+            startContent={<FontAwesomeIcon icon={faSearch} />}
+            type="search"
+            variant="flat"
+          />
+        }
+      />
 
       <div className="w-full flex gap-2 flex-col">
-        <ListItem
-          onClick={() => navigate('/vendors/1')}
-          title="Microsoft"
-          description="This product is the latest release of this series."
-          menu={<EditPopover itemId="1" />}
-          chips={
-            <div className="flex gap-2">
-              <Chip color="primary" radius="sm" variant="flat">
-                Microsoft
-              </Chip>
-            </div>
-          }
-        />
-
-        <ListItem
-          onClick={() => navigate('/vendors/2')}
-          title="Microsoft"
-          description="This product is the latest release of this series."
-          menu={<EditPopover itemId="2" />}
-          chips={
-            <div className="flex gap-2">
-              <Chip color="primary" radius="sm" variant="flat">
-                Apple
-              </Chip>
-            </div>
-          }
-        />
+        {fakeVendors.map((vendor) => (
+          <ListItem
+            key={vendor.id}
+            onClick={() => navigate(`/vendors/${vendor.id}`)}
+            title={vendor.name}
+            description="This product is the latest release of this series."
+            menu={<EditPopover itemId={String(vendor.id)} />}
+          />
+        ))}
 
         <Pagination />
       </div>

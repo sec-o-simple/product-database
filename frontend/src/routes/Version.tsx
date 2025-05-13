@@ -9,7 +9,11 @@ import { Button } from '@heroui/button'
 import { BreadcrumbItem, Chip } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 
-export default function Version() {
+export default function Version({
+  hideBreadcrumbs = false,
+}: {
+  hideBreadcrumbs?: boolean
+}) {
   const { productId } = useParams()
   // find the correct product by id
   const product = fakeVendors
@@ -20,12 +24,14 @@ export default function Version() {
 
   return (
     <div className="flex grow flex-col w-full gap-4 p-2">
-      <Breadcrumbs>
-        <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-        <BreadcrumbItem href="/vendors/1">Products</BreadcrumbItem>
-        <BreadcrumbItem href="/products/1">Versions</BreadcrumbItem>
-        <BreadcrumbItem>{product?.name}</BreadcrumbItem>
-      </Breadcrumbs>
+      {!hideBreadcrumbs && (
+        <Breadcrumbs>
+          <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors/1">Products</BreadcrumbItem>
+          <BreadcrumbItem href="/products/1">Versions</BreadcrumbItem>
+          <BreadcrumbItem>{product?.name}</BreadcrumbItem>
+        </Breadcrumbs>
+      )}
       <div className="flex w-full flex-col items-center gap-4">
         <ListGroup title="Installed On">
           {product?.versions?.map((version) => (

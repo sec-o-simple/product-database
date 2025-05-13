@@ -22,7 +22,7 @@ export default function AddRelationship() {
         <FontAwesomeIcon icon={faAdd} className="mr-2" />
         Add Relationship
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
         <ModalContent>
           {(onClose) => (
             <>
@@ -37,9 +37,11 @@ export default function AddRelationship() {
                   </Select>
 
                   <Select label="Version" className="w-1/3">
-                    <SelectItem key="1">Firmware</SelectItem>
-                    <SelectItem key="2">Software</SelectItem>
-                    <SelectItem key="3">Hardware</SelectItem>
+                    <SelectItem key="1">1.0</SelectItem>
+                    <SelectItem key="2">1.1</SelectItem>
+                    <SelectItem key="3">1.2</SelectItem>
+                    <SelectItem key="4">1.3</SelectItem>
+                    <SelectItem key="5">2.0</SelectItem>
                   </Select>
                 </div>
 
@@ -50,9 +52,11 @@ export default function AddRelationship() {
                   </Select>
 
                   <Select label="Version" className="w-1/3">
-                    <SelectItem key="1">Firmware</SelectItem>
-                    <SelectItem key="2">Software</SelectItem>
-                    <SelectItem key="3">Hardware</SelectItem>
+                    <SelectItem key="1">1.0</SelectItem>
+                    <SelectItem key="2">1.1</SelectItem>
+                    <SelectItem key="3">1.2</SelectItem>
+                    <SelectItem key="4">1.3</SelectItem>
+                    <SelectItem key="5">2.0</SelectItem>
                   </Select>
                 </div>
 

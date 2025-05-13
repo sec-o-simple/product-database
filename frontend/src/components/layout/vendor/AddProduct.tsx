@@ -20,7 +20,7 @@ export default function AddProduct() {
         <FontAwesomeIcon icon={faAdd} className="mr-2" />
         Add Product
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
         <ModalContent>
           {(onClose) => (
             <>

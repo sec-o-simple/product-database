@@ -10,6 +10,7 @@ import VendorLayout from './components/layout/vendor/VendorLayout'
 import VersionLayout from './components/layout/version/VersionLayout'
 import Product from './routes/Product'
 import Products from './routes/Products'
+import TreeView from './routes/TreeView'
 import Vendor from './routes/Vendor'
 import Vendors from './routes/Vendors'
 import Version from './routes/Version'
@@ -27,6 +28,10 @@ function App() {
 
           <Route path="products">
             <Route index element={<Products />} />
+          </Route>
+
+          <Route path="tree">
+            <Route index element={<TreeView />} />
           </Route>
         </Route>
 

@@ -1,12 +1,17 @@
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
+import DataGrid from '@/components/forms/DataGrid'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
+import AddVersion from '@/components/layout/product/AddVersion'
 import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
-import Pagination from '@/components/table/Pagination'
 import { BreadcrumbItem } from '@heroui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-export default function Product() {
+export default function Product({
+  hideBreadcrumbs = false,
+}: {
+  hideBreadcrumbs?: boolean
+}) {
   const { productId } = useParams()
   const navigate = useNavigate()
 
@@ -19,17 +24,18 @@ export default function Product() {
 
   return (
     <div className="flex grow flex-col w-full gap-4 p-2">
-      <Breadcrumbs>
-        <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-        <BreadcrumbItem href="/vendors/1">Products</BreadcrumbItem>
-        <BreadcrumbItem>Versions</BreadcrumbItem>
-      </Breadcrumbs>
+      {!hideBreadcrumbs && (
+        <Breadcrumbs>
+          <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors/1">Products</BreadcrumbItem>
+          <BreadcrumbItem>Versions</BreadcrumbItem>
+        </Breadcrumbs>
+      )}
 
-      <p className="font-semibold text-xl">
-        Versions ({product?.versions?.length ?? 0})
-      </p>
-
-      <div className="flex w-full flex-col items-center gap-4">
+      <DataGrid
+        title={`Versions (${product?.versions?.length ?? 0})`}
+        addButton={<AddVersion />}
+      >
         {product?.versions?.map((version) => (
           <ListItem
             key={version.id}
@@ -46,8 +52,7 @@ export default function Product() {
             description={version.description}
           />
         ))}
-        <Pagination />
-      </div>
+      </DataGrid>
     </div>
   )
 }

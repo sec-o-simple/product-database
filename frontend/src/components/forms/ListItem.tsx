@@ -21,13 +21,9 @@ interface ListItemProps {
 export function ListGroup({
   title,
   children,
-  classNames,
 }: {
   title: string
   children: React.ReactNode
-  classNames?: {
-    base?: string
-  }
 }) {
   return (
     <div className="flex w-full flex-col bg-white rounded-lg">

@@ -1,5 +1,6 @@
 import { PropsWithChildren, useMemo } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
+import { NavLink } from 'react-router-dom'
 
 export default function NavigationLayout() {
   return (

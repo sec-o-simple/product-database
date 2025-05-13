@@ -25,7 +25,7 @@ export default function AddVersion() {
         <FontAwesomeIcon icon={faAdd} className="mr-2" />
         Add Version
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
         <ModalContent>
           {(onClose) => (
             <>
