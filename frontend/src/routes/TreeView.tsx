@@ -107,7 +107,7 @@ export default function TreeView() {
           <div className="bg-white rounded-lg border-1 border-gray-200 p-2">
             <MuiTreeView
               expandedItems={expandedItems}
-              onExpandedItemsChange={(event, itemIds) => {
+              onExpandedItemsChange={(_, itemIds) => {
                 setExpandedItems(itemIds)
               }}
             >
@@ -206,7 +206,7 @@ export default function TreeView() {
                         ? faSitemap
                         : selected?.type === 'version'
                           ? faCodeBranch
-                          : null
+                          : faCodeBranch
                   }
                   className="text-primary text-2xl mr-4"
                 />
