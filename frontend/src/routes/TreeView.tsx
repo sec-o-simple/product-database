@@ -9,7 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
-import { Tooltip } from '@heroui/react'
+import { Spinner, Tooltip } from '@heroui/react'
 import { SimpleTreeView as MuiTreeView, TreeItem } from '@mui/x-tree-view'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -21,6 +21,10 @@ import Version from './Version'
 interface SelectedNode {
   type: 'vendor' | 'product' | 'version'
   id: string | null
+}
+
+export function HydrateFallback() {
+  return <Spinner />
 }
 
 export default function TreeView() {

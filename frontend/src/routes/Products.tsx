@@ -1,5 +1,7 @@
 import { Input } from '@/components/forms/Input'
+import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
+import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import Pagination from '@/components/table/Pagination'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -37,6 +39,12 @@ export function DashboardTabs({
 
 export default function Products() {
   const navigate = useNavigate()
+  const allProducts = fakeVendors
+    .map((vendor) => {
+      if (vendor.products) return vendor.products
+    })
+    .filter((product) => product !== undefined)
+    .flat()
 
   return (
     <div className="flex grow flex-col items-center gap-4">
@@ -60,11 +68,21 @@ export default function Products() {
         }
       />
 
-      <ListItem
-        title="Iphone 14 Pro"
-        description="This product is the latest release of this series."
-        onClick={() => navigate('/products/1')}
-      />
+      {allProducts.map((product) => (
+        <ListItem
+          key={product.id}
+          onClick={() => navigate(`/products/${product.id}`)}
+          title={
+            <div className="flex gap-2 items-center">
+              {product.id === 1 && <LatestChip />}
+
+              <p>{product.name}</p>
+            </div>
+          }
+          description={product.description}
+        />
+      ))}
+
       <Pagination />
     </div>
   )

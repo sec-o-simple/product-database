@@ -2,6 +2,7 @@ import { Input } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { ButtonProps } from '@heroui/button'
 import {
   Button,
   Checkbox,
@@ -16,12 +17,12 @@ import {
 } from '@heroui/react'
 import { I18nProvider } from '@react-aria/i18n'
 
-export default function AddVersion() {
+export default function AddVersion(props: { props?: ButtonProps }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   return (
     <>
-      <Button color="primary" onPress={onOpen}>
+      <Button color="primary" onPress={onOpen} {...props}>
         <FontAwesomeIcon icon={faAdd} className="mr-2" />
         Add Version
       </Button>

@@ -3,7 +3,7 @@ import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import Pagination from '@/components/table/Pagination'
 import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { cn, Input, Listbox, ListboxItem } from '@heroui/react'
+import { Chip, cn, Input, Listbox, ListboxItem } from '@heroui/react'
 import { useNavigate } from 'react-router-dom'
 import { DashboardTabs } from './Products'
 
@@ -82,6 +82,13 @@ export default function Vendors() {
             title={vendor.name}
             description="This product is the latest release of this series."
             menu={<EditPopover itemId={String(vendor.id)} />}
+            chips={
+              vendor.products && (
+                <Chip variant="flat" color="primary" className="rounded-md">
+                  Products: {vendor.products?.length}
+                </Chip>
+              )
+            }
           />
         ))}
 

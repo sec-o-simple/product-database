@@ -1,11 +1,9 @@
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import LatestChip from '@/components/forms/Latest'
 import ListItem, { ListGroup } from '@/components/forms/ListItem'
+import AddVersion from '@/components/layout/product/AddVersion'
 import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import Pagination from '@/components/table/Pagination'
-import { faAdd } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button } from '@heroui/button'
 import { BreadcrumbItem, Chip } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 
@@ -84,14 +82,7 @@ export default function Version({
                     </Chip>
                   </div>
 
-                  <Button
-                    variant="light"
-                    color="primary"
-                    size="sm"
-                    startContent={<FontAwesomeIcon icon={faAdd} />}
-                  >
-                    Add Version
-                  </Button>
+                  <AddVersion variant="light" size="sm" />
                 </div>
               }
             />

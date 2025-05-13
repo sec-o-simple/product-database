@@ -50,7 +50,7 @@ export default function ListItem({
         onClick?.()
       }}
       className={cn(
-        'group flex w-full flex-col gap-4 justify-between rounded-lg bg-white p-4 border-1 border-default-200 hover:bg-gray-50 group-hover:transition-background hover:cursor-pointer',
+        'group flex w-full flex-col gap-2 justify-between rounded-lg bg-white p-4 border-1 border-default-200 hover:bg-gray-50 group-hover:transition-background hover:cursor-pointer',
         classNames?.base,
       )}
     >
