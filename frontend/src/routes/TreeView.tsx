@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { Spinner, Tooltip } from '@heroui/react'
 import { SimpleTreeView as MuiTreeView, TreeItem } from '@mui/x-tree-view'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Product from './Product'
 import { DashboardTabs } from './Products'
@@ -30,7 +30,9 @@ export function HydrateFallback() {
 export default function TreeView() {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const [selected, setSelected] = useState<SelectedNode | null>(null)
+  const [checkboxes, setCheckboxes] = useState([])
   const navigate = useNavigate()
+  const apiRef = useRef<any>(null)
 
   const item = useMemo(() => {
     if (!selected) return null
@@ -110,6 +112,8 @@ export default function TreeView() {
 
           <div className="bg-white rounded-lg border-1 border-gray-200 p-2">
             <MuiTreeView
+              checkboxSelection
+              apiRef={apiRef}
               expandedItems={expandedItems}
               onExpandedItemsChange={(_, itemIds) => {
                 setExpandedItems(itemIds)

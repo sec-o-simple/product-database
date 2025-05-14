@@ -1,6 +1,5 @@
 import IconButton from '@/components/forms/IconButton'
-import { faArrowLeft, faDatabase } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { Chip } from '@heroui/chip'
 import { Outlet, useNavigate } from 'react-router-dom'
 import AddRelationship from '../product/AddRelationship'
@@ -17,12 +16,6 @@ export default function VersionLayout() {
     <div className="flex h-screen flex-col bg-[#F9FAFB]">
       <div className="flex w-full items-center justify-between gap-8 border-b px-6 py-4 bg-white">
         <span className="flex items-center gap-2 text-2xl font-bold">
-          <FontAwesomeIcon
-            icon={faDatabase}
-            className="cursor-pointer text-primary"
-            onClick={() => navigate('/vendors')}
-          />
-
           <IconButton
             icon={faArrowLeft}
             color="primary"
@@ -47,8 +40,8 @@ export default function VersionLayout() {
       <div className="flex flex-row h-full">
         <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
           <Attribute label="Version" value={versionId} />
-          <Attribute label="Relationships" value="2" />
           <Attribute label="Description" value="Version Description" />
+          <Attribute label="Relationships" value="2" />
         </div>
         <div className="p-4 w-full">
           <Outlet />

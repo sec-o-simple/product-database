@@ -4,7 +4,7 @@ import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import AddVersion from '@/components/layout/product/AddVersion'
 import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
-import { BreadcrumbItem } from '@heroui/react'
+import { BreadcrumbItem, Chip } from '@heroui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export default function Product({
@@ -28,6 +28,7 @@ export default function Product({
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
           <BreadcrumbItem href="/vendors/1">Products</BreadcrumbItem>
+          <BreadcrumbItem>{product?.name}</BreadcrumbItem>
           <BreadcrumbItem>Versions</BreadcrumbItem>
         </Breadcrumbs>
       )}
@@ -50,6 +51,16 @@ export default function Product({
               </div>
             }
             description={version.description}
+            chips={
+              <div className="flex flex-row gap-2">
+                <Chip className="rounded-md" size="sm" variant="flat">
+                  Installed On: Microsoft Office 2019
+                </Chip>
+                <Chip className="rounded-md" size="sm" variant="flat">
+                  Installed On: Microsoft Office 365
+                </Chip>
+              </div>
+            }
           />
         ))}
       </DataGrid>

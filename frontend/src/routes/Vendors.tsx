@@ -1,14 +1,26 @@
+import DataGrid, { FilterButton } from '@/components/forms/DataGrid'
 import ListItem from '@/components/forms/ListItem'
+import AddVendor from '@/components/layout/vendor/AddVendor'
 import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
-import Pagination from '@/components/table/Pagination'
-import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons'
+import {
+  faEdit,
+  faSearch,
+  faSortAlphaAsc,
+  faSortAmountAsc,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Chip, cn, Input, Listbox, ListboxItem } from '@heroui/react'
 import { useNavigate } from 'react-router-dom'
 import { DashboardTabs } from './Products'
 
-export function EditPopover({ itemId }: { itemId?: string }) {
-  const navigate = useNavigate()
+export function EditPopover({
+  onEdit,
+  onDelete,
+}: {
+  onEdit?: () => void
+  onDelete?: () => void
+}) {
   const iconClasses = 'text-default-500 pointer-events-none flex-shrink-0'
 
   return (
@@ -22,9 +34,7 @@ export function EditPopover({ itemId }: { itemId?: string }) {
     >
       <ListboxItem
         key="new"
-        onClick={() => {
-          navigate(`/vendors/${itemId}/edit`)
-        }}
+        onClick={onEdit}
         startContent={<FontAwesomeIcon className={iconClasses} icon={faEdit} />}
       >
         Edit
@@ -33,9 +43,7 @@ export function EditPopover({ itemId }: { itemId?: string }) {
         key="delete"
         color="danger"
         className="text-danger"
-        onClick={() => {
-          navigate(`/vendors/${itemId}/delete`)
-        }}
+        onClick={onDelete}
         startContent={
           <FontAwesomeIcon
             className={cn(iconClasses, 'text-danger')}
@@ -75,24 +83,31 @@ export default function Vendors() {
       />
 
       <div className="w-full flex gap-2 flex-col">
-        {fakeVendors.map((vendor) => (
-          <ListItem
-            key={vendor.id}
-            onClick={() => navigate(`/vendors/${vendor.id}`)}
-            title={vendor.name}
-            description="This product is the latest release of this series."
-            menu={<EditPopover itemId={String(vendor.id)} />}
-            chips={
-              vendor.products && (
-                <Chip variant="flat" color="primary" className="rounded-md">
-                  Products: {vendor.products?.length}
-                </Chip>
-              )
-            }
-          />
-        ))}
+        <div className="flex w-full items-center justify-between mb-2 gap-2">
+          <div className="flex flex-grow flex-row gap-2"></div>
+          <FilterButton title="Products" icon={faSortAmountAsc} />
+          <FilterButton title="Name" icon={faSortAlphaAsc} />
+          <AddVendor />
+        </div>
 
-        <Pagination />
+        <DataGrid addButton={<AddVendor />}>
+          {fakeVendors.map((vendor) => (
+            <ListItem
+              key={vendor.id}
+              onClick={() => navigate(`/vendors/${vendor.id}`)}
+              title={vendor.name}
+              description="This product is the latest release of this series."
+              menu={<EditPopover />}
+              chips={
+                vendor.products && (
+                  <Chip variant="flat" color="primary" className="rounded-md">
+                    Products: {vendor.products?.length}
+                  </Chip>
+                )
+              }
+            />
+          ))}
+        </DataGrid>
       </div>
     </div>
   )
