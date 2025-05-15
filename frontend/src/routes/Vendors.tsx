@@ -77,16 +77,17 @@ export default function Vendors() {
             size="sm"
             startContent={<FontAwesomeIcon icon={faSearch} />}
             type="search"
-            variant="flat"
+            variant="bordered"
           />
         }
       />
 
       <div className="w-full flex gap-2 flex-col">
         <div className="flex w-full items-center justify-between mb-2 gap-2">
-          <div className="flex flex-grow flex-row gap-2"></div>
-          <FilterButton title="Products" icon={faSortAmountAsc} />
-          <FilterButton title="Name" icon={faSortAlphaAsc} />
+          <div className="flex flex-grow flex-row gap-2">
+            <FilterButton title="Products" icon={faSortAmountAsc} />
+            <FilterButton title="Name" icon={faSortAlphaAsc} />
+          </div>
           <AddVendor />
         </div>
 

@@ -11,7 +11,7 @@ export type IconButtonProps = ButtonProps & {
 export default function IconButton({ icon, ...buttonProps }: IconButtonProps) {
   return (
     <Button
-      isIconOnly={true}
+      isIconOnly
       variant="light"
       className="rounded-full text-neutral-foreground"
       {...buttonProps}

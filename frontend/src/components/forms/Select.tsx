@@ -10,7 +10,7 @@ export default function Select(props: SelectProps) {
       classNames={{
         trigger: 'border-1 shadow-none',
       }}
-      {...rest}
+      {...props}
     />
   )
 }

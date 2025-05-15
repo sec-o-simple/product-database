@@ -71,7 +71,7 @@ export default function ListItem({
           <Popover placement="bottom-end">
             <PopoverTrigger>
               <Button
-                isIconOnly={true}
+                isIconOnly
                 variant="light"
                 className="rounded-full text-neutral-foreground"
               >

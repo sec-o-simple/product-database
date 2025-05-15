@@ -96,8 +96,12 @@ export function AddIdHelper({
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button color="primary" isIconOnly={isIconOnly} variant="flat">
-          <FontAwesomeIcon icon={faAdd} />
+        <Button
+          color="primary"
+          isIconOnly={isIconOnly}
+          variant="flat"
+          startContent={<FontAwesomeIcon icon={faAdd} />}
+        >
           {!isIconOnly && 'Add ID Helper'}
         </Button>
       </DropdownTrigger>
@@ -145,8 +149,12 @@ export default function ProductLayout() {
         </span>
 
         <div className="flex flex-row gap-4">
-          <Button color="primary" variant="light" disabled>
-            <FontAwesomeIcon icon={faFileExport} />
+          <Button
+            color="primary"
+            variant="light"
+            disabled
+            startContent={<FontAwesomeIcon icon={faFileExport} />}
+          >
             Export
           </Button>
 

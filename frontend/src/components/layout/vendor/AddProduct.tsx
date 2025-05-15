@@ -16,8 +16,11 @@ export default function AddProduct() {
 
   return (
     <>
-      <Button color="primary" onPress={onOpen}>
-        <FontAwesomeIcon icon={faAdd} className="mr-2" />
+      <Button
+        color="primary"
+        onPress={onOpen}
+        startContent={<FontAwesomeIcon icon={faAdd} />}
+      >
         Add Product
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">

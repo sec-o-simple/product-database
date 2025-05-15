@@ -16,8 +16,11 @@ export default function AddVendor() {
 
   return (
     <>
-      <Button color="primary" onPress={onOpen}>
-        <FontAwesomeIcon icon={faAdd} className="mr-2" />
+      <Button
+        color="primary"
+        onPress={onOpen}
+        startContent={<FontAwesomeIcon icon={faAdd} />}
+      >
         Add Vendor
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>

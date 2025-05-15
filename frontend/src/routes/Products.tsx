@@ -63,7 +63,7 @@ export default function Products() {
             size="sm"
             startContent={<FontAwesomeIcon icon={faSearch} />}
             type="search"
-            variant="flat"
+            variant="bordered"
           />
         }
       />

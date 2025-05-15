@@ -2,9 +2,8 @@ import { Input } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ButtonProps } from '@heroui/button'
+import { Button, ButtonProps } from '@heroui/button'
 import {
-  Button,
   Checkbox,
   DatePicker,
   Modal,
@@ -22,8 +21,12 @@ export default function AddVersion(props: { props?: ButtonProps }) {
 
   return (
     <>
-      <Button color="primary" onPress={onOpen} {...props}>
-        <FontAwesomeIcon icon={faAdd} className="mr-2" />
+      <Button
+        color="primary"
+        onPress={onOpen}
+        startContent={<FontAwesomeIcon icon={faAdd} />}
+        {...props}
+      >
         Add Version
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">

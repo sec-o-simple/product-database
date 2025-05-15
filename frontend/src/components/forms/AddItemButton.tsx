@@ -17,12 +17,12 @@ export default function AddItemButton(props: AddItemButtonProps) {
     <Button
       {...buttonProps}
       variant="bordered"
+      startContent={<FontAwesomeIcon icon={icon} />}
       className={twMerge(
         'border-dashed text-neutral-foreground border-gray',
         buttonProps.className ?? '',
       )}
     >
-      <FontAwesomeIcon icon={icon} />
       {label}
     </Button>
   )

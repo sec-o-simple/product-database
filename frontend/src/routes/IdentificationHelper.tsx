@@ -88,13 +88,7 @@ function IndentificationItem({
           )}
           {edit && (
             <div className="flex justify-end gap-2">
-              <Button
-                variant="light"
-                size="sm"
-                onPress={() => {
-                  setEdit(false)
-                }}
-              >
+              <Button variant="light" size="sm" onPress={() => setEdit(false)}>
                 Cancel
               </Button>
               <Button
@@ -115,7 +109,7 @@ function IndentificationItem({
           <Popover placement="bottom-end">
             <PopoverTrigger>
               <Button
-                isIconOnly={true}
+                isIconOnly
                 variant="light"
                 className="rounded-full text-neutral-foreground"
               >
@@ -320,6 +314,7 @@ export default function IdentificationHelper({
                 <Button
                   variant="bordered"
                   className="border-dashed text-gray border-gray"
+                  startContent={<FontAwesomeIcon icon={faAdd} />}
                   onPress={() => {
                     setHelper((prev) =>
                       prev.map((h, index) => {
@@ -343,7 +338,6 @@ export default function IdentificationHelper({
                     )
                   }}
                 >
-                  <FontAwesomeIcon icon={faAdd} />
                   Add {helper.label}
                 </Button>
               }

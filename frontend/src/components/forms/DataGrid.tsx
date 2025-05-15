@@ -1,7 +1,6 @@
 import { EmptyState } from '@/routes/Vendor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ButtonProps } from '@heroui/button'
-import { Button } from '@heroui/react'
+import { Button, ButtonProps } from '@heroui/button'
 import React from 'react'
 import Pagination from '../table/Pagination'
 
@@ -15,8 +14,11 @@ export function FilterButton({
   props?: ButtonProps
 }) {
   return (
-    <Button variant="light" {...props}>
-      <FontAwesomeIcon icon={icon} />
+    <Button
+      variant="light"
+      {...props}
+      startContent={<FontAwesomeIcon icon={icon} />}
+    >
       {title}
     </Button>
   )
