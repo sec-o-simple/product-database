@@ -9,9 +9,11 @@
     "build": "tsc && vite build",
     "lint": "eslint -c .eslintrc.json ./src/**/**/*.{ts,tsx} --fix",
     "preview": "vite preview",
-    "dev-all": "concurrently \"npm run dev\" \"npm run dev:api\""
+    "dev-all": "concurrently \"npm run dev\" \"npm run dev:api\"",
+    "generate:api": "openapi-typescript ../server/doc/openapi.json --output src/client/schema.d.ts"
   },
   "dependencies": {
+    "@emotion/styled": "^11.14.0",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -34,11 +36,13 @@
     "@heroui/tabs": "^2.2.11",
     "@heroui/theme": "2.4.13",
     "@heroui/use-theme": "2.1.6",
-    "@mui/x-tree-view": "^8.3.0",
+    "@mui/x-tree-view": "^8.4.0",
     "@react-aria/visually-hidden": "3.8.21",
     "@react-types/shared": "3.28.0",
     "clsx": "2.1.1",
     "framer-motion": "11.15.0",
+    "openapi-fetch": "^0.14.0",
+    "openapi-react-query": "^0.5.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "6.23.0",
@@ -62,9 +66,10 @@
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-unused-imports": "4.1.4",
+    "openapi-typescript": "^7.8.0",
     "postcss": "8.4.38",
     "prettier": "3.3.3",
-    "typescript": "5.6.3",
+    "typescript": "^5.6.3",
     "vite": "^5.2.0",
     "vite-tsconfig-paths": "^4.3.2"
   }

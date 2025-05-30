@@ -1,3 +1,4 @@
+import client from '@/client'
 import { Input } from '@/components/forms/Input'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
@@ -39,6 +40,7 @@ export function DashboardTabs({
 
 export default function Products() {
   const navigate = useNavigate()
+
   const allProducts = fakeVendors
     .map((vendor) => {
       if (vendor.products) return vendor.products
