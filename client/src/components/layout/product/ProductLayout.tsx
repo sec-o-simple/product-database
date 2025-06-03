@@ -2,6 +2,7 @@ import { IdentificationGroup } from '@/routes/IdentificationHelper'
 import {
   faAdd,
   faArrowLeft,
+  faArrowUpRightFromSquare,
   faFileExport,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -135,7 +136,7 @@ export default function ProductLayout() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-[#F9FAFB]">
+    <div className="flex min-h-screen flex-col bg-[#F9FAFB]">
       <div className="flex w-full items-center justify-between gap-8 border-b px-6 py-4 bg-white">
         <span className="flex items-center gap-2 text-2xl font-bold">
           <IconButton
@@ -164,13 +165,24 @@ export default function ProductLayout() {
         </div>
       </div>
 
-      <div className="flex flex-row h-full">
+      <div className="flex flex-row h-full flex-grow">
         <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
           <Attribute label="Name" value={product?.name} />
 
           <Attribute label="Description" value={product?.description} />
 
-          <p className="text-md font-bold mt-4">Identification Helpers</p>
+          <div className="flex flex-row items-center gap-2 mt-4">
+            <p className="text-md font-bold">Identification Helpers</p>
+
+            <Button
+              isIconOnly
+              variant="light"
+              color="primary"
+              onPress={() => navigate('/products/1/identification-helper')}
+            >
+              <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+            </Button>
+          </div>
           {idHelperTypes.map((type) => (
             <IdentificationGroup
               key={type.id}
