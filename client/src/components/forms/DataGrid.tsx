@@ -4,6 +4,14 @@ import { Button, ButtonProps } from '@heroui/button'
 import React from 'react'
 import Pagination from '../table/Pagination'
 
+export function Titlebar({ title }: { title: string }) {
+  return (
+    <div className="flex w-full items-center justify-between border-1 border-gray-200 bg-white p-4 rounded-md">
+      <p className="font-semibold text-xl text-primary">{title}</p>
+    </div>
+  )
+}
+
 export function FilterButton({
   icon,
   title,
@@ -35,11 +43,7 @@ export default function DataGrid({
 }) {
   return (
     <div className="flex w-full flex-col items-center gap-4">
-      {title && (
-        <div className="flex w-full items-center justify-between border-1 border-gray-200 bg-white p-4 rounded-md">
-          <p className="font-semibold text-xl text-primary">{title}</p>
-        </div>
-      )}
+      {title && <Titlebar title={title} />}
 
       {/** Empty State */}
       {!children && <EmptyState add={addButton} />}

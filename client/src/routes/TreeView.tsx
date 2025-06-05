@@ -31,6 +31,12 @@ export function HydrateFallback() {
   return <Spinner />
 }
 
+enum TypeLabels {
+  vendor = 'Vendor',
+  product = 'Product',
+  version = 'Version',
+}
+
 function getParentNode(
   items: TreeViewBaseItem[],
   id: string,
@@ -330,18 +336,8 @@ export default function TreeView() {
           <div className="w-4/5 bg-white rounded-lg border-1 border-gray-200 p-6 space-y-4">
             <div className="flex w-full justify-between items-center gap-2">
               <p className="font-semibold text-xl">
-                <FontAwesomeIcon
-                  icon={
-                    selected?.type === 'vendor'
-                      ? faBuilding
-                      : selected?.type === 'product'
-                        ? faSitemap
-                        : selected?.type === 'version'
-                          ? faCodeBranch
-                          : faCodeBranch
-                  }
-                  className="text-primary text-2xl mr-4"
-                />
+                {TypeLabels[selected?.type] || 'Unknown Type'}
+                {': '}
                 {item?.name}
               </p>
 

@@ -32,27 +32,33 @@ export function EditPopover({
       }}
       variant="flat"
     >
-      <ListboxItem
-        key="new"
-        onClick={onEdit}
-        startContent={<FontAwesomeIcon className={iconClasses} icon={faEdit} />}
-      >
-        Edit
-      </ListboxItem>
-      <ListboxItem
-        key="delete"
-        color="danger"
-        className="text-danger"
-        onClick={onDelete}
-        startContent={
-          <FontAwesomeIcon
-            className={cn(iconClasses, 'text-danger')}
-            icon={faTrash}
-          />
-        }
-      >
-        Delete
-      </ListboxItem>
+      {!!onEdit ? (
+        <ListboxItem
+          key="new"
+          onClick={onEdit}
+          startContent={
+            <FontAwesomeIcon className={iconClasses} icon={faEdit} />
+          }
+        >
+          Edit
+        </ListboxItem>
+      ) : null}
+      {!!onDelete ? (
+        <ListboxItem
+          key="delete"
+          color="danger"
+          className="text-danger"
+          onClick={onDelete}
+          startContent={
+            <FontAwesomeIcon
+              className={cn(iconClasses, 'text-danger')}
+              icon={faTrash}
+            />
+          }
+        >
+          Delete
+        </ListboxItem>
+      ) : null}
     </Listbox>
   )
 }
@@ -98,7 +104,7 @@ export default function Vendors() {
               onClick={() => navigate(`/vendors/${vendor.id}`)}
               title={vendor.name}
               description="This product is the latest release of this series."
-              menu={<EditPopover />}
+              menu={<EditPopover onEdit={() => {}} onDelete={() => {}} />}
               chips={
                 vendor.products && (
                   <Chip variant="flat" color="primary" className="rounded-md">

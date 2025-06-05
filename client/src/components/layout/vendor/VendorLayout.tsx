@@ -1,9 +1,10 @@
+import History from '@/components/forms/HistoryButton'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import IconButton from '../../forms/IconButton'
 import { UserAvatar } from '../TopBarLayout'
-import AddProduct from './AddProduct'
+import AddProduct from '../product/CreateEditProduct'
 
 export const fakeVendors = [
   {
@@ -62,6 +63,10 @@ export const fakeVendors = [
   },
 ]
 
+export function getVendorById(vendorId: number) {
+  return fakeVendors.find((vendor) => vendor.id === vendorId)
+}
+
 export function Attribute({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-gray-100 rounded-lg p-4 space-y-2">
@@ -81,7 +86,7 @@ export default function VendorLayout() {
   const navigate = useNavigate()
 
   const vendor = useMemo(() => {
-    return fakeVendors.find((vendor) => vendor.id === Number(vendorId))
+    return getVendorById(Number(vendorId))
   }, [vendorId])
 
   if (!vendor?.name) {
@@ -103,6 +108,8 @@ export default function VendorLayout() {
         </span>
 
         <div className="flex flex-row gap-4">
+          <History />
+
           <AddProduct />
 
           <UserAvatar />

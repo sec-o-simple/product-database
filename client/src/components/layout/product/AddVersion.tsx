@@ -16,7 +16,7 @@ import {
 } from '@heroui/react'
 import { I18nProvider } from '@react-aria/i18n'
 
-export default function AddVersion(props: { props?: ButtonProps }) {
+export default function AddVersion(props?: ButtonProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   return (

@@ -1,7 +1,7 @@
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
 import ListItem from '@/components/forms/ListItem'
-import AddProduct from '@/components/layout/vendor/AddProduct'
+import AddProduct from '@/components/layout/product/CreateEditProduct'
 import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -41,7 +41,7 @@ export default function Vendor({
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-          <BreadcrumbItem>Products</BreadcrumbItem>
+          <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
@@ -52,7 +52,7 @@ export default function Vendor({
         {vendor?.products?.map((product) => (
           <ListItem
             onClick={() => navigate(`/products/${product.id}`)}
-            title={vendor?.name ?? 'Vendor Name'}
+            title={product.name ?? 'Vendor Name'}
             description={vendor?.description ?? 'Vendor Description'}
           />
         ))}

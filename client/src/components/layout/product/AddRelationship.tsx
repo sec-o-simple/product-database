@@ -252,42 +252,45 @@ export default function AddRelationship() {
               }}
             />
 
-            <div className="flex flex-row gap-2 bg-gray-100 items-center rounded-md p-4 justify-around">
-              <ProductBox
-                products={selected.sourceProducts.map(
-                  (product) =>
-                    products.find((p) => p.id === product)?.name as string,
-                )}
-                versions={selected.sourceVersions.map(
-                  (version) =>
-                    versions.find((v) => v.id === version)?.name as string,
-                )}
-              />
+            {selected.sourceProducts.length > 0 &&
+              selected.targetProducts.length > 0 && (
+                <div className="flex flex-row gap-2 bg-gray-100 items-center rounded-md p-4 justify-around">
+                  <ProductBox
+                    products={selected.sourceProducts.map(
+                      (product) =>
+                        products.find((p) => p.id === product)?.name as string,
+                    )}
+                    versions={selected.sourceVersions.map(
+                      (version) =>
+                        versions.find((v) => v.id === version)?.name as string,
+                    )}
+                  />
 
-              <div className="flex flex-col items-center space-y-2">
-                <FontAwesomeIcon
-                  icon={faArrowRight}
-                  size="xl"
-                  className="text-primary"
-                />
-                <p className="text-sm text-zinc-500">
-                  {relationshipTypes.find(
-                    (type) => type === selected.relationshipType,
-                  )}
-                </p>
-              </div>
+                  <div className="flex flex-col items-center space-y-2">
+                    <FontAwesomeIcon
+                      icon={faArrowRight}
+                      size="xl"
+                      className="text-primary"
+                    />
+                    <p className="text-sm text-zinc-500">
+                      {relationshipTypes.find(
+                        (type) => type === selected.relationshipType,
+                      )}
+                    </p>
+                  </div>
 
-              <ProductBox
-                products={selected.targetProducts.map(
-                  (product) =>
-                    products.find((p) => p.id === product)?.name as string,
-                )}
-                versions={selected.targetVersions.map(
-                  (version) =>
-                    versions.find((v) => v.id === version)?.name as string,
-                )}
-              />
-            </div>
+                  <ProductBox
+                    products={selected.targetProducts.map(
+                      (product) =>
+                        products.find((p) => p.id === product)?.name as string,
+                    )}
+                    versions={selected.targetVersions.map(
+                      (version) =>
+                        versions.find((v) => v.id === version)?.name as string,
+                    )}
+                  />
+                </div>
+              )}
           </ModalBody>
           <ModalFooter>
             <Button variant="light" onPress={onClose}>

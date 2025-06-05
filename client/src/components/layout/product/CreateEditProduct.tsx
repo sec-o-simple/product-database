@@ -11,8 +11,10 @@ import {
   useDisclosure,
 } from '@heroui/react'
 
-export default function AddProduct() {
+export default function AddProduct({ id }: { id?: string | number }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const isCreateForm = !id
+  const label = isCreateForm ? 'Add Product' : 'Edit Product'
 
   return (
     <>
@@ -21,15 +23,13 @@ export default function AddProduct() {
         onPress={onOpen}
         startContent={<FontAwesomeIcon icon={faAdd} />}
       >
-        Add Product
+        {label}
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">
-                Add Product
-              </ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">{label}</ModalHeader>
               <ModalBody className="gap-4">
                 <Input
                   label="Name"
@@ -51,7 +51,7 @@ export default function AddProduct() {
                   Cancel
                 </Button>
                 <Button color="primary" onPress={onClose}>
-                  Create Product
+                  {isCreateForm ? 'Add Product' : 'Save Changes'}
                 </Button>
               </ModalFooter>
             </>

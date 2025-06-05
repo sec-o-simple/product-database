@@ -2,6 +2,7 @@ import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
+import PageContainer from '@/components/forms/PageContainer'
 import AddVersion from '@/components/layout/product/AddVersion'
 import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import { BreadcrumbItem, Chip } from '@heroui/react'
@@ -16,20 +17,21 @@ export default function Product({
   const navigate = useNavigate()
 
   // find the correct product by id
-  const product = fakeVendors
-    .find((vendor) =>
-      vendor.products?.some((product) => String(product.id) === productId),
-    )
-    ?.products?.find((product) => String(product.id) === productId)
+  const vendor = fakeVendors.find((vendor) =>
+    vendor.products?.some((product) => String(product.id) === productId),
+  )
+  const product = vendor?.products?.find(
+    (product) => String(product.id) === productId,
+  )
 
   return (
-    <div className="flex grow flex-col w-full gap-4 p-2">
+    <PageContainer>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-          <BreadcrumbItem href="/vendors/1">Products</BreadcrumbItem>
+          <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
+          <BreadcrumbItem>Products</BreadcrumbItem>
           <BreadcrumbItem>{product?.name}</BreadcrumbItem>
-          <BreadcrumbItem>Versions</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
@@ -64,6 +66,6 @@ export default function Product({
           />
         ))}
       </DataGrid>
-    </div>
+    </PageContainer>
   )
 }
