@@ -8,13 +8,15 @@ import ProductLayout from './components/layout/product/ProductLayout'
 import TopBarLayout from './components/layout/TopBarLayout'
 import VendorLayout from './components/layout/vendor/VendorLayout'
 import VersionLayout from './components/layout/version/VersionLayout'
-import IdentificationHelper from './routes/IdentificationHelper'
+import IdentificationOverview from './routes/IdentificationHelper/IdentificationOverview'
 import Product from './routes/Product'
 import Products from './routes/Products'
 import TreeView from './routes/TreeView'
 import Vendor from './routes/Vendor'
 import Vendors from './routes/Vendors'
 import Version from './routes/Version'
+import History from './routes/History'
+import Helper from './routes/IdentificationHelper/Helper'
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
         <Route element={<VendorLayout />}>
           <Route path="vendors">
             <Route path=":vendorId" element={<Vendor />} />
+            <Route path="history" element={<History />} />
           </Route>
         </Route>
 
@@ -46,17 +49,21 @@ function App() {
           <Route path="products">
             <Route path=":productId">
               <Route index element={<Product />} />
-              <Route
-                path="identification-helper"
-                element={<IdentificationHelper />}
-              />
+              <Route path="history" element={<History />} />
             </Route>
           </Route>
         </Route>
 
         <Route element={<VersionLayout />}>
           <Route path="products/:productId/versions">
-            <Route path=":versionId" element={<Version />} />
+            <Route path=":versionId">
+              <Route index element={<Version />} />
+
+              <Route path="identification-helper">
+                <Route index element={<IdentificationOverview />} />
+                <Route path=":helperId" element={<Helper />} />
+              </Route>
+            </Route>
           </Route>
         </Route>
       </Routes>
