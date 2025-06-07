@@ -1,3 +1,4 @@
+import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,9 +11,39 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react'
+import { useState } from 'react'
 
-export default function AddVendor() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+interface AddVendorProps {
+  onCreate?: () => void
+}
+
+export default function AddVendor({ onCreate }: AddVendorProps) {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+
+  const mutation = client.useMutation(
+    "post",
+    "/api/v1/vendors",
+    {
+      onSuccess: () => {
+        setName('')
+        setDescription('')
+        onClose()
+        onCreate?.()
+      },
+    }
+  )
+
+  function handleCreateVendor() {
+    mutation.mutate({
+      body: {
+        name,
+        description,
+      },
+    })
+  }
 
   return (
     <>
@@ -31,10 +62,19 @@ export default function AddVendor() {
                 Add Vendor
               </ModalHeader>
               <ModalBody className="gap-4">
+                {mutation.isError ? (
+                  <div className="text-red-500">
+                    Error: {mutation.error?.title || 'Failed to create vendor'}
+                  </div>
+                ) : null}
+
                 <Input
                   label="Name"
                   placeholder="Enter the product name..."
                   className="w-full"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoFocus
                   type="text"
                 />
 
@@ -43,6 +83,8 @@ export default function AddVendor() {
                   multiple
                   placeholder="Enter the description..."
                   className="w-full"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   type="text"
                 />
               </ModalBody>
@@ -50,7 +92,7 @@ export default function AddVendor() {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" onPress={handleCreateVendor} isLoading={mutation.isPending}>
                   Create Vendor
                 </Button>
               </ModalFooter>

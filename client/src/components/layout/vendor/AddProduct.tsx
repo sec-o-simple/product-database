@@ -1,3 +1,4 @@
+import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,9 +11,44 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-export default function AddProduct() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+interface AddProductProps {
+  vendorBranchId: string,
+}
+
+export default function AddProduct({ vendorBranchId }: AddProductProps) {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const navigate = useNavigate()
+
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('')
+
+  const mutation = client.useMutation(
+    "post",
+    "/api/v1/products",
+    {
+      onSuccess: () => {
+        setName('')
+        setDescription('')
+        onClose()
+
+        // Reload the current route
+        navigate(0)
+      },
+    }
+  )
+
+  function handleCreateProduct() {
+    mutation.mutate({
+      body: {
+        name,
+        description,
+        vendor_branch_id: vendorBranchId,
+      },
+    })
+  }
 
   return (
     <>
@@ -31,10 +67,18 @@ export default function AddProduct() {
                 Add Product
               </ModalHeader>
               <ModalBody className="gap-4">
+                {mutation.error && (
+                  <div className="text-red-500">
+                    {mutation.error.title || 'An error occurred while creating the product.'}
+                  </div>
+                )}
                 <Input
                   label="Name"
                   placeholder="Enter the product name..."
                   className="w-full"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoFocus
                   type="text"
                 />
 
@@ -43,6 +87,8 @@ export default function AddProduct() {
                   multiple
                   placeholder="Enter the description..."
                   className="w-full"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   type="text"
                 />
               </ModalBody>
@@ -50,7 +96,7 @@ export default function AddProduct() {
                 <Button variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" onPress={handleCreateProduct} isLoading={mutation.isPending}>
                   Create Product
                 </Button>
               </ModalFooter>

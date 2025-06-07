@@ -1,3 +1,4 @@
+import client from '@/client'
 import { Input } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
@@ -6,6 +7,7 @@ import { Button, ButtonProps } from '@heroui/button'
 import {
   Checkbox,
   DatePicker,
+  DateValue,
   Modal,
   ModalBody,
   ModalContent,
@@ -15,9 +17,51 @@ import {
   useDisclosure,
 } from '@heroui/react'
 import { I18nProvider } from '@react-aria/i18n'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-export default function AddVersion(props: { props?: ButtonProps }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+interface AddVersionProps {
+  props?: ButtonProps
+  productBranchId: string
+}
+
+export default function AddVersion(props: AddVersionProps) {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const navigate = useNavigate()
+
+  const [name, setName] = useState('')
+  const [releaseDate, setReleaseDate] = useState<DateValue | null>(null)
+  const [isLatest, setIsLatest] = useState(false)
+
+  const mutation = client.useMutation(
+    "post",
+    "/api/v1/products/{id}/versions",
+    {
+      onSuccess: () => {
+        setName('')
+        onClose()
+
+        // Reload the current route
+        navigate(0)
+      },
+    }
+  )
+
+  function handleCreateVersion() {
+    mutation.mutate({
+      body: {
+        version: name,
+        is_latest: isLatest,
+        release_date: new Date().toISOString().split('T')[0],
+        product_branch_id: props.productBranchId,
+      },
+      params: {
+        path: {
+          id: props.productBranchId,
+        }
+      }
+    })
+  }
 
   return (
     <>
@@ -29,7 +73,7 @@ export default function AddVersion(props: { props?: ButtonProps }) {
       >
         Add Version
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl" isDismissable={false}>
         <ModalContent>
           {(onClose) => (
             <>
@@ -37,10 +81,11 @@ export default function AddVersion(props: { props?: ButtonProps }) {
                 Add New Version
               </ModalHeader>
               <ModalBody className="gap-4">
-                <Select label="Product" placeholder="Select a product">
-                  <SelectItem key="1">Product 1</SelectItem>
-                  <SelectItem key="2">Product 2</SelectItem>
-                </Select>
+                {mutation.error && (
+                  <div className="text-red-500">
+                    {mutation.error.title || 'An error occurred while creating the product.'}
+                  </div>
+                )}
 
                 <Select label="Type" placeholder="Select a type">
                   <SelectItem key="1">Firmware</SelectItem>
@@ -53,12 +98,16 @@ export default function AddVersion(props: { props?: ButtonProps }) {
                     label="Version Number"
                     placeholder="1.0.0"
                     className="w-full"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     type="text"
                   />
 
                   <I18nProvider locale="de-DE">
                     <DatePicker
                       label="Release Date"
+                      value={releaseDate}
+                      onChange={(date) => setReleaseDate(date)}
                       variant="bordered"
                       labelPlacement="outside"
                       classNames={{
@@ -68,13 +117,16 @@ export default function AddVersion(props: { props?: ButtonProps }) {
                     />
                   </I18nProvider>
                 </div>
-                <Checkbox>Is Latest Version?</Checkbox>
+                <Checkbox
+                  isSelected={isLatest}
+                  onChange={(e) => setIsLatest(e.target.checked)}
+                >Is Latest Version?</Checkbox>
               </ModalBody>
               <ModalFooter>
                 <Button variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" onPress={handleCreateVersion} isLoading={mutation.isPending}>
                   Create
                 </Button>
               </ModalFooter>

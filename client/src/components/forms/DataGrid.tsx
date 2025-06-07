@@ -2,7 +2,6 @@ import { EmptyState } from '@/routes/Vendor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, ButtonProps } from '@heroui/button'
 import React from 'react'
-import Pagination from '../table/Pagination'
 
 export function FilterButton({
   icon,
@@ -46,7 +45,7 @@ export default function DataGrid({
 
       <div className="flex flex-col w-full gap-2">{children}</div>
 
-      <Pagination />
+      {/* <Pagination /> */}
     </div>
   )
 }

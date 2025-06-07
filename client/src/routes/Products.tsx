@@ -1,9 +1,6 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
-import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
-import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
-import Pagination from '@/components/table/Pagination'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Divider } from '@heroui/react'
@@ -41,12 +38,10 @@ export function DashboardTabs({
 export default function Products() {
   const navigate = useNavigate()
 
-  const allProducts = fakeVendors
-    .map((vendor) => {
-      if (vendor.products) return vendor.products
-    })
-    .filter((product) => product !== undefined)
-    .flat()
+  const { data: products } = client.useQuery(
+    'get',
+    '/api/v1/products',
+  )
 
   return (
     <div className="flex grow flex-col items-center gap-4">
@@ -70,22 +65,22 @@ export default function Products() {
         }
       />
 
-      {allProducts.map((product) => (
+      {products?.map((product) => (
         <ListItem
           key={product.id}
           onClick={() => navigate(`/products/${product.id}`)}
           title={
             <div className="flex gap-2 items-center">
-              {product.id === 1 && <LatestChip />}
+              {/* {product.id === 1 && <LatestChip />} */}
 
               <p>{product.name}</p>
             </div>
           }
-          description={product.description}
+          description={product.description || 'No description'}
         />
       ))}
 
-      <Pagination />
+      {/* <Pagination /> */}
     </div>
   )
 }

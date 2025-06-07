@@ -3,7 +3,7 @@ import createClient from "openapi-react-query";
 import type { paths } from "./schema";
 
 const fetchClient = createFetchClient<paths>({
-  baseUrl: "http://localhost:9999/v1",
+  baseUrl: "http://localhost:9999/",
 });
 
 const client = createClient(fetchClient);

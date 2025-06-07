@@ -1,4 +1,3 @@
-import { Input } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { faAdd, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -137,7 +136,7 @@ export default function AddRelationship() {
             Create Product Relationship
           </ModalHeader>
           <ModalBody className="gap-4">
-            <div className="flex flex-row gap-2">
+            {/* <div className="flex flex-row gap-2">
               <Select
                 label="Source Product"
                 name="sourceProducts"
@@ -177,7 +176,7 @@ export default function AddRelationship() {
                   ))}
                 </>
               </Select>
-            </div>
+            </div> */}
 
             <div className="flex flex-row gap-2">
               <Select
@@ -237,7 +236,7 @@ export default function AddRelationship() {
                 <SelectItem key={type}>{type}</SelectItem>
               ))}
             </Select>
-
+{/* 
             <Input
               label="Description"
               placeholder="Enter the description..."
@@ -250,7 +249,7 @@ export default function AddRelationship() {
                   description: e.target.value,
                 }))
               }}
-            />
+            /> */}
 
             <div className="flex flex-row gap-2 bg-gray-100 items-center rounded-md p-4 justify-around">
               <ProductBox

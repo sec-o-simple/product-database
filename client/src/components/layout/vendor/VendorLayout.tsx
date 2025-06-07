@@ -1,9 +1,8 @@
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { useMemo } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import IconButton from '../../forms/IconButton'
-import { UserAvatar } from '../TopBarLayout'
 import AddProduct from './AddProduct'
+import client from '@/client'
 
 export const fakeVendors = [
   {
@@ -80,11 +79,19 @@ export default function VendorLayout() {
   const { vendorId } = useParams()
   const navigate = useNavigate()
 
-  const vendor = useMemo(() => {
-    return fakeVendors.find((vendor) => vendor.id === Number(vendorId))
-  }, [vendorId])
+  const { data: vendor } = client.useQuery(
+    'get',
+    `/api/v1/vendors/{id}`,
+    {
+      params: {
+        path: {
+          id: vendorId || '',
+        }
+      }
+    }
+  )
 
-  if (!vendor?.name) {
+  if (!vendor) {
     return null
   }
 
@@ -99,21 +106,19 @@ export default function VendorLayout() {
             isIconOnly={true}
             onPress={() => navigate(-1)}
           />
-          <p>Vendor: {vendor?.name}</p>
+          <p>Vendor: {vendor.name}</p>
         </span>
 
         <div className="flex flex-row gap-4">
-          <AddProduct />
-
-          <UserAvatar />
+          <AddProduct vendorBranchId={vendor.id} />
         </div>
       </div>
 
       <div className="flex flex-row h-full">
         <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
-          <Attribute label="Name" value={vendor?.name} />
+          <Attribute label="Name" value={vendor.name} />
 
-          <Attribute label="Description" value={vendor?.description} />
+          <Attribute label="Description" value={vendor.description || '-/-'} />
         </div>
         <div className="p-4 w-full">
           <Outlet />

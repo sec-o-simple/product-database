@@ -1,15 +1,30 @@
 import IconButton from '@/components/forms/IconButton'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { Chip } from '@heroui/chip'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import AddRelationship from '../product/AddRelationship'
-import { UserAvatar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
+import client from '@/client'
 
 export default function VersionLayout() {
   const navigate = useNavigate()
-  const { versionId } = {
-    versionId: '1.2.1',
+  const { productId, versionId } = useParams()
+
+  const { data: version } = client.useQuery(
+    'get',
+    `/api/v1/products/{id}/versions/{versionID}`,
+    {
+      params: {
+        path: {
+          id: productId || '',
+          versionID: versionId || '',
+        }
+      }
+    }
+  )
+
+  if (!version) {
+    return null
   }
 
   return (
@@ -23,25 +38,23 @@ export default function VersionLayout() {
             isIconOnly={true}
             onPress={() => navigate(-1)}
           />
-          <p>Product X - Relationships</p>
+          <p>Product {version.product_name || ''} - Relationships</p>
 
           <Chip variant="flat" className="rounded-md ml-2">
-            Version: {versionId}
+            Version: {version.name}
           </Chip>
         </span>
 
         <div className="flex flex-row gap-4">
           <AddRelationship />
-
-          <UserAvatar />
         </div>
       </div>
 
       <div className="flex flex-row h-full">
         <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
-          <Attribute label="Version" value={versionId} />
+          <Attribute label="Version" value={version.name} />
           <Attribute label="Description" value="Version Description" />
-          <Attribute label="Relationships" value="2" />
+          <Attribute label="Relationships" value={`${version.source_relationships ? version.source_relationships.length : 0}`} />
         </div>
         <div className="p-4 w-full">
           <Outlet />
