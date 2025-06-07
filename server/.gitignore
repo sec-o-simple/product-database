@@ -9,3 +9,4 @@ bin
 go.work.sum
 *.db
 tmp
+.env

@@ -41,6 +41,12 @@ $ go mod tidy
 
 # Install developer tools (air, lint, etc.)
 $ make tools
+
+# Copy .env.sample to .env and edit as needed
+$ cp .env.sample .env
+
+# Start the development server
+$ make dev
 ```
 
 ---
