@@ -1,12 +1,11 @@
+import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
 import ListItem from '@/components/forms/ListItem'
-import AddProduct from '@/components/layout/product/CreateEditProduct'
-import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
+import AddProduct from '@/components/layout/vendor/AddProduct'
 import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem } from '@heroui/react'
-import { useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export function EmptyState({ add }: { add: React.ReactNode }) {
@@ -32,9 +31,21 @@ export default function Vendor({
   const { vendorId } = useParams()
   const navigate = useNavigate()
 
-  const vendor = useMemo(() => {
-    return fakeVendors.find((vendor) => vendor.id === Number(vendorId))
-  }, [vendorId])
+  const { data: vendor, refetch } = client.useQuery(
+    'get',
+    `/api/v1/vendors/{id}`,
+    {
+      params: {
+        path: {
+          id: vendorId || '',
+        },
+      },
+    },
+  )
+
+  if (!vendor) {
+    return null
+  }
 
   return (
     <div className="flex grow flex-col w-full gap-4 p-2">
@@ -46,16 +57,18 @@ export default function Vendor({
       )}
 
       <DataGrid
-        title={`Products (${vendor?.products?.length ?? 0})`}
-        addButton={<AddProduct />}
+        title={`Products (${vendor.products?.length ?? 0})`}
+        addButton={<AddProduct vendorBranchId={vendor.id} />}
       >
-        {vendor?.products?.map((product) => (
-          <ListItem
-            onClick={() => navigate(`/products/${product.id}`)}
-            title={product.name ?? 'Vendor Name'}
-            description={vendor?.description ?? 'Vendor Description'}
-          />
-        ))}
+        {vendor.products.length === 0
+          ? null
+          : vendor.products.map((product) => (
+              <ListItem
+                onClick={() => navigate(`/products/${product.id}`)}
+                title={product.name ?? 'Product Name'}
+                description={product.description ?? 'Vendor Description'}
+              />
+            ))}
       </DataGrid>
     </div>
   )

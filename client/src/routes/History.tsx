@@ -1,13 +1,11 @@
+import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
-import { Titlebar } from '@/components/forms/DataGrid'
 import ListItem from '@/components/forms/ListItem'
-import { getProductById } from '@/components/layout/product/ProductLayout'
-import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import { faRefresh, faTimeline } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem, Button, Chip } from '@heroui/react'
-import { useParams } from 'react-router-dom'
 import moment from 'moment'
+import { useParams } from 'react-router-dom'
 
 const updates = [
   {
@@ -35,16 +33,20 @@ const updates = [
 export default function History() {
   const { productId } = useParams()
 
-  const vendor = fakeVendors.find((vendor) =>
-    vendor.products?.some((product) => String(product.id) === productId),
-  )
-  const product = getProductById(productId?.toString() ?? '')
+  const vendor = undefined
+  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
+    params: {
+      path: {
+        id: productId || '',
+      },
+    },
+  })
 
   return (
     <div className="flex grow flex-col w-full gap-4 p-2">
       <Breadcrumbs>
         <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-        <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
+        <BreadcrumbItem>{'xxx'}</BreadcrumbItem>
         <BreadcrumbItem>Products</BreadcrumbItem>
         <BreadcrumbItem>{product?.name}</BreadcrumbItem>
         <BreadcrumbItem>Object History</BreadcrumbItem>

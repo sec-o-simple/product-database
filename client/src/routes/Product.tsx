@@ -1,10 +1,9 @@
+import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
-import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import PageContainer from '@/components/forms/PageContainer'
 import AddVersion from '@/components/layout/product/AddVersion'
-import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import { BreadcrumbItem, Chip } from '@heroui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 
@@ -16,55 +15,64 @@ export default function Product({
   const { productId } = useParams()
   const navigate = useNavigate()
 
-  // find the correct product by id
-  const vendor = fakeVendors.find((vendor) =>
-    vendor.products?.some((product) => String(product.id) === productId),
-  )
-  const product = vendor?.products?.find(
-    (product) => String(product.id) === productId,
-  )
+  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
+    params: {
+      path: {
+        id: productId || '',
+      },
+    },
+  })
+
+  if (!product) {
+    return null
+  }
 
   return (
     <PageContainer>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-          <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
+          <BreadcrumbItem>{'todo'}</BreadcrumbItem>
           <BreadcrumbItem>Products</BreadcrumbItem>
           <BreadcrumbItem>{product?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
       <DataGrid
-        title={`Versions (${product?.versions?.length ?? 0})`}
-        addButton={<AddVersion />}
+        title={`Versions (${product.versions?.length})`}
+        addButton={<AddVersion productBranchId={product.id} />}
       >
-        {product?.versions?.map((version) => (
-          <ListItem
-            key={version.id}
-            onClick={() =>
-              navigate(`/products/${productId}/versions/${version.id}`)
-            }
-            title={
-              <div className="flex gap-2 items-center">
-                {version.id === 1 && <LatestChip />}
+        {product.versions.length === 0
+          ? null
+          : product.versions.map((version) => (
+              <ListItem
+                key={version.id}
+                onClick={() =>
+                  navigate(`/products/${productId}/versions/${version.id}`)
+                }
+                title={
+                  <div className="flex gap-2 items-center">
+                    {/* {version.id === 1 && <LatestChip />} */}
 
-                <p>{version.name}</p>
-              </div>
-            }
-            description={version.description}
-            chips={
-              <div className="flex flex-row gap-2">
-                <Chip className="rounded-md" size="sm" variant="flat">
-                  Installed On: Microsoft Office 2019
-                </Chip>
-                <Chip className="rounded-md" size="sm" variant="flat">
-                  Installed On: Microsoft Office 365
-                </Chip>
-              </div>
-            }
-          />
-        ))}
+                    <p>{version.name}</p>
+                  </div>
+                }
+                description={'No description'}
+                chips={
+                  version.source_relationships &&
+                  version.source_relationships.length !== 0 && (
+                    <div className="flex flex-row gap-2">
+                      {version.source_relationships.map((relationship) => (
+                        <Chip className="rounded-md" size="sm" variant="flat">
+                          {relationship.category}:{' '}
+                          {relationship.target_branch_name}
+                        </Chip>
+                      ))}
+                    </div>
+                  )
+                }
+              />
+            ))}
       </DataGrid>
     </PageContainer>
   )

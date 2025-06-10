@@ -1,13 +1,10 @@
+import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
-import { Titlebar } from '@/components/forms/DataGrid'
-import LatestChip from '@/components/forms/Latest'
 import ListItem, { ListGroup } from '@/components/forms/ListItem'
-import AddVersion from '@/components/layout/product/AddVersion'
-import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
-import { getProductVersionById } from '@/components/layout/version/VersionLayout'
-import Pagination from '@/components/table/Pagination'
-import { BreadcrumbItem, Chip } from '@heroui/react'
+import AddRelationship from '@/components/layout/product/AddRelationship'
+import { BreadcrumbItem } from '@heroui/react'
 import { useParams } from 'react-router-dom'
+import { EmptyState } from './Vendor'
 
 export interface HelperTypeProps {
   id: number
@@ -91,15 +88,39 @@ export default function Version({
   hideBreadcrumbs?: boolean
 }) {
   const { productId, versionId } = useParams()
-  // find the correct product by id
-  const { product, version } = getProductVersionById(
-    productId || '',
-    versionId || '',
+
+  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
+    params: {
+      path: {
+        id: productId || '',
+      },
+    },
+  })
+
+  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
+    params: {
+      path: {
+        id: product?.vendor_id || '',
+      },
+    },
+  })
+
+  const { data: version } = client.useQuery(
+    'get',
+    `/api/v1/products/{id}/versions/{versionID}`,
+    {
+      params: {
+        path: {
+          id: productId || '',
+          versionID: versionId || '',
+        },
+      },
+    },
   )
 
-  const vendor = fakeVendors.find((vendor) =>
-    vendor.products?.some((product) => String(product.id) === productId),
-  )
+  if (!version) {
+    return null
+  }
 
   return (
     <div className="flex grow flex-col w-full gap-4 p-2">
@@ -107,82 +128,43 @@ export default function Version({
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
           <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
-          <BreadcrumbItem href={`/vendors/${vendor.id}`}>
+          <BreadcrumbItem href={`/vendors/${vendor?.id}`}>
             Products
           </BreadcrumbItem>
           <BreadcrumbItem>{product?.name}</BreadcrumbItem>
-          <BreadcrumbItem href={`/products/${product?.id}/versions`}>
+          <BreadcrumbItem href={`/products/${product?.id}`}>
             Versions
           </BreadcrumbItem>
           <BreadcrumbItem>{version?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
+
       <div className="flex w-full flex-col items-center gap-4">
-        <Titlebar title="Relationships" />
+        {!version.source_relationships ||
+        version.source_relationships.length === 0 ? (
+          <EmptyState add={<AddRelationship />} />
+        ) : null}
 
-        <ListGroup title="Installed On">
-          {product?.versions?.map((version) => (
+        {version.source_relationships?.map((relationship) => (
+          <ListGroup
+            title={relationship.category}
+            key={`${relationship.category}-${relationship.id}`}
+          >
             <ListItem
-              key={version.id}
               classNames={{
                 base: 'border-default-200 border-b-0 rounded-none',
               }}
               title={
                 <div className="flex gap-2 items-center">
-                  {version.id === 1 && <LatestChip />}
+                  {/* {version.id === 1 && <LatestChip />} */}
 
-                  <p>{version.name}</p>
+                  <p>{relationship.target_branch_name}</p>
                 </div>
               }
-              description={version.description}
+              description={'No description'}
             />
-          ))}
-
-          <Pagination
-            classNames={{
-              base: 'rounded-t-none',
-            }}
-          />
-        </ListGroup>
-
-        <ListGroup title="Component Of">
-          {product?.versions?.map((version) => (
-            <ListItem
-              key={version.id}
-              classNames={{
-                base: 'border-default-200 border-b-0 rounded-none',
-              }}
-              title={
-                <div className="flex gap-2 items-center">
-                  {version.id === 1 && <LatestChip />}
-
-                  <p>{version.name}</p>
-                </div>
-              }
-              description={version.description}
-              chips={
-                <div className="flex justify-between">
-                  <div className="flex gap-2">
-                    <Chip variant="flat" className="rounded-md">
-                      Version: 1.2.0
-                    </Chip>
-                    <Chip variant="flat" className="rounded-md">
-                      Version: 1.2.1
-                    </Chip>
-                  </div>
-
-                  <AddVersion variant="light" size="sm" />
-                </div>
-              }
-            />
-          ))}
-
-          <Pagination
-            classNames={{
-              base: 'rounded-t-none',
-            }}
-          />
-        </ListGroup>
+          </ListGroup>
+        ))}
       </div>
     </div>
   )

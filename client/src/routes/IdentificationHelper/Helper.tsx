@@ -1,7 +1,8 @@
+import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
-import { Titlebar } from '@/components/forms/DataGrid'
 import PageContainer from '@/components/forms/PageContainer'
-import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
+import { faAdd, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   BreadcrumbItem,
   Button,
@@ -9,12 +10,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@heroui/react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
-import { idHelperTypes } from '../Version'
-import { EditPopover } from '../Vendors'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAdd, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
+import { Navigate, useParams } from 'react-router-dom'
+import { EditPopover } from '../Vendors'
+import { idHelperTypes } from '../Version'
 import { AddIdHelperItem } from './AddIDHelperItem'
 
 const hashes = [
@@ -72,7 +71,7 @@ function IdentificationItem() {
               </PopoverTrigger>
 
               <PopoverContent className="p-0 rounded-medium">
-                <EditPopover onDelete={() => {}} />
+                <EditPopover />
               </PopoverContent>
             </Popover>
           )}
@@ -99,7 +98,7 @@ function IdentificationItem() {
                   </PopoverTrigger>
 
                   <PopoverContent className="p-0 rounded-medium">
-                    <EditPopover onDelete={() => {}} onEdit={() => {}} />
+                    <EditPopover onEdit={() => {}} />
                   </PopoverContent>
                 </Popover>
               )}
@@ -121,16 +120,16 @@ function IdentificationItem() {
 export default function Helper() {
   const { helperId, productId, versionId } = useParams()
 
-  const vendor = fakeVendors.find((vendor) =>
-    vendor.products?.some((product) => String(product.id) === productId),
+  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
+    params: { path: { id: productId || '' } },
+  })
+  const { data: version } = client.useQuery(
+    'get',
+    `/api/v1/products/{id}/versions/{versionID}`,
+    {
+      params: { path: { id: versionId || '', versionID: versionId || '' } },
+    },
   )
-  const product = vendor?.products?.find(
-    (product) => String(product.id) === productId,
-  )
-  const version = product?.versions?.find(
-    (version) => String(version.id) === versionId,
-  )
-
   if (!helperId) {
     return <Navigate to="/products" replace />
   }
@@ -143,7 +142,7 @@ export default function Helper() {
     <PageContainer>
       <Breadcrumbs>
         <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-        <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
+        <BreadcrumbItem>{'xxx'}</BreadcrumbItem>
         <BreadcrumbItem>Products</BreadcrumbItem>
         <BreadcrumbItem>{product?.name}</BreadcrumbItem>
         <BreadcrumbItem>Versions</BreadcrumbItem>

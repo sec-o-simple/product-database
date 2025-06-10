@@ -1,10 +1,8 @@
-import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import {
   faArrowDown,
   faArrowUp,
   faArrowUpRightFromSquare,
   faBuilding,
-  faCodeBranch,
   faSitemap,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -145,6 +143,41 @@ export default function TreeView() {
   const [expandedItems, setExpandedItems] = useState<string[]>([])
   const [selected, setSelected] = useState<SelectedNode | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  const fakeVendors = useMemo(() => {
+    return [
+      {
+        id: 1,
+        name: 'Vendor A',
+        products: [
+          {
+            id: 1,
+            name: 'Product A1',
+            versions: [
+              { id: 1, name: 'Version A1.1' },
+              { id: 2, name: 'Version A1.2' },
+            ],
+          },
+          {
+            id: 2,
+            name: 'Product A2',
+            versions: [{ id: 3, name: 'Version A2.1' }],
+          },
+        ],
+      },
+      {
+        id: 2,
+        name: 'Vendor B',
+        products: [
+          {
+            id: 3,
+            name: 'Product B1',
+            versions: [{ id: 4, name: 'Version B1.1' }],
+          },
+        ],
+      },
+    ]
+  }, [])
 
   const handleSelectedItemsChange = (_event: any, itemIds: string[] | null) => {
     if (itemIds === null) {

@@ -8,6 +8,8 @@ import ProductLayout from './components/layout/product/ProductLayout'
 import TopBarLayout from './components/layout/TopBarLayout'
 import VendorLayout from './components/layout/vendor/VendorLayout'
 import VersionLayout from './components/layout/version/VersionLayout'
+import History from './routes/History'
+import Helper from './routes/IdentificationHelper/Helper'
 import IdentificationOverview from './routes/IdentificationHelper/IdentificationOverview'
 import Product from './routes/Product'
 import Products from './routes/Products'
@@ -15,8 +17,6 @@ import TreeView from './routes/TreeView'
 import Vendor from './routes/Vendor'
 import Vendors from './routes/Vendors'
 import Version from './routes/Version'
-import History from './routes/History'
-import Helper from './routes/IdentificationHelper/Helper'
 
 function App() {
   return (

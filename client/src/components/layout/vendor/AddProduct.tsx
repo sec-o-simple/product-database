@@ -12,31 +12,40 @@ import {
   useDisclosure,
 } from '@heroui/react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-interface AddVendorProps {
-  onCreate?: () => void
+interface AddProductProps {
+  vendorBranchId: string,
 }
 
-export default function AddVendor({ onCreate }: AddVendorProps) {
+export default function AddProduct({ vendorBranchId }: AddProductProps) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const navigate = useNavigate()
 
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
 
-  const mutation = client.useMutation('post', '/api/v1/vendors', {
-    onSuccess: () => {
-      setName('')
-      setDescription('')
-      onClose()
-      onCreate?.()
-    },
-  })
+  const mutation = client.useMutation(
+    "post",
+    "/api/v1/products",
+    {
+      onSuccess: () => {
+        setName('')
+        setDescription('')
+        onClose()
 
-  function handleCreateVendor() {
+        // Reload the current route
+        navigate(0)
+      },
+    }
+  )
+
+  function handleCreateProduct() {
     mutation.mutate({
       body: {
         name,
         description,
+        vendor_branch_id: vendorBranchId,
       },
     })
   }
@@ -48,22 +57,21 @@ export default function AddVendor({ onCreate }: AddVendorProps) {
         onPress={onOpen}
         startContent={<FontAwesomeIcon icon={faAdd} />}
       >
-        Add Vendor
+        Add Product
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
         <ModalContent>
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Add Vendor
+                Add Product
               </ModalHeader>
               <ModalBody className="gap-4">
-                {mutation.isError ? (
+                {mutation.error && (
                   <div className="text-red-500">
-                    Error: {mutation.error?.title || 'Failed to create vendor'}
+                    {mutation.error.title || 'An error occurred while creating the product.'}
                   </div>
-                ) : null}
-
+                )}
                 <Input
                   label="Name"
                   placeholder="Enter the product name..."
@@ -85,15 +93,11 @@ export default function AddVendor({ onCreate }: AddVendorProps) {
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+                <Button variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button
-                  color="primary"
-                  onPress={handleCreateVendor}
-                  isLoading={mutation.isPending}
-                >
-                  Create Vendor
+                <Button color="primary" onPress={handleCreateProduct} isLoading={mutation.isPending}>
+                  Create Product
                 </Button>
               </ModalFooter>
             </>

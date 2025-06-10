@@ -1,13 +1,13 @@
-import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import { Input } from '@/components/forms/Input'
-import PageContainer from '@/components/forms/PageContainer'
+import {
+  AddIdHelper,
+  idHelperTypes,
+} from '@/components/layout/product/ProductLayout'
 import { faAdd, faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import {
-  Accordion,
-  AccordionItem,
   BreadcrumbItem,
   Popover,
   PopoverContent,
@@ -15,11 +15,8 @@ import {
   Tooltip,
 } from '@heroui/react'
 import React, { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { EmptyState } from '../Vendor'
-import { EditPopover } from '../Vendors'
-import { idHelperTypes } from '../Version'
-import { AddIdHelper } from './AddIDHelper'
+import { EmptyState } from './Vendor'
+import { EditPopover } from './Vendors'
 
 interface IDTypeProps {
   id: number
@@ -36,7 +33,6 @@ interface FieldProps {
   id: number
   label: string
   value: string
-  items?: ItemProps[]
 }
 
 function IndentificationItem({
@@ -57,15 +53,8 @@ function IndentificationItem({
     <div className="flex w-full flex-col gap-2 justify-between bg-gray-50 px-4 py-2 rounded-lg border-1 border-default-200 hover:bg-gray-100 hover:transition-background">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2 grow">
-          {data.fields.map((field) => {
-            if (!edit)
-              return (
-                <div key={field.id}>
-                  <div className="text-sm text-default-500">{field.label}</div>
-                  <div className="text-lg font-medium">{field.value}</div>
-                </div>
-              )
-            return (
+          {data.fields.map((field) =>
+            edit ? (
               <div
                 key={field.id}
                 className="flex flex-col gap-2 py-1 items-end"
@@ -89,47 +78,14 @@ function IndentificationItem({
                     )
                   }}
                 />
-                {field.items && (
-                  <Accordion defaultExpandedKeys={['0']}>
-                    {field.items.map((subItems, index) => (
-                      <AccordionItem
-                        key={index}
-                        title={subItems.fields[0].label}
-                      >
-                        <div className="flex flex-col gap-2 mb-2">
-                          {subItems.fields.map((subField) => (
-                            <Input
-                              key={subField.id}
-                              type="text"
-                              label={subField.label}
-                              labelPlacement="outside"
-                              classNames={{
-                                inputWrapper: 'bg-white',
-                              }}
-                              value={
-                                editFields.find((f) => f.id === subField.id)
-                                  ?.value || ''
-                              }
-                              onChange={(e) => {
-                                setEditFields((prev) =>
-                                  prev.map((f) => {
-                                    if (f.id === subField.id) {
-                                      return { ...f, value: e.target.value }
-                                    }
-                                    return f
-                                  }),
-                                )
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                )}
               </div>
-            )
-          })}
+            ) : (
+              <div key={field.id}>
+                <div className="text-sm text-default-500">{field.label}</div>
+                <div className="text-lg font-medium">{field.value}</div>
+              </div>
+            ),
+          )}
           {edit && (
             <div className="flex justify-end gap-2">
               <Button variant="light" size="sm" onPress={() => setEdit(false)}>
@@ -162,7 +118,7 @@ function IndentificationItem({
             </PopoverTrigger>
 
             <PopoverContent className="p-0 rounded-medium">
-              <EditPopover onEdit={() => setEdit(true)} />
+              <EditPopover onDelete={onDelete} onEdit={() => setEdit(true)} />
             </PopoverContent>
           </Popover>
         )}
@@ -179,7 +135,6 @@ export function IdentificationGroup({
   items,
   setHelper,
   deleteable = false,
-  onClick,
   add,
 }: {
   label: string
@@ -187,18 +142,12 @@ export function IdentificationGroup({
   items: ItemProps[]
   setHelper?: React.Dispatch<React.SetStateAction<IDTypeProps[]>>
   deleteable?: boolean
-  onClick?: () => void
   add?: React.ReactNode
 }) {
   const [showMore, setShowMore] = useState(items.length > 3)
 
   return (
-    <div
-      className={`flex flex-col bg-white border-1 border-gray-200 p-4 gap-2 rounded-md group ${
-        onClick ? 'cursor-pointer hover:bg-gray-50' : ''
-      }`}
-      onClick={onClick}
-    >
+    <div className="flex flex-col bg-white border-1 border-gray-200 p-4 gap-2 rounded-md group">
       <div className="mb-2">
         <div className="flex items-center justify-between">
           <p className="font-semibold text-lg">{label}</p>
@@ -298,26 +247,12 @@ export function IdentificationGroup({
   )
 }
 
-export default function IdentificationOverview({
+export default function IdentificationHelper({
   hideBreadcrumbs = false,
 }: {
   hideBreadcrumbs?: boolean
 }) {
-  const { productId, versionId } = useParams()
-  const navigate = useNavigate()
   const [helper, setHelper] = useState([] as IDTypeProps[])
-
-  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
-    params: { path: { id: productId || '' } },
-  })
-
-  const { data: version } = client.useQuery(
-    'get',
-    `/api/v1/products/{id}/versions/{versionID}`,
-    {
-      params: { path: { id: productId || '', versionID: versionId || '' } },
-    },
-  )
 
   function handleAddIdHelper(type: { id: number; label: string }) {
     setHelper((prev) => {
@@ -337,22 +272,12 @@ export default function IdentificationOverview({
   }
 
   return (
-    <PageContainer>
+    <div className="flex h-full w-full flex-col gap-4 p-2">
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-          <BreadcrumbItem href={`/vendors/${product?.vendor_id}`}>
-            Vendor
-          </BreadcrumbItem>
-          <BreadcrumbItem href={`/products/${product?.id}`}>
-            {product?.name || 'Product'}
-          </BreadcrumbItem>
-          <BreadcrumbItem href={`/products/${productId}/versions`}>
-            Versions
-          </BreadcrumbItem>
-          <BreadcrumbItem href={`/products/${productId}/versions/${versionId}`}>
-            {version?.name || 'Version'}
-          </BreadcrumbItem>
+          <BreadcrumbItem href="/vendors/1">Products</BreadcrumbItem>
+          <BreadcrumbItem href="/products/1">Microsoft Office</BreadcrumbItem>
           <BreadcrumbItem>Identification Helper</BreadcrumbItem>
         </Breadcrumbs>
       )}
@@ -391,8 +316,25 @@ export default function IdentificationOverview({
                   className="border-dashed text-gray border-gray"
                   startContent={<FontAwesomeIcon icon={faAdd} />}
                   onPress={() => {
-                    navigate(
-                      `/products/${productId}/versions/${versionId}/identification-helper/${existingType.id}`,
+                    setHelper((prev) =>
+                      prev.map((h, index) => {
+                        if (h.label === existingType.label) {
+                          return {
+                            ...h,
+                            items: [
+                              ...h.items,
+                              {
+                                id: index + 1,
+                                fields: existingType.fields.map((f) => ({
+                                  ...f,
+                                  value: '',
+                                })),
+                              },
+                            ],
+                          }
+                        }
+                        return h
+                      }),
                     )
                   }}
                 >
@@ -403,6 +345,6 @@ export default function IdentificationOverview({
           )
         })}
       </div>
-    </PageContainer>
+    </div>
   )
 }

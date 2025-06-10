@@ -1,7 +1,7 @@
+import client from '@/client'
 import DataGrid, { FilterButton } from '@/components/forms/DataGrid'
 import ListItem from '@/components/forms/ListItem'
 import AddVendor from '@/components/layout/vendor/AddVendor'
-import { fakeVendors } from '@/components/layout/vendor/VendorLayout'
 import {
   faEdit,
   faSearch,
@@ -117,6 +117,8 @@ export function EditPopover(
 export default function Vendors() {
   const navigate = useNavigate()
 
+  const { data: vendors, refetch } = client.useQuery('get', '/api/v1/vendors')
+
   return (
     <div className="flex grow flex-col items-center gap-4">
       <DashboardTabs
@@ -145,28 +147,21 @@ export default function Vendors() {
             <FilterButton title="Products" icon={faSortAmountAsc} />
             <FilterButton title="Name" icon={faSortAlphaAsc} />
           </div>
-          <AddVendor />
+          <AddVendor onCreate={() => refetch()} />
         </div>
 
         <DataGrid addButton={<AddVendor />}>
-          {fakeVendors.map((vendor) => (
+          {vendors?.map((vendor) => (
             <ListItem
               key={vendor.id}
               onClick={() => navigate(`/vendors/${vendor.id}`)}
               title={vendor.name}
-              description="This product is the latest release of this series."
-              menu={
-                <EditPopover
-                  onEdit={() => {}}
-                  onDelete={() => {}}
-                  title="Delete Vendor"
-                  confirmText="Are you sure you want to delete this vendor? This action cannot be undone."
-                />
-              }
+              description={vendor.description || 'No description'}
+              menu={<EditPopover />}
               chips={
-                vendor.products && (
+                vendor.product_count !== 0 && (
                   <Chip variant="flat" color="primary" className="rounded-md">
-                    Products: {vendor.products?.length}
+                    Products: {vendor.product_count}
                   </Chip>
                 )
               }
