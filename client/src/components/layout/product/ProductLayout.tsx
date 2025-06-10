@@ -1,3 +1,4 @@
+import History from '@/components/forms/HistoryButton'
 import { faArrowLeft, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
@@ -6,7 +7,6 @@ import IconButton from '../../forms/IconButton'
 import { UserAvatar } from '../TopBarLayout'
 import { Attribute, fakeVendors } from '../vendor/VendorLayout'
 import AddVersion from './AddVersion'
-import History from '@/components/forms/HistoryButton'
 
 export function getProductById(productId: string) {
   return fakeVendors
