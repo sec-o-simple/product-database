@@ -110,7 +110,7 @@ export default function VendorLayout() {
         </span>
 
         <div className="flex flex-row gap-4">
-          <AddProduct vendorBranchId={vendor.id} />
+          <AddProduct vendorId={vendor.id} />
         </div>
       </div>
 

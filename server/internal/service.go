@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"time"
 
 	"github.com/go-fuego/fuego"
 	"github.com/google/uuid"
@@ -16,15 +15,17 @@ func NewService(repository *repository) *Service {
 	return &Service{repo: repository}
 }
 
+// Vendor
+
 func (s *Service) CreateVendor(ctx context.Context, vendor CreateVendorDTO) (VendorDTO, error) {
-	branch := Branch{
+	node := Node{
 		ID:          uuid.New().String(),
 		Name:        vendor.Name,
 		Description: vendor.Description,
 		Category:    Vendor,
 	}
 
-	createdBranch, err := s.repo.CreateBranch(ctx, branch)
+	createdNode, err := s.repo.CreateNode(ctx, node)
 	if err != nil {
 		return VendorDTO{}, fuego.InternalServerError{
 			Title: "Failed to create vendor",
@@ -33,50 +34,77 @@ func (s *Service) CreateVendor(ctx context.Context, vendor CreateVendorDTO) (Ven
 	}
 
 	return VendorDTO{
-		ID:          createdBranch.ID,
-		Name:        createdBranch.Name,
-		Description: createdBranch.Description,
-		Products:    []ProductDTO{},
+		ID:           createdNode.ID,
+		Name:         createdNode.Name,
+		Description:  createdNode.Description,
+		ProductCount: 0,
 	}, nil
 }
 
-func (s *Service) ListVendors(ctx context.Context) ([]VendorListItemDTO, error) {
-	branches, err := s.repo.ListBranchesByCategory(ctx, Vendor)
+func (s *Service) ListVendors(ctx context.Context) ([]VendorDTO, error) {
+	nodes, err := s.repo.GetNodesByCategory(ctx, Vendor)
 	if err != nil {
 		return nil, err
 	}
 
-	vendors := make([]VendorListItemDTO, len(branches))
-	for i, branch := range branches {
-		vendors[i] = VendorListItemDTO{
-			ID:           branch.ID,
-			Name:         branch.Name,
-			Description:  branch.Description,
-			ProductCount: len(branch.Children),
+	vendors := make([]VendorDTO, len(nodes))
+	for i, node := range nodes {
+		vendors[i] = VendorDTO{
+			ID:           node.ID,
+			Name:         node.Name,
+			Description:  node.Description,
+			ProductCount: len(node.Children),
 		}
 	}
 
 	return vendors, nil
 }
 
-func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (ProductDTO, error) {
-	vendorBranch, err := s.repo.GetBranchByID(ctx, product.VendorBranchID)
-
-	if err != nil || vendorBranch.Category != Vendor {
-		return ProductDTO{}, fuego.BadRequestError{
-			Title: "Invalid vendor branch ID",
+func (s *Service) GetVendorByID(ctx context.Context, id string) (VendorDTO, error) {
+	vendor, err := s.repo.GetNodeByID(ctx, id)
+	if err != nil || vendor.Category != Vendor {
+		return VendorDTO{}, fuego.BadRequestError{
+			Title: "Invalid vendor ID",
 		}
 	}
 
-	branch := Branch{
+	products := make([]ProductDTO, len(vendor.Children))
+	for i, product := range vendor.Children {
+		products[i] = ProductDTO{
+			ID:          product.ID,
+			VendorID:    product.ParentID,
+			Name:        product.Name,
+			Description: product.Description,
+		}
+	}
+
+	return VendorDTO{
+		ID:          vendor.ID,
+		Name:        vendor.Name,
+		Description: vendor.Description,
+	}, nil
+}
+
+// Products
+
+func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (ProductDTO, error) {
+	vendorNode, err := s.repo.GetNodeByID(ctx, product.VendorID)
+
+	if err != nil || vendorNode.Category != Vendor {
+		return ProductDTO{}, fuego.BadRequestError{
+			Title: "Invalid vendor node ID",
+		}
+	}
+
+	node := Node{
 		ID:          uuid.New().String(),
 		Name:        product.Name,
 		Description: product.Description,
 		Category:    ProductName,
-		ParentID:    &vendorBranch.ID,
+		ParentID:    &vendorNode.ID,
 	}
 
-	createdBranch, err := s.repo.CreateBranch(ctx, branch)
+	createdNode, err := s.repo.CreateNode(ctx, node)
 
 	if err != nil {
 		return ProductDTO{}, fuego.InternalServerError{
@@ -86,65 +114,86 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 	}
 
 	return ProductDTO{
-		ID:          createdBranch.ID,
-		VendorID:    createdBranch.ParentID,
-		Name:        createdBranch.Name,
-		Description: createdBranch.Description,
-		Versions:    []ProductVersionDTO{},
+		ID:          createdNode.ID,
+		VendorID:    createdNode.ParentID,
+		Name:        createdNode.Name,
+		Description: createdNode.Description,
 	}, nil
 }
 
 func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
-	branches, err := s.repo.ListBranchesByCategory(ctx, ProductName)
+	nodes, err := s.repo.GetNodesByCategory(ctx, ProductName)
 	if err != nil {
 		return nil, err
 	}
 
-	products := make([]ProductDTO, len(branches))
-	for i, branch := range branches {
+	products := make([]ProductDTO, len(nodes))
+	for i, node := range nodes {
 		products[i] = ProductDTO{
-			ID:          branch.ID,
-			VendorID:    branch.ParentID,
-			Name:        branch.Name,
-			Description: branch.Description,
-			Versions:    []ProductVersionDTO{},
+			ID:          node.ID,
+			VendorID:    node.ParentID,
+			Name:        node.Name,
+			Description: node.Description,
 		}
 	}
 
 	return products, nil
 }
 
+func (s *Service) ListVendorProducts(ctx context.Context, vendorID string) ([]ProductDTO, error) {
+	vendor, err := s.repo.GetNodeByID(ctx, vendorID, WithChildren())
+	if err != nil || vendor.Category != Vendor {
+		return nil, fuego.BadRequestError{
+			Title: "Invalid vendor ID",
+		}
+	}
+	products := make([]ProductDTO, len(vendor.Children))
+	for i, product := range vendor.Children {
+		products[i] = ProductDTO{
+			ID:          product.ID,
+			VendorID:    product.ParentID,
+			Name:        product.Name,
+			Description: product.Description,
+		}
+	}
+	return products, nil
+}
+
+func (s *Service) GetProductByID(ctx context.Context, id string) (ProductDTO, error) {
+	product, err := s.repo.GetNodeByID(ctx, id)
+	if err != nil || product.Category != ProductName {
+		return ProductDTO{}, fuego.BadRequestError{
+			Title: "Invalid product ID",
+		}
+	}
+
+	return ProductDTO{
+		ID:          product.ID,
+		VendorID:    product.ParentID,
+		Name:        product.Name,
+		Description: product.Description,
+	}, nil
+}
+
+// Product Versions
+
 func (s *Service) CreateProductVersion(ctx context.Context, version CreateProductVersionDTO) (ProductVersionDTO, error) {
-	productBranch, err := s.repo.GetBranchByID(ctx, version.ProductBranchID)
+	productNode, err := s.repo.GetNodeByID(ctx, version.ProductID)
 
-	if err != nil || productBranch.Category != ProductName {
+	if err != nil || productNode.Category != ProductName {
 		return ProductVersionDTO{}, fuego.BadRequestError{
-			Title: "Invalid product branch ID",
+			Title: "Invalid product node ID",
 		}
 	}
 
-	var releaseDate *time.Time
-	if version.ReleaseDate != nil {
-		parsedDate, err := time.Parse("2006-01-02", *version.ReleaseDate)
-		if err != nil {
-			return ProductVersionDTO{}, fuego.BadRequestError{
-				Title: "Invalid release date format",
-				Err:   err,
-			}
-		}
-		releaseDate = &parsedDate
+	node := Node{
+		ID:       uuid.New().String(),
+		Name:     version.Version,
+		Category: ProductVersion,
+		ParentID: &productNode.ID,
 	}
 
-	branch := Branch{
-		ID:              uuid.New().String(),
-		Name:            version.Version,
-		IsLatestVersion: version.IsLatest,
-		ReleaseDate:     releaseDate,
-		Category:        ProductVersion,
-		ParentID:        &productBranch.ID,
-	}
-
-	createdBranch, err := s.repo.CreateBranch(ctx, branch)
+	createdNode, err := s.repo.CreateNode(ctx, node)
 
 	if err != nil {
 		return ProductVersionDTO{}, fuego.InternalServerError{
@@ -154,15 +203,15 @@ func (s *Service) CreateProductVersion(ctx context.Context, version CreateProduc
 	}
 
 	return ProductVersionDTO{
-		ID:          createdBranch.ID,
-		ProductID:   createdBranch.ParentID,
-		Name:        createdBranch.Name,
-		Description: createdBranch.Description,
+		ID:          createdNode.ID,
+		ProductID:   createdNode.ParentID,
+		Name:        createdNode.Name,
+		Description: createdNode.Description,
 	}, nil
 }
 
 func (s *Service) ListProductVersions(ctx context.Context, productID string) ([]ProductVersionDTO, error) {
-	product, err := s.repo.GetBranchByID(ctx, productID)
+	product, err := s.repo.GetNodeByID(ctx, productID, WithChildren())
 
 	if err != nil || product.Category != ProductName {
 		return nil, fuego.BadRequestError{
@@ -186,79 +235,15 @@ func (s *Service) ListProductVersions(ctx context.Context, productID string) ([]
 	return versions, nil
 }
 
-func (s *Service) GetVendorByID(ctx context.Context, id string) (VendorDTO, error) {
-	vendor, err := s.repo.GetBranchByID(ctx, id)
-	if err != nil || vendor.Category != Vendor {
-		return VendorDTO{}, fuego.BadRequestError{
-			Title: "Invalid vendor ID",
-		}
-	}
-
-	products := make([]ProductDTO, len(vendor.Children))
-	for i, product := range vendor.Children {
-		products[i] = ProductDTO{
-			ID:          product.ID,
-			VendorID:    product.ParentID,
-			Name:        product.Name,
-			Description: product.Description,
-		}
-	}
-
-	return VendorDTO{
-		ID:          vendor.ID,
-		Name:        vendor.Name,
-		Description: vendor.Description,
-		Products:    products,
-	}, nil
-}
-
-func (s *Service) GetProductByID(ctx context.Context, id string) (ProductDTO, error) {
-	product, err := s.repo.GetBranchByID(ctx, id)
-	if err != nil || product.Category != ProductName {
-		return ProductDTO{}, fuego.BadRequestError{
-			Title: "Invalid product ID",
-		}
-	}
-
-	versions := make([]ProductVersionDTO, len(product.Children))
-	for i, version := range product.Children {
-		sourceRelationships := make([]RelationshipDTO, len(version.SourceRelationships))
-
-		for j, rel := range version.SourceRelationships {
-			sourceRelationships[j] = RelationshipDTO{
-				ID:               rel.ID,
-				Category:         string(rel.Category),
-				TargetBranchName: rel.TargetBranch.Name,
-			}
-		}
-
-		versions[i] = ProductVersionDTO{
-			ID:                  version.ID,
-			ProductID:           version.ParentID,
-			Name:                version.Name,
-			Description:         version.Description,
-			SourceRelationships: sourceRelationships,
-		}
-	}
-
-	return ProductDTO{
-		ID:          product.ID,
-		VendorID:    product.ParentID,
-		Name:        product.Name,
-		Description: product.Description,
-		Versions:    versions,
-	}, nil
-}
-
 func (s *Service) GetProductVersionByID(ctx context.Context, id string) (ProductVersionDTO, error) {
-	version, err := s.repo.GetBranchByID(ctx, id)
+	version, err := s.repo.GetNodeByID(ctx, id)
 	if err != nil || version.Category != ProductVersion {
 		return ProductVersionDTO{}, fuego.BadRequestError{
 			Title: "Invalid product version ID",
 		}
 	}
 
-	product, err := s.repo.GetBranchByID(ctx, *version.ParentID)
+	product, err := s.repo.GetNodeByID(ctx, *version.ParentID)
 
 	if err != nil || product.Category != ProductName {
 		return ProductVersionDTO{}, fuego.BadRequestError{
@@ -266,22 +251,10 @@ func (s *Service) GetProductVersionByID(ctx context.Context, id string) (Product
 		}
 	}
 
-	sourceRelationships := make([]RelationshipDTO, len(version.SourceRelationships))
-
-	for i, rel := range version.SourceRelationships {
-		sourceRelationships[i] = RelationshipDTO{
-			ID:               rel.ID,
-			Category:         string(rel.Category),
-			TargetBranchName: rel.TargetBranch.Name,
-		}
-	}
-
 	return ProductVersionDTO{
-		ID:                  version.ID,
-		ProductID:           version.ParentID,
-		ProductName:         &product.Name,
-		Name:                version.Name,
-		Description:         version.Description,
-		SourceRelationships: sourceRelationships,
+		ID:          version.ID,
+		ProductID:   version.ParentID,
+		Name:        version.Name,
+		Description: version.Description,
 	}, nil
 }

@@ -1,10 +1,9 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
-import ListItem, { ListGroup } from '@/components/forms/ListItem'
+import AddRelationship from '@/components/layout/product/AddRelationship'
 import { BreadcrumbItem } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 import { EmptyState } from './Vendor'
-import AddRelationship from '@/components/layout/product/AddRelationship'
 
 export default function Version({
   hideBreadcrumbs = false,
@@ -15,7 +14,7 @@ export default function Version({
 
   const { data: version } = client.useQuery(
     'get',
-    `/api/v1/products/{id}/versions/{versionID}`,
+    `/api/v1/product-versions/{id}`,
     {
       params: {
         path: {
@@ -40,11 +39,12 @@ export default function Version({
         </Breadcrumbs>
       )}
       <div className="flex w-full flex-col items-center gap-4">
-        {!version.source_relationships || version.source_relationships.length === 0 ?
-          <EmptyState add={<AddRelationship />} /> : null}
+        <EmptyState add={<AddRelationship />} />
+        {/* {!version.source_relationships || version.source_relationships.length === 0 ? */}
+          {/* <EmptyState add={<AddRelationship />} /> : null} */}
 
 
-        {version.source_relationships?.map((relationship) => (
+        {/* {version.source_relationships?.map((relationship) => (
           <ListGroup title={relationship.category} key={`${relationship.category}-${relationship.id}`}>
             <ListItem
               classNames={{
@@ -52,7 +52,7 @@ export default function Version({
               }}
               title={
                 <div className="flex gap-2 items-center">
-                  {/* {version.id === 1 && <LatestChip />} */}
+                  {version.id === 1 && <LatestChip />}
 
                   <p>{relationship.target_branch_name}</p>
                 </div>
@@ -60,7 +60,7 @@ export default function Version({
               description={'No description'}
             />
           </ListGroup>
-        ))}
+        ))} */}
       </div>
     </div>
   )

@@ -4,6 +4,272 @@
  */
 
 export interface paths {
+    "/api/v1/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * func1
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.RegisterRoutes.func1`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        get: operations["GET_/api/v1/health"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/identification-helper": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * create identification helper
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).CreateIdentificationHelper`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        post: operations["POST_/api/v1/identification-helper"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/identification-helper/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * get identification helper
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).GetIdentificationHelper`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        get: operations["GET_/api/v1/identification-helper/:id"];
+        /**
+         * update identification helper
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateIdentificationHelper`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        put: operations["PUT_/api/v1/identification-helper/:id"];
+        post?: never;
+        /**
+         * delete identification helper
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteIdentificationHelper`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        delete: operations["DELETE_/api/v1/identification-helper/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * create product version
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).CreateProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        post: operations["POST_/api/v1/product-versions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-versions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * get product version
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).GetProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        get: operations["GET_/api/v1/product-versions/:id"];
+        /**
+         * update product version
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        put: operations["PUT_/api/v1/product-versions/:id"];
+        post?: never;
+        /**
+         * delete product version
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        delete: operations["DELETE_/api/v1/product-versions/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-versions/{id}/identification-helpers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * list identification helpers by product version
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListIdentificationHelpersByProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        get: operations["GET_/api/v1/product-versions/:id/identification-helpers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-versions/{id}/relationships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * list relationships by product version
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListRelationshipsByProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        get: operations["GET_/api/v1/product-versions/:id/relationships"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products": {
         parameters: {
             query?: never;
@@ -56,10 +322,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get product by i d
+         * get product
          * @description #### Controller:
          *
-         *     `product-database-api/internal.(*Handler).GetProductByID`
+         *     `product-database-api/internal.(*Handler).GetProduct`
          *
          *     #### Middlewares:
          *
@@ -70,9 +336,37 @@ export interface paths {
          *
          */
         get: operations["GET_/api/v1/products/:id"];
-        put?: never;
+        /**
+         * update product
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateProduct`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        put: operations["PUT_/api/v1/products/:id"];
         post?: never;
-        delete?: never;
+        /**
+         * delete product
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteProduct`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        delete: operations["DELETE_/api/v1/products/:id"];
         options?: never;
         head?: never;
         patch?: never;
@@ -101,11 +395,27 @@ export interface paths {
          */
         get: operations["GET_/api/v1/products/:id/versions"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/relationships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
         /**
-         * create product version
+         * create relationship
          * @description #### Controller:
          *
-         *     `product-database-api/internal.(*Handler).CreateProductVersion`
+         *     `product-database-api/internal.(*Handler).CreateRelationship`
          *
          *     #### Middlewares:
          *
@@ -115,14 +425,14 @@ export interface paths {
          *
          *
          */
-        post: operations["POST_/api/v1/products/:id/versions"];
+        post: operations["POST_/api/v1/relationships"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/api/v1/products/{id}/versions/{versionID}": {
+    "/api/v1/relationships/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -130,10 +440,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get product version by i d
+         * get relationship
          * @description #### Controller:
          *
-         *     `product-database-api/internal.(*Handler).GetProductVersionByID`
+         *     `product-database-api/internal.(*Handler).GetRelationship`
          *
          *     #### Middlewares:
          *
@@ -143,10 +453,38 @@ export interface paths {
          *
          *
          */
-        get: operations["GET_/api/v1/products/:id/versions/:versionID"];
-        put?: never;
+        get: operations["GET_/api/v1/relationships/:id"];
+        /**
+         * update relationship
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateRelationship`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        put: operations["PUT_/api/v1/relationships/:id"];
         post?: never;
-        delete?: never;
+        /**
+         * delete relationship
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteRelationship`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        delete: operations["DELETE_/api/v1/relationships/:id"];
         options?: never;
         head?: never;
         patch?: never;
@@ -204,10 +542,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get vendor by i d
+         * get vendor
          * @description #### Controller:
          *
-         *     `product-database-api/internal.(*Handler).GetVendorByID`
+         *     `product-database-api/internal.(*Handler).GetVendor`
          *
          *     #### Middlewares:
          *
@@ -218,6 +556,64 @@ export interface paths {
          *
          */
         get: operations["GET_/api/v1/vendors/:id"];
+        /**
+         * update vendor
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateVendor`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        put: operations["PUT_/api/v1/vendors/:id"];
+        post?: never;
+        /**
+         * delete vendor
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteVendor`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        delete: operations["DELETE_/api/v1/vendors/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vendors/{id}/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * list vendor products
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListVendorProducts`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        get: operations["GET_/api/v1/vendors/:id/products"];
         put?: never;
         post?: never;
         delete?: never;
@@ -230,25 +626,51 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description CreateIdentificationHelperDTO schema */
+        CreateIdentificationHelperDTO: {
+            /** @example hashes */
+            category: string;
+            /** @example {"hash":"abc123"} */
+            metadata: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_version_id: string;
+        };
         /** @description CreateProductDTO schema */
         CreateProductDTO: {
             /** @example Product Description */
             description?: string;
             /** @example Product Name */
             name: string;
+            /** @example software */
+            type: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
-            vendor_branch_id: string;
+            vendor_id: string;
         };
         /** @description CreateProductVersionDTO schema */
         CreateProductVersionDTO: {
-            /** @example true */
-            is_latest?: boolean;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            predecessor_id?: string | null;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
-            product_branch_id: string;
-            /** @example 2023-10-01 */
-            release_date?: string | null;
+            product_id: string;
+            /**
+             * @description string schema
+             * @example 2023-10-01
+             */
+            release_date?: string;
             /** @example Version Name */
             version: string;
+        };
+        /** @description CreateRelationshipDTO schema */
+        CreateRelationshipDTO: {
+            /** @example default_component_of */
+            category: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            source_node_id: string;
+            /** @example Source Node Name */
+            source_node_name: string;
         };
         /** @description CreateVendorDTO schema */
         CreateVendorDTO: {
@@ -282,105 +704,303 @@ export interface components {
             /** @description URL of the error type. Can be used to lookup the error in a documentation */
             type?: string | null;
         };
+        /** @description IdentificationHelperDTO schema */
+        IdentificationHelperDTO: {
+            /** @example hashes */
+            category: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            id: string;
+            /** @example {"hash":"abc123"} */
+            metadata: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_version_id: string;
+        };
+        /** @description IdentificationHelperListItemDTO schema */
+        IdentificationHelperListItemDTO: {
+            /** @example hashes */
+            category: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            id: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_version_id: string;
+        };
         /** @description ProductDTO schema */
         ProductDTO: {
             /** @example Product Description */
             description?: string;
+            /** @example Vendor Name - Product Name */
+            full_name: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
             id: string;
-            /** @example Product Name */
-            name: string;
-            /** @example 123e4567-e89b-12d3-a456-426614174000 */
-            vendor_id?: string | null;
-            versions: {
+            latest_versions?: {
                 /** @example Version Description */
                 description?: string;
+                /** @example Product Name - Version Name */
+                full_name: string;
                 /** @example 123e4567-e89b-12d3-a456-426614174000 */
                 id: string;
+                /** @example true */
+                is_latest: boolean;
                 /** @example Version Name */
                 name: string;
-                /** @example 123e4567-e89b-12d3-a456-426614174000 */
-                product_id?: string | null;
-                /** @example Product Name */
-                product_name?: string | null;
-                source_relationships?: {
-                    /** @example default_component_of */
-                    category: string;
-                    /** @example 123e4567-e89b-12d3-a456-426614174000 */
-                    id: string;
-                    /** @example 123e4567-e89b-12d3-a456-426614174000 */
-                    target_branch_id: string;
-                    /** @example Target Branch Name */
-                    target_branch_name: string;
-                }[];
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                predecessor_id?: string | null;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                product_id?: string;
             }[];
+            /** @example Product Name */
+            name: string;
+            /** @example software */
+            type: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            vendor_id?: string;
         };
         /** @description ProductVersionDTO schema */
         ProductVersionDTO: {
             /** @example Version Description */
             description?: string;
+            /** @example Product Name - Version Name */
+            full_name: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
             id: string;
+            /** @example true */
+            is_latest: boolean;
             /** @example Version Name */
             name: string;
-            /** @example 123e4567-e89b-12d3-a456-426614174000 */
-            product_id?: string | null;
-            /** @example Product Name */
-            product_name?: string | null;
-            source_relationships?: {
-                /** @example default_component_of */
-                category: string;
-                /** @example 123e4567-e89b-12d3-a456-426614174000 */
-                id: string;
-                /** @example 123e4567-e89b-12d3-a456-426614174000 */
-                target_branch_id: string;
-                /** @example Target Branch Name */
-                target_branch_name: string;
-            }[];
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            predecessor_id?: string | null;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            product_id?: string;
         };
-        /** @description VendorDTO schema */
-        VendorDTO: {
-            /** @example Vendor Description */
-            description?: string;
+        /** @description RelationshipDTO schema */
+        RelationshipDTO: {
+            /** @example default_component_of */
+            category: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
             id: string;
-            /** @example Vendor Name */
-            name: string;
-            products: {
-                /** @example Product Description */
+            source: {
+                /** @example Version Description */
                 description?: string;
+                /** @example Product Name - Version Name */
+                full_name: string;
                 /** @example 123e4567-e89b-12d3-a456-426614174000 */
                 id: string;
-                /** @example Product Name */
+                /** @example true */
+                is_latest: boolean;
+                /** @example Version Name */
                 name: string;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                predecessor_id?: string | null;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                product_id?: string;
+            };
+            target: {
+                /** @example Version Description */
+                description?: string;
+                /** @example Product Name - Version Name */
+                full_name: string;
                 /** @example 123e4567-e89b-12d3-a456-426614174000 */
-                vendor_id?: string | null;
-                versions: {
-                    /** @example Version Description */
+                id: string;
+                /** @example true */
+                is_latest: boolean;
+                /** @example Version Name */
+                name: string;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                predecessor_id?: string | null;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                product_id?: string;
+            }[];
+        };
+        /** @description RelationshipGroupDTO schema */
+        RelationshipGroupDTO: {
+            /** @example default_component_of */
+            category: string;
+            products: {
+                product: {
+                    /** @example Product Description */
                     description?: string;
+                    /** @example Vendor Name - Product Name */
+                    full_name: string;
                     /** @example 123e4567-e89b-12d3-a456-426614174000 */
                     id: string;
-                    /** @example Version Name */
-                    name: string;
-                    /** @example 123e4567-e89b-12d3-a456-426614174000 */
-                    product_id?: string | null;
-                    /** @example Product Name */
-                    product_name?: string | null;
-                    source_relationships?: {
-                        /** @example default_component_of */
-                        category: string;
+                    latest_versions?: {
+                        /** @example Version Description */
+                        description?: string;
+                        /** @example Product Name - Version Name */
+                        full_name: string;
                         /** @example 123e4567-e89b-12d3-a456-426614174000 */
                         id: string;
-                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
-                        target_branch_id: string;
-                        /** @example Target Branch Name */
-                        target_branch_name: string;
+                        /** @example true */
+                        is_latest: boolean;
+                        /** @example Version Name */
+                        name: string;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        predecessor_id?: string | null;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        product_id?: string;
                     }[];
+                    /** @example Product Name */
+                    name: string;
+                    /** @example software */
+                    type: string;
+                    /**
+                     * @description string schema
+                     * @example 123e4567-e89b-12d3-a456-426614174000
+                     */
+                    vendor_id?: string;
+                };
+                version_relationships: {
+                    /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                    id: string;
+                    version: {
+                        /** @example Version Description */
+                        description?: string;
+                        /** @example Product Name - Version Name */
+                        full_name: string;
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                        id: string;
+                        /** @example true */
+                        is_latest: boolean;
+                        /** @example Version Name */
+                        name: string;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        predecessor_id?: string | null;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        product_id?: string;
+                    };
                 }[];
             }[];
         };
-        /** @description VendorListItemDTO schema */
-        VendorListItemDTO: {
+        /** @description UpdateIdentificationHelperDTO schema */
+        UpdateIdentificationHelperDTO: {
+            /** @example hashes */
+            category?: string;
+            /**
+             * @description string schema
+             * @example {"key":"value"}
+             */
+            metadata?: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_version_id?: string;
+        };
+        /** @description UpdateProductDTO schema */
+        UpdateProductDTO: {
+            /**
+             * @description string schema
+             * @example Product Description
+             */
+            description?: string;
+            /**
+             * @description string schema
+             * @example Product Name
+             */
+            name?: string;
+            /**
+             * @description string schema
+             * @example software
+             */
+            type?: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            vendor_id?: string;
+        };
+        /** @description UpdateProductVersionDTO schema */
+        UpdateProductVersionDTO: {
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            predecessor_id?: string | null;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            product_id?: string;
+            /**
+             * @description string schema
+             * @example 2023-10-01
+             */
+            release_date?: string;
+            /**
+             * @description string schema
+             * @example Version Name
+             */
+            version?: string;
+        };
+        /** @description UpdateRelationshipDTO schema */
+        UpdateRelationshipDTO: {
+            /**
+             * @description string schema
+             * @example default_component_of
+             */
+            category?: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            source_node_id?: string;
+            /**
+             * @description string schema
+             * @example Source Node Name
+             */
+            source_node_name?: string;
+        };
+        /** @description UpdateVendorDTO schema */
+        UpdateVendorDTO: {
+            /**
+             * @description string schema
+             * @example Vendor Description
+             */
+            description?: string;
+            /**
+             * @description string schema
+             * @example Vendor Name
+             */
+            name?: string;
+        };
+        /** @description VendorDTO schema */
+        VendorDTO: {
             /** @example Vendor Description */
             description: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
@@ -390,6 +1010,8 @@ export interface components {
             /** @example 10 */
             product_count: number;
         };
+        /** @description string schema */
+        string: string;
         /** @description unknown-interface schema */
         "unknown-interface": unknown;
     };
@@ -401,6 +1023,581 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    "GET_/api/v1/health": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["string"];
+                    "application/xml": components["schemas"]["string"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/identification-helper": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.CreateIdentificationHelperDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["CreateIdentificationHelperDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentificationHelperDTO"];
+                    "application/xml": components["schemas"]["IdentificationHelperDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/identification-helper/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentificationHelperDTO"];
+                    "application/xml": components["schemas"]["IdentificationHelperDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/identification-helper/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateIdentificationHelperDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateIdentificationHelperDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentificationHelperDTO"];
+                    "application/xml": components["schemas"]["IdentificationHelperDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/identification-helper/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/product-versions": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.CreateProductVersionDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["CreateProductVersionDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductVersionDTO"];
+                    "application/xml": components["schemas"]["ProductVersionDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/product-versions/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductVersionDTO"];
+                    "application/xml": components["schemas"]["ProductVersionDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/product-versions/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateProductVersionDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateProductVersionDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductVersionDTO"];
+                    "application/xml": components["schemas"]["ProductVersionDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/product-versions/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/product-versions/:id/identification-helpers": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentificationHelperListItemDTO"][];
+                    "application/xml": components["schemas"]["IdentificationHelperListItemDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/product-versions/:id/relationships": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelationshipGroupDTO"][];
+                    "application/xml": components["schemas"]["RelationshipGroupDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     "GET_/api/v1/products": {
         parameters: {
             query?: never;
@@ -555,6 +1752,113 @@ export interface operations {
             };
         };
     };
+    "PUT_/api/v1/products/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateProductDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateProductDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDTO"];
+                    "application/xml": components["schemas"]["ProductDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/products/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     "GET_/api/v1/products/:id/versions": {
         parameters: {
             query?: never;
@@ -606,21 +1910,19 @@ export interface operations {
             };
         };
     };
-    "POST_/api/v1/products/:id/versions": {
+    "POST_/api/v1/relationships": {
         parameters: {
             query?: never;
             header?: {
                 Accept?: string;
             };
-            path: {
-                id: string;
-            };
+            path?: never;
             cookie?: never;
         };
-        /** @description Request body for internal.CreateProductVersionDTO */
+        /** @description Request body for internal.CreateRelationshipDTO */
         requestBody: {
             content: {
-                "*/*": components["schemas"]["CreateProductVersionDTO"];
+                "*/*": components["schemas"]["CreateRelationshipDTO"];
             };
         };
         responses: {
@@ -630,8 +1932,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProductVersionDTO"];
-                    "application/xml": components["schemas"]["ProductVersionDTO"];
+                    "application/json": components["schemas"]["RelationshipDTO"];
+                    "application/xml": components["schemas"]["RelationshipDTO"];
                 };
             };
             /** @description Bad Request _(validation or deserialization error)_ */
@@ -662,7 +1964,7 @@ export interface operations {
             };
         };
     };
-    "GET_/api/v1/products/:id/versions/:versionID": {
+    "GET_/api/v1/relationships/:id": {
         parameters: {
             query?: never;
             header?: {
@@ -670,7 +1972,6 @@ export interface operations {
             };
             path: {
                 id: string;
-                versionID: string;
             };
             cookie?: never;
         };
@@ -682,8 +1983,115 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProductVersionDTO"];
-                    "application/xml": components["schemas"]["ProductVersionDTO"];
+                    "application/json": components["schemas"]["RelationshipDTO"];
+                    "application/xml": components["schemas"]["RelationshipDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/relationships/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateRelationshipDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateRelationshipDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelationshipDTO"];
+                    "application/xml": components["schemas"]["RelationshipDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/relationships/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
                 };
             };
             /** @description Bad Request _(validation or deserialization error)_ */
@@ -731,8 +2139,8 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["VendorListItemDTO"][];
-                    "application/xml": components["schemas"]["VendorListItemDTO"][];
+                    "application/json": components["schemas"]["VendorDTO"][];
+                    "application/xml": components["schemas"]["VendorDTO"][];
                 };
             };
             /** @description Bad Request _(validation or deserialization error)_ */
@@ -838,6 +2246,164 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["VendorDTO"];
                     "application/xml": components["schemas"]["VendorDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/vendors/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateVendorDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateVendorDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorDTO"];
+                    "application/xml": components["schemas"]["VendorDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/vendors/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/vendors/:id/products": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDTO"][];
+                    "application/xml": components["schemas"]["ProductDTO"][];
                 };
             };
             /** @description Bad Request _(validation or deserialization error)_ */

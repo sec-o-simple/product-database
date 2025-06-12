@@ -8,16 +8,15 @@ import client from '@/client'
 
 export default function VersionLayout() {
   const navigate = useNavigate()
-  const { productId, versionId } = useParams()
+  const { versionId } = useParams()
 
   const { data: version } = client.useQuery(
     'get',
-    `/api/v1/products/{id}/versions/{versionID}`,
+    `/api/v1/product-versions/{id}`,
     {
       params: {
         path: {
-          id: productId || '',
-          versionID: versionId || '',
+          id: versionId || '',
         }
       }
     }
@@ -38,7 +37,7 @@ export default function VersionLayout() {
             isIconOnly={true}
             onPress={() => navigate(-1)}
           />
-          <p>Product {version.product_name || ''} - Relationships</p>
+          <p>Product {version.full_name || ''} - Relationships</p>
 
           <Chip variant="flat" className="rounded-md ml-2">
             Version: {version.name}
@@ -54,7 +53,7 @@ export default function VersionLayout() {
         <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
           <Attribute label="Version" value={version.name} />
           <Attribute label="Description" value="Version Description" />
-          <Attribute label="Relationships" value={`${version.source_relationships ? version.source_relationships.length : 0}`} />
+          <Attribute label="Relationships" value={`0`} />
         </div>
         <div className="p-4 w-full">
           <Outlet />

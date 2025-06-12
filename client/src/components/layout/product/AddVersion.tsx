@@ -31,11 +31,10 @@ export default function AddVersion(props: AddVersionProps) {
 
   const [name, setName] = useState('')
   const [releaseDate, setReleaseDate] = useState<DateValue | null>(null)
-  const [isLatest, setIsLatest] = useState(false)
 
   const mutation = client.useMutation(
     "post",
-    "/api/v1/products/{id}/versions",
+    "/api/v1/product-versions",
     {
       onSuccess: () => {
         setName('')
@@ -51,15 +50,9 @@ export default function AddVersion(props: AddVersionProps) {
     mutation.mutate({
       body: {
         version: name,
-        is_latest: isLatest,
         release_date: new Date().toISOString().split('T')[0],
-        product_branch_id: props.productBranchId,
+        product_id: props.productBranchId,
       },
-      params: {
-        path: {
-          id: props.productBranchId,
-        }
-      }
     })
   }
 
@@ -87,12 +80,6 @@ export default function AddVersion(props: AddVersionProps) {
                   </div>
                 )}
 
-                <Select label="Type" placeholder="Select a type">
-                  <SelectItem key="1">Firmware</SelectItem>
-                  <SelectItem key="2">Software</SelectItem>
-                  <SelectItem key="3">Hardware</SelectItem>
-                </Select>
-
                 <div className="flex flex-row gap-2">
                   <Input
                     label="Version Number"
@@ -117,10 +104,6 @@ export default function AddVersion(props: AddVersionProps) {
                     />
                   </I18nProvider>
                 </div>
-                <Checkbox
-                  isSelected={isLatest}
-                  onChange={(e) => setIsLatest(e.target.checked)}
-                >Is Latest Version?</Checkbox>
               </ModalBody>
               <ModalFooter>
                 <Button variant="light" onPress={onClose}>
