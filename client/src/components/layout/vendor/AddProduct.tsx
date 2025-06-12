@@ -17,7 +17,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface AddProductProps {
-  vendorId: string,
+  vendorId: string
 }
 
 export default function AddProduct({ vendorId }: AddProductProps) {
@@ -28,29 +28,25 @@ export default function AddProduct({ vendorId }: AddProductProps) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
 
-  const mutation = client.useMutation(
-    "post",
-    "/api/v1/products",
-    {
-      onSuccess: () => {
-        setName('')
-        setDescription('')
-        setType('software')
-        onClose()
+  const mutation = client.useMutation('post', '/api/v1/products', {
+    onSuccess: () => {
+      setName('')
+      setDescription('')
+      setType('software')
+      onClose()
 
-        // Reload the current route
-        navigate(0)
-      },
-    }
-  )
+      // Reload the current route
+      navigate(0)
+    },
+  })
 
   function handleCreateProduct() {
     mutation.mutate({
       body: {
         name,
         description,
-        vendor_id: vendorId,
         type,
+        vendor_id: vendorId,
       },
     })
   }
@@ -64,7 +60,12 @@ export default function AddProduct({ vendorId }: AddProductProps) {
       >
         Add Product
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg" isDismissable={false}>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        size="lg"
+        isDismissable={false}
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -74,16 +75,23 @@ export default function AddProduct({ vendorId }: AddProductProps) {
               <ModalBody className="gap-4">
                 {mutation.error && (
                   <div className="text-red-500">
-                    {mutation.error.title || 'An error occurred while creating the product.'}
+                    {mutation.error.title ||
+                      'An error occurred while creating the product.'}
                   </div>
                 )}
 
-                <Select label="Type" placeholder="Select a type" className="w-full" value={type} onChange={(e) => setType(e.target.value)}>
+                <Select
+                  label="Type"
+                  placeholder="Select a type"
+                  className="w-full"
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                >
                   <SelectItem key="firmware">Firmware</SelectItem>
                   <SelectItem key="software">Software</SelectItem>
                   <SelectItem key="hardware">Hardware</SelectItem>
                 </Select>
-                
+
                 <Input
                   label="Name"
                   placeholder="Enter the product name..."
@@ -108,7 +116,11 @@ export default function AddProduct({ vendorId }: AddProductProps) {
                 <Button variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={handleCreateProduct} isLoading={mutation.isPending}>
+                <Button
+                  color="primary"
+                  onPress={handleCreateProduct}
+                  isLoading={mutation.isPending}
+                >
                   Create Product
                 </Button>
               </ModalFooter>

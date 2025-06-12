@@ -1,20 +1,11 @@
 import client from '@/client'
-import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import PageContent from '@/components/forms/PageContent'
 import { faAdd, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  BreadcrumbItem,
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@heroui/react'
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@heroui/react'
 import React from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import { EditPopover } from '../Vendors'
-import { idHelperTypes } from '../Version'
-import { AddIdHelperItem } from './AddIDHelperItem'
 
 const hashes = [
   {
@@ -123,22 +114,14 @@ export default function Helper() {
   const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
     params: { path: { id: productId || '' } },
   })
-  const { data: version } = client.useQuery(
-    'get',
-    `/api/v1/products/{id}/versions/{versionID}`,
-    {
-      params: { path: { id: versionId || '', versionID: versionId || '' } },
-    },
-  )
+
   if (!helperId) {
     return <Navigate to="/products" replace />
   }
 
-  const helper = idHelperTypes.find((helper) => String(helper.id) === helperId)
-
   return (
     <PageContent>
-      <Breadcrumbs>
+      {/* <Breadcrumbs>
         <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
         <BreadcrumbItem>{'xxx'}</BreadcrumbItem>
         <BreadcrumbItem>Products</BreadcrumbItem>
@@ -151,9 +134,9 @@ export default function Helper() {
           Identification Helper
         </BreadcrumbItem>
         <BreadcrumbItem>{helper?.entryTitle}</BreadcrumbItem>
-      </Breadcrumbs>
+      </Breadcrumbs> */}
 
-      <div className="flex flex-col w-full border-1 border-gray-200 bg-white p-4 gap-4 rounded-md">
+      {/* <div className="flex flex-col w-full border-1 border-gray-200 bg-white p-4 gap-4 rounded-md">
         <div className="flex justify-between items-center">
           <p className="text-xl font-semibold">{helper?.entryTitle ?? ''}</p>
 
@@ -163,7 +146,7 @@ export default function Helper() {
         <p className="text-sm text-gray-500">
           {helper?.description ?? 'No description available.'}
         </p>
-      </div>
+      </div> */}
 
       <IdentificationItem />
     </PageContent>

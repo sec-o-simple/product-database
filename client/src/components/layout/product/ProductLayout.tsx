@@ -1,6 +1,10 @@
 import client from '@/client'
 import PageContainer from '@/components/forms/PageContainer'
 import Sidebar from '@/components/forms/Sidebar'
+import {
+  HelperTypeProps,
+  idHelperTypes,
+} from '@/routes/IdentificationHelper/IdentificationOverview'
 import { faAdd, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
@@ -15,71 +19,6 @@ import { Outlet, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import AddVersion from './AddVersion'
-
-export interface HelperTypeProps {
-  id: number
-  label: string
-  entryTitle: string
-  description: string
-  fields: { label: string; type: string }[]
-}
-
-export const idHelperTypes = [
-  {
-    id: 1,
-    label: 'Hashes',
-    entryTitle: 'Hash',
-    description:
-      'A hash is a fixed-size string of characters generated from data of any size. It is used to verify the integrity of data.',
-    fields: [
-      { label: 'Algorithm of the hash', type: 'text' },
-      { label: 'Hash Value', type: 'text' },
-    ],
-  },
-  {
-    id: 2,
-    label: 'Models',
-    entryTitle: 'Model',
-    description:
-      'A model is a specific version or variant of a product. It is used to identify the product in the market.',
-    fields: [{ label: 'Model Number', type: 'text' }],
-  },
-  {
-    id: 3,
-    label: 'SBOM URLs',
-    entryTitle: 'SBOM URL',
-    description:
-      'A Software Bill of Materials (SBOM) URL is a link to a document that lists the components of a software product. It is used to identify the software components and their versions.',
-    fields: [{ label: 'SBOM URL', type: 'text' }],
-  },
-  {
-    id: 4,
-    label: 'Serial Numbers',
-    entryTitle: 'Serial Number',
-    description:
-      'A serial number is a unique identifier assigned to a product. It is used to track the product throughout its lifecycle.',
-    fields: [{ label: 'Serial Number', type: 'text' }],
-  },
-  {
-    id: 5,
-    label: 'Stock Keeping Units (SKUs)',
-    entryTitle: 'SKU',
-    description:
-      'A Stock Keeping Unit (SKU) is a unique identifier assigned to a product for inventory management. It is used to track the product in the supply chain.',
-    fields: [{ label: 'Stock Keeping Unit', type: 'text' }],
-  },
-  {
-    id: 6,
-    label: 'Generic URIs',
-    entryTitle: 'URI',
-    description:
-      'A Uniform Resource Identifier (URI) is a string of characters that identifies a particular resource. It is used to identify the product in the market.',
-    fields: [
-      { label: 'Namespace of URI', type: 'text' },
-      { label: 'URI', type: 'text' },
-    ],
-  },
-] as HelperTypeProps[]
 
 export function AddIdHelper({
   onAdd,

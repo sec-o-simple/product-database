@@ -18,7 +18,6 @@ import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { EmptyState } from '../Vendor'
 import { EditPopover } from '../Vendors'
-import { idHelperTypes } from '../Version'
 import { AddIdHelper } from './AddIDHelper'
 
 interface IDTypeProps {
@@ -38,6 +37,78 @@ interface FieldProps {
   value: string
   items?: ItemProps[]
 }
+
+type FieldType =
+  | { type: 'text'; key: string; label: string; required?: boolean }
+  | { type: 'number'; key: string; label: string; required?: boolean }
+  | { type: 'date'; key: string; label: string; required?: boolean }
+  | { type: 'hashes'; key: string; label: string; hashes: string[] }
+  | { type: 'file'; key: string; label: string; subFields: FieldType[] }
+
+export interface HelperTypeProps {
+  id: number | string
+  label: string
+  entryTitle: string
+  description: string
+  fields: FieldType[]
+}
+
+export const idHelperTypes = [
+  {
+    id: 1,
+    label: 'Hashes',
+    entryTitle: 'Hash',
+    description:
+      'A hash is a fixed-size string of characters generated from data of any size. It is used to verify the integrity of data.',
+    fields: [
+      { label: 'Algorithm of the hash', type: 'text' },
+      { label: 'Hash Value', type: 'text' },
+    ],
+  },
+  {
+    id: 2,
+    label: 'Models',
+    entryTitle: 'Model',
+    description:
+      'A model is a specific version or variant of a product. It is used to identify the product in the market.',
+    fields: [{ label: 'Model Number', type: 'text' }],
+  },
+  {
+    id: 3,
+    label: 'SBOM URLs',
+    entryTitle: 'SBOM URL',
+    description:
+      'A Software Bill of Materials (SBOM) URL is a link to a document that lists the components of a software product. It is used to identify the software components and their versions.',
+    fields: [{ label: 'SBOM URL', type: 'text' }],
+  },
+  {
+    id: 4,
+    label: 'Serial Numbers',
+    entryTitle: 'Serial Number',
+    description:
+      'A serial number is a unique identifier assigned to a product. It is used to track the product throughout its lifecycle.',
+    fields: [{ label: 'Serial Number', type: 'text' }],
+  },
+  {
+    id: 5,
+    label: 'Stock Keeping Units (SKUs)',
+    entryTitle: 'SKU',
+    description:
+      'A Stock Keeping Unit (SKU) is a unique identifier assigned to a product for inventory management. It is used to track the product in the supply chain.',
+    fields: [{ label: 'Stock Keeping Unit', type: 'text' }],
+  },
+  {
+    id: 6,
+    label: 'Generic URIs',
+    entryTitle: 'URI',
+    description:
+      'A Uniform Resource Identifier (URI) is a string of characters that identifies a particular resource. It is used to identify the product in the market.',
+    fields: [
+      { label: 'Namespace of URI', type: 'text' },
+      { label: 'URI', type: 'text' },
+    ],
+  },
+] as HelperTypeProps[]
 
 function IndentificationItem({
   data,
@@ -313,11 +384,13 @@ export default function IdentificationOverview({
 
   const { data: version } = client.useQuery(
     'get',
-    `/api/v1/products/{id}/versions/{versionID}`,
+    '/api/v1/product-versions/{id}',
     {
-      params: { path: { id: productId || '', versionID: versionId || '' } },
+      params: { path: { id: versionId || '' } },
     },
   )
+
+  const idHelperTypes = [] as HelperTypeProps[]
 
   function handleAddIdHelper(type: { id: number; label: string }) {
     setHelper((prev) => {

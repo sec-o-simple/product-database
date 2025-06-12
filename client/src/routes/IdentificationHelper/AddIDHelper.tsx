@@ -8,7 +8,7 @@ import {
   DropdownSection,
   DropdownTrigger,
 } from '@heroui/react'
-import { HelperTypeProps, idHelperTypes } from '../Version'
+import { HelperTypeProps, idHelperTypes } from './IdentificationOverview'
 
 export function AddIdHelper({
   onAdd,
