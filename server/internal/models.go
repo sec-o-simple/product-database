@@ -1,13 +1,14 @@
 package internal
 
-import "time"
+import "database/sql"
 
-type BranchCategory string
+type NodeCategory string
 
 const (
-	Vendor         BranchCategory = "vendor"
-	ProductName    BranchCategory = "product_name"
-	ProductVersion BranchCategory = "product_version"
+	Vendor         NodeCategory = "vendor"
+	ProductFamily  NodeCategory = "product_family"
+	ProductName    NodeCategory = "product_name"
+	ProductVersion NodeCategory = "product_version"
 )
 
 type RelationshipCategory string
@@ -28,40 +29,49 @@ const (
 	Firmware ProductType = "firmware"
 )
 
-type Branch struct {
-	ID       string         `gorm:"primaryKey"`
-	Category BranchCategory `gorm:"not null"`
+type IdentificationHelperCategory string
 
-	Name        string `gorm:"not null"`
+type Node struct {
+	ID       string `gorm:"primaryKey"`
+	Category NodeCategory
+
+	Name        string
 	Description string `gorm:"type:text"`
 
 	ParentID *string
-	Parent   *Branch
-	Children []Branch `gorm:"foreignKey:ParentID"`
+	Parent   *Node
+	Children []Node `gorm:"foreignKey:ParentID"`
 
-	SourceRelationships []Relationship `gorm:"foreignKey:SourceBranchID"`
-	TargetRelationships []Relationship `gorm:"foreignKey:TargetBranchID"`
+	SourceRelationships []Relationship `gorm:"foreignKey:SourceNodeID"`
+	TargetRelationships []Relationship `gorm:"foreignKey:TargetNodeID"`
 
-	// Only relevant for versions at the moment
-	ProductType     *ProductType `gorm:"type:product_type"`
-	ReleaseDate     *time.Time
-	IsLatestVersion bool `gorm:"default:false;not null"`
+	ProductType *ProductType `gorm:"type:product_type"`
+	ReleasedAt  sql.NullTime
+
+	SuccessorID *string
+	Successor   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 }
 
 type Relationship struct {
-	ID       string               `gorm:"primaryKey"`
-	Category RelationshipCategory `gorm:"not null"`
+	ID       string `gorm:"primaryKey"`
+	Category RelationshipCategory
 
-	SourceBranchID *string `gorm:"not null"`
-	SourceBranch   *Branch `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	SourceNodeID string
+	SourceNode   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 
-	TargetBranchID *string `gorm:"not null"`
-	TargetBranch   *Branch `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	TargetNodeID string
+	TargetNode   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+}
+
+type IdentificationHelper struct {
+	ID       string `gorm:"primaryKey"`
+	Category IdentificationHelperCategory
+	Metadata []byte `gorm:"serializer:json"`
 }
 
 func Models() []interface{} {
 	return []interface{}{
-		&Branch{},
+		&Node{},
 		&Relationship{},
 	}
 }

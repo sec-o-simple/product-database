@@ -11,7 +11,7 @@ import { Attribute } from '../vendor/VendorLayout'
 
 export default function VersionLayout() {
   const navigate = useNavigate()
-  const { productId, versionId } = useParams()
+  const { versionId, productId } = useParams()
 
   const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
     params: {
@@ -23,12 +23,11 @@ export default function VersionLayout() {
 
   const { data: version } = client.useQuery(
     'get',
-    `/api/v1/products/{id}/versions/{versionID}`,
+    `/api/v1/product-versions/{id}`,
     {
       params: {
         path: {
-          id: productId || '',
-          versionID: versionId || '',
+          id: versionId || '',
         },
       },
     },

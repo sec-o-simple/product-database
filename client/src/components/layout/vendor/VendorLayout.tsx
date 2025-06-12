@@ -71,7 +71,7 @@ export default function VendorLayout() {
         title={`Vendor: ${vendor.name}`}
         historyLink={`/vendors/${vendorId}/history`}
       >
-        <AddProduct vendorBranchId={vendor.id} />
+        <AddProduct vendorId={vendor.id} />
       </TopBar>
 
       <div className="flex flex-row h-full flex-grow">

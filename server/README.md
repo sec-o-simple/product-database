@@ -31,7 +31,7 @@ server/
 
 ### Prerequisites
 
-- [Go](https://golang.org/dl/) 1.21 or higher
+- [Go](https://golang.org/dl/) 1.24 or higher
 
 ### Setup
 

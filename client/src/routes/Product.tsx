@@ -4,7 +4,7 @@ import DataGrid from '@/components/forms/DataGrid'
 import ListItem from '@/components/forms/ListItem'
 import PageContent from '@/components/forms/PageContent'
 import AddVersion from '@/components/layout/product/AddVersion'
-import { BreadcrumbItem, Chip } from '@heroui/react'
+import { BreadcrumbItem } from '@heroui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export default function Product({
@@ -31,6 +31,18 @@ export default function Product({
     },
   })
 
+  const { data: versions } = client.useQuery(
+    'get',
+    `/api/v1/products/{id}/versions`,
+    {
+      params: {
+        path: {
+          id: productId || '',
+        },
+      },
+    },
+  )
+
   if (!product) {
     return null
   }
@@ -49,12 +61,12 @@ export default function Product({
       )}
 
       <DataGrid
-        title={`Versions (${product.versions?.length})`}
+        title={`Versions (${versions?.length})`}
         addButton={<AddVersion productBranchId={product.id} />}
       >
-        {product.versions.length === 0
+        {versions && versions.length === 0
           ? null
-          : product.versions.map((version) => (
+          : versions?.map((version) => (
               <ListItem
                 key={version.id}
                 onClick={() =>
@@ -68,19 +80,6 @@ export default function Product({
                   </div>
                 }
                 description={'No description'}
-                chips={
-                  version.source_relationships &&
-                  version.source_relationships.length !== 0 && (
-                    <div className="flex flex-row gap-2">
-                      {version.source_relationships.map((relationship) => (
-                        <Chip className="rounded-md" size="sm" variant="flat">
-                          {relationship.category}:{' '}
-                          {relationship.target_branch_name}
-                        </Chip>
-                      ))}
-                    </div>
-                  )
-                }
               />
             ))}
       </DataGrid>

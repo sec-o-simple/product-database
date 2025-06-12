@@ -1,5 +1,6 @@
 import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
+import Select from '@/components/forms/Select'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -9,19 +10,21 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  SelectItem,
   useDisclosure,
 } from '@heroui/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 interface AddProductProps {
-  vendorBranchId: string,
+  vendorId: string,
 }
 
-export default function AddProduct({ vendorBranchId }: AddProductProps) {
+export default function AddProduct({ vendorId }: AddProductProps) {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
   const navigate = useNavigate()
 
+  const [type, setType] = useState('software')
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
 
@@ -32,6 +35,7 @@ export default function AddProduct({ vendorBranchId }: AddProductProps) {
       onSuccess: () => {
         setName('')
         setDescription('')
+        setType('software')
         onClose()
 
         // Reload the current route
@@ -45,7 +49,8 @@ export default function AddProduct({ vendorBranchId }: AddProductProps) {
       body: {
         name,
         description,
-        vendor_branch_id: vendorBranchId,
+        vendor_id: vendorId,
+        type,
       },
     })
   }
@@ -59,7 +64,7 @@ export default function AddProduct({ vendorBranchId }: AddProductProps) {
       >
         Add Product
       </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg" isDismissable={false}>
         <ModalContent>
           {(onClose) => (
             <>
@@ -72,6 +77,13 @@ export default function AddProduct({ vendorBranchId }: AddProductProps) {
                     {mutation.error.title || 'An error occurred while creating the product.'}
                   </div>
                 )}
+
+                <Select label="Type" placeholder="Select a type" className="w-full" value={type} onChange={(e) => setType(e.target.value)}>
+                  <SelectItem key="firmware">Firmware</SelectItem>
+                  <SelectItem key="software">Software</SelectItem>
+                  <SelectItem key="hardware">Hardware</SelectItem>
+                </Select>
+                
                 <Input
                   label="Name"
                   placeholder="Enter the product name..."

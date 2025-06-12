@@ -40,6 +40,18 @@ export default function Vendor({
     },
   })
 
+  const { data: products } = client.useQuery(
+    'get',
+    '/api/v1/vendors/{id}/products',
+    {
+      params: {
+        path: {
+          id: vendorId || '',
+        },
+      },
+    },
+  )
+
   if (!vendor) {
     return null
   }
@@ -54,13 +66,14 @@ export default function Vendor({
       )}
 
       <DataGrid
-        title={`Products (${vendor.products?.length ?? 0})`}
-        addButton={<AddProduct vendorBranchId={vendor.id} />}
+        title={`Products (${products?.length ?? 0})`}
+        addButton={<AddProduct vendorId={vendor.id} />}
       >
-        {vendor.products.length === 0
+        {!products || products.length === 0
           ? null
-          : vendor.products.map((product) => (
+          : products.map((product) => (
               <ListItem
+                key={product.id}
                 onClick={() => navigate(`/products/${product.id}`)}
                 title={product.name ?? 'Product Name'}
                 description={product.description ?? 'Vendor Description'}
