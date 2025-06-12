@@ -1,9 +1,7 @@
 import client from '@/client'
-import {
-  faAdd,
-  faArrowLeft,
-  faFileExport,
-} from '@fortawesome/free-solid-svg-icons'
+import PageContainer from '@/components/forms/PageContainer'
+import Sidebar from '@/components/forms/Sidebar'
+import { faAdd, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import {
@@ -13,8 +11,8 @@ import {
   DropdownSection,
   DropdownTrigger,
 } from '@heroui/react'
-import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import IconButton from '../../forms/IconButton'
+import { Outlet, useParams } from 'react-router-dom'
+import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import AddVersion from './AddVersion'
 
@@ -124,7 +122,6 @@ export function AddIdHelper({
 
 export default function ProductLayout() {
   const { productId } = useParams()
-  const navigate = useNavigate()
 
   const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
     params: {
@@ -134,24 +131,24 @@ export default function ProductLayout() {
     },
   })
 
+  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
+    params: {
+      path: {
+        id: product?.vendor_id || '',
+      },
+    },
+  })
+
   if (!product) {
     return null
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F9FAFB]">
-      <div className="flex w-full items-center justify-between gap-8 border-b px-6 py-4 bg-white">
-        <span className="flex items-center gap-2 text-2xl font-bold">
-          <IconButton
-            icon={faArrowLeft}
-            color="primary"
-            variant="light"
-            isIconOnly={true}
-            onPress={() => navigate(-1)}
-          />
-          <p>Product: {product.name}</p>
-        </span>
-
+    <PageContainer>
+      <TopBar
+        title={`Product: ${product.name}`}
+        historyLink={`/products/${product.id}/history`}
+      >
         <div className="flex flex-row gap-4">
           <Button
             color="primary"
@@ -164,18 +161,27 @@ export default function ProductLayout() {
 
           <AddVersion productBranchId={product.id} />
         </div>
-      </div>
+      </TopBar>
 
-      <div className="flex flex-row h-full">
-        <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
-          <Attribute label="Name" value={product.name} />
-
-          <Attribute label="Description" value={product.description || '-/-'} />
-        </div>
+      <div className="flex flex-row h-full flex-grow">
+        <Sidebar
+          attributes={[
+            <Attribute label="Name" value={product.name} />,
+            <Attribute
+              label="Description"
+              value={product.description || '-/-'}
+            />,
+            <Attribute
+              label="Vendor"
+              value={vendor?.name || '-/-'}
+              href={`/vendors/${product.vendor_id}`}
+            />,
+          ]}
+        />
         <div className="p-4 w-full">
           <Outlet />
         </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }

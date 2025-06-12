@@ -1,7 +1,8 @@
 import client from '@/client'
 import DataGrid, { FilterButton } from '@/components/forms/DataGrid'
+import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
-import AddVendor from '@/components/layout/vendor/AddVendor'
+import CreateEditVendor from '@/components/layout/vendor/CreateEditVendor'
 import {
   faEdit,
   faSearch,
@@ -144,20 +145,31 @@ export default function Vendors() {
       <div className="w-full flex gap-2 flex-col">
         <div className="flex w-full items-center justify-between mb-2 gap-2">
           <div className="flex flex-grow flex-row gap-2">
-            <FilterButton title="Products" icon={faSortAmountAsc} />
-            <FilterButton title="Name" icon={faSortAlphaAsc} />
+            <FilterButton title="Name" icon={faSortAlphaAsc} disabled />
+            <FilterButton title="Products" icon={faSortAmountAsc} disabled />
           </div>
-          <AddVendor onCreate={() => refetch()} />
+          <CreateEditVendor onCreate={() => refetch()} />
         </div>
 
-        <DataGrid addButton={<AddVendor />}>
+        <DataGrid addButton={<CreateEditVendor />}>
           {vendors?.map((vendor) => (
             <ListItem
               key={vendor.id}
               onClick={() => navigate(`/vendors/${vendor.id}`)}
               title={vendor.name}
               description={vendor.description || 'No description'}
-              menu={<EditPopover />}
+              actions={
+                <div className="flex flex-row gap">
+                  <IconButton
+                    icon={faEdit}
+                    onPress={() => navigate(`/vendors/${vendor.id}/edit`)}
+                  />
+                  <IconButton
+                    icon={faTrash}
+                    onPress={() => navigate(`/vendors/${vendor.id}/delete`)}
+                  />
+                </div>
+              }
               chips={
                 vendor.product_count !== 0 && (
                   <Chip variant="flat" color="primary" className="rounded-md">

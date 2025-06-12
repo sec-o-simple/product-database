@@ -128,13 +128,11 @@ export default function Version({
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
           <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
-          <BreadcrumbItem href={`/vendors/${vendor?.id}`}>
-            Products
-          </BreadcrumbItem>
-          <BreadcrumbItem>{product?.name}</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>Products</BreadcrumbItem>
           <BreadcrumbItem href={`/products/${product?.id}`}>
-            Versions
+            {product?.name}
           </BreadcrumbItem>
+          <BreadcrumbItem isDisabled>Versions</BreadcrumbItem>
           <BreadcrumbItem>{version?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}

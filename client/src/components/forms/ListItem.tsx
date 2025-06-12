@@ -1,7 +1,3 @@
-import { faEllipsisV } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button } from '@heroui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@heroui/popover'
 import { cn } from '@heroui/theme'
 import React from 'react'
 
@@ -10,7 +6,7 @@ interface ListItemProps {
   description?: string
   chips?: React.ReactNode
   onClick?: () => void
-  menu?: React.ReactNode
+  actions?: React.ReactNode
   classNames?: {
     base?: string
     title?: string
@@ -40,8 +36,8 @@ export default function ListItem({
   description,
   chips,
   onClick,
-  menu,
   classNames,
+  actions,
 }: Readonly<ListItemProps>) {
   return (
     <div
@@ -67,23 +63,7 @@ export default function ListItem({
           <div className="text-sm text-default-500">- {description}</div>
         </div>
 
-        {menu && (
-          <Popover placement="bottom-end">
-            <PopoverTrigger>
-              <Button
-                isIconOnly
-                variant="light"
-                className="rounded-full text-neutral-foreground"
-              >
-                <FontAwesomeIcon icon={faEllipsisV} />
-              </Button>
-            </PopoverTrigger>
-
-            <PopoverContent className="p-0 rounded-medium">
-              {menu}
-            </PopoverContent>
-          </Popover>
-        )}
+        <div className="invisible group-hover:visible">{actions}</div>
       </div>
 
       {chips}

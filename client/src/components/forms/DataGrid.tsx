@@ -11,15 +11,12 @@ export function Titlebar({ title }: { title: string }) {
   )
 }
 
-export function FilterButton({
-  icon,
-  title,
-  props,
-}: {
+type FilterButtonProps = {
   icon: any
   title: string
-  props?: ButtonProps
-}) {
+} & ButtonProps
+
+export function FilterButton({ icon, title, ...props }: FilterButtonProps) {
   return (
     <Button
       variant="light"

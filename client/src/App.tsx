@@ -1,14 +1,12 @@
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { default as ProductHistory } from './components/layout/product/ProductHistory'
 import ProductLayout from './components/layout/product/ProductLayout'
 import TopBarLayout from './components/layout/TopBarLayout'
+import EditVendor from './components/layout/vendor/EditVendor'
+import VendorHistory from './components/layout/vendor/VendorHistory'
 import VendorLayout from './components/layout/vendor/VendorLayout'
+import VersionHistory from './components/layout/version/VersionHistory'
 import VersionLayout from './components/layout/version/VersionLayout'
-import History from './routes/History'
 import Helper from './routes/IdentificationHelper/Helper'
 import IdentificationOverview from './routes/IdentificationHelper/IdentificationOverview'
 import Product from './routes/Product'
@@ -19,9 +17,12 @@ import Vendors from './routes/Vendors'
 import Version from './routes/Version'
 
 function App() {
+  const location = useLocation()
+  const state = location.state
+
   return (
-    <Router>
-      <Routes>
+    <>
+      <Routes location={state?.backgroundLocation || location}>
         <Route path="/" element={<Navigate to="/vendors" replace />} />
 
         <Route element={<TopBarLayout />}>
@@ -40,8 +41,10 @@ function App() {
 
         <Route element={<VendorLayout />}>
           <Route path="vendors">
-            <Route path=":vendorId" element={<Vendor />} />
-            <Route path="history" element={<History />} />
+            <Route path=":vendorId">
+              <Route index element={<Vendor />} />
+              <Route path="history" element={<VendorHistory />} />
+            </Route>
           </Route>
         </Route>
 
@@ -49,7 +52,7 @@ function App() {
           <Route path="products">
             <Route path=":productId">
               <Route index element={<Product />} />
-              <Route path="history" element={<History />} />
+              <Route path="history" element={<ProductHistory />} />
             </Route>
           </Route>
         </Route>
@@ -58,6 +61,7 @@ function App() {
           <Route path="products/:productId/versions">
             <Route path=":versionId">
               <Route index element={<Version />} />
+              <Route path="history" element={<VersionHistory />} />
 
               <Route path="identification-helper">
                 <Route index element={<IdentificationOverview />} />
@@ -67,7 +71,13 @@ function App() {
           </Route>
         </Route>
       </Routes>
-    </Router>
+
+      {state?.backgroundLocation && (
+        <Routes>
+          <Route path="/vendors/:vendorId/edit" element={<EditVendor />} />
+        </Routes>
+      )}
+    </>
   )
 }
 

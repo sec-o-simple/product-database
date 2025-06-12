@@ -1,18 +1,48 @@
 import client from '@/client'
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
-import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import IconButton from '../../forms/IconButton'
+import ConfirmButton from '@/components/forms/ConfirmButton'
+import PageContainer from '@/components/forms/PageContainer'
+import Sidebar from '@/components/forms/Sidebar'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Button } from '@heroui/button'
+import { cn } from '@heroui/theme'
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { TopBar } from '../TopBarLayout'
 import AddProduct from './AddProduct'
 
-export function Attribute({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-gray-100 rounded-lg p-4 space-y-2">
-      <div>
-        <p className="font-bold">{label}</p>
-      </div>
+export function Attribute({
+  label,
+  value,
+  href = '',
+}: {
+  label: string
+  value: string | number
+  href?: string
+}) {
+  const navigate = useNavigate()
 
-      <div className="flex justify-end">
-        <p>{value}</p>
+  return (
+    <div className="flex flex-col gap-2">
+      <div>
+        <p className="font-bold ">{label}</p>
+      </div>
+      <div
+        className={cn(
+          'group bg-gray-100 rounded-lg p-4 space-y-2',
+          href ? 'cursor-pointer hover:bg-gray-200' : '',
+        )}
+        onClick={() => {
+          if (href) navigate(href)
+        }}
+      >
+        <div
+          className={cn(
+            'group bg-gray-100 rounded-lg px-2 py-1 space-y-2',
+            href ? 'cursor-pointer hover:bg-gray-200' : '',
+          )}
+        >
+          <p>{value}</p>
+        </div>
       </div>
     </div>
   )
@@ -20,6 +50,7 @@ export function Attribute({ label, value }: { label: string; value: string }) {
 
 export default function VendorLayout() {
   const { vendorId } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
 
   const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
@@ -35,34 +66,54 @@ export default function VendorLayout() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F9FAFB]">
-      <div className="flex w-full items-center justify-between gap-8 border-b px-6 py-4 bg-white">
-        <span className="flex items-center gap-2 text-2xl font-bold">
-          <IconButton
-            icon={faArrowLeft}
-            color="primary"
-            variant="light"
-            isIconOnly={true}
-            onPress={() => navigate(-1)}
-          />
-          <p>Vendor: {vendor.name}</p>
-        </span>
+    <PageContainer>
+      <TopBar
+        title={`Vendor: ${vendor.name}`}
+        historyLink={`/vendors/${vendorId}/history`}
+      >
+        <AddProduct vendorBranchId={vendor.id} />
+      </TopBar>
 
-        <div className="flex flex-row gap-4">
-          <AddProduct vendorBranchId={vendor.id} />
-        </div>
-      </div>
+      <div className="flex flex-row h-full flex-grow">
+        <Sidebar
+          actions={
+            <div className="flex flex-row gap-4">
+              <ConfirmButton
+                buttonProps={{
+                  color: 'danger',
+                  label: 'Delete',
+                  startContent: <FontAwesomeIcon icon={faTrash} />,
+                }}
+                confirmText="Are you sure you want to delete this vendor?"
+                confirmTitle="Delete Vendor"
+              />
 
-      <div className="flex flex-row h-full">
-        <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
-          <Attribute label="Name" value={vendor.name} />
+              <Button
+                variant="solid"
+                color="primary"
+                onPress={() =>
+                  navigate(`/vendors/${vendor.id}/edit`, {
+                    state: { backgroundLocation: location },
+                  })
+                }
+              >
+                Edit Vendor
+              </Button>
+            </div>
+          }
+          attributes={[
+            <Attribute label="Name" value={vendor.name} />,
+            <Attribute
+              label="Description"
+              value={vendor.description || '-/-'}
+            />,
+          ]}
+        />
 
-          <Attribute label="Description" value={vendor.description || '-/-'} />
-        </div>
-        <div className="p-4 w-full">
+        <div className="p-4 flex-grow">
           <Outlet />
         </div>
       </div>
-    </div>
+    </PageContainer>
   )
 }

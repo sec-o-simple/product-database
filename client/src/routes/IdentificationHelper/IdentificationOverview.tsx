@@ -1,7 +1,7 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import { Input } from '@/components/forms/Input'
-import PageContainer from '@/components/forms/PageContainer'
+import PageContent from '@/components/forms/PageContent'
 import { faAdd, faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
@@ -337,7 +337,7 @@ export default function IdentificationOverview({
   }
 
   return (
-    <PageContainer>
+    <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
@@ -403,6 +403,6 @@ export default function IdentificationOverview({
           )
         })}
       </div>
-    </PageContainer>
+    </PageContent>
   )
 }

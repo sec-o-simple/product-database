@@ -2,13 +2,14 @@ import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
 import ListItem from '@/components/forms/ListItem'
+import PageContent from '@/components/forms/PageContent'
 import AddProduct from '@/components/layout/vendor/AddProduct'
 import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem } from '@heroui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-export function EmptyState({ add }: { add: React.ReactNode }) {
+export function EmptyState({ add }: { add?: React.ReactNode }) {
   return (
     <div className="text-center py-16 px-6">
       <div className="mx-auto w-24 h-24 text-4xl rounded-full bg-gray-100 flex items-center justify-center">
@@ -18,7 +19,7 @@ export function EmptyState({ add }: { add: React.ReactNode }) {
       <p className="mt-1 text-sm text-gray-500">
         There are no items to display at this moment.
       </p>
-      <div className="mt-6">{add}</div>
+      {add && <div className="mt-6">{add}</div>}
     </div>
   )
 }
@@ -31,24 +32,20 @@ export default function Vendor({
   const { vendorId } = useParams()
   const navigate = useNavigate()
 
-  const { data: vendor, refetch } = client.useQuery(
-    'get',
-    `/api/v1/vendors/{id}`,
-    {
-      params: {
-        path: {
-          id: vendorId || '',
-        },
+  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
+    params: {
+      path: {
+        id: vendorId || '',
       },
     },
-  )
+  })
 
   if (!vendor) {
     return null
   }
 
   return (
-    <div className="flex grow flex-col w-full gap-4 p-2">
+    <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
@@ -70,6 +67,6 @@ export default function Vendor({
               />
             ))}
       </DataGrid>
-    </div>
+    </PageContent>
   )
 }

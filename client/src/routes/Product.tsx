@@ -2,7 +2,7 @@ import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
 import ListItem from '@/components/forms/ListItem'
-import PageContainer from '@/components/forms/PageContainer'
+import PageContent from '@/components/forms/PageContent'
 import AddVersion from '@/components/layout/product/AddVersion'
 import { BreadcrumbItem, Chip } from '@heroui/react'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -23,17 +23,27 @@ export default function Product({
     },
   })
 
+  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
+    params: {
+      path: {
+        id: product?.vendor_id || '',
+      },
+    },
+  })
+
   if (!product) {
     return null
   }
 
   return (
-    <PageContainer>
+    <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-          <BreadcrumbItem>{'todo'}</BreadcrumbItem>
-          <BreadcrumbItem>Products</BreadcrumbItem>
+          <BreadcrumbItem href={`/vendors/${vendor?.id}`}>
+            {vendor?.name}
+          </BreadcrumbItem>
+          <BreadcrumbItem isDisabled>Products</BreadcrumbItem>
           <BreadcrumbItem>{product?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
@@ -74,6 +84,6 @@ export default function Product({
               />
             ))}
       </DataGrid>
-    </PageContainer>
+    </PageContent>
   )
 }

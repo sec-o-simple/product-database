@@ -1,6 +1,6 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
-import PageContainer from '@/components/forms/PageContainer'
+import PageContent from '@/components/forms/PageContent'
 import { faAdd, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -136,10 +136,8 @@ export default function Helper() {
 
   const helper = idHelperTypes.find((helper) => String(helper.id) === helperId)
 
-  const [edit, setEdit] = React.useState(false)
-
   return (
-    <PageContainer>
+    <PageContent>
       <Breadcrumbs>
         <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
         <BreadcrumbItem>{'xxx'}</BreadcrumbItem>
@@ -168,6 +166,6 @@ export default function Helper() {
       </div>
 
       <IdentificationItem />
-    </PageContainer>
+    </PageContent>
   )
 }

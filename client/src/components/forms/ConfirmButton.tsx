@@ -9,11 +9,13 @@ import {
 } from '@heroui/react'
 
 export default function ConfirmButton({
-  button,
+  buttonProps,
   confirmTitle,
   confirmText,
 }: {
-  button: typeof Button
+  buttonProps?: React.ComponentProps<typeof Button> & {
+    label?: string
+  }
   confirmTitle: string
   confirmText: string
 }) {
@@ -21,9 +23,9 @@ export default function ConfirmButton({
 
   return (
     <>
-      {button({
-        onClick: onOpen,
-      })}
+      <Button onPress={onOpen} {...buttonProps}>
+        {buttonProps?.label || 'Confirm'}
+      </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
         <ModalContent>
           {(onClose) => (
