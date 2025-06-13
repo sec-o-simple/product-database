@@ -1,4 +1,4 @@
-import { Button } from '@heroui/button'
+import { Button, ButtonProps } from '@heroui/button'
 import {
   Modal,
   ModalBody,
@@ -8,23 +8,24 @@ import {
   useDisclosure,
 } from '@heroui/react'
 
-export default function ConfirmButton({
-  buttonProps,
-  confirmTitle,
-  confirmText,
-}: {
-  buttonProps?: React.ComponentProps<typeof Button> & {
-    label?: string
-  }
-  confirmTitle: string
+type ConfirmButtonProps = {
   confirmText: string
-}) {
+  confirmTitle: string
+  onConfirm: () => void
+} & ButtonProps
+
+export default function ConfirmButton({
+  confirmText,
+  confirmTitle,
+  onConfirm,
+  ...props
+}: ConfirmButtonProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   return (
     <>
-      <Button onPress={onOpen} fullWidth {...buttonProps}>
-        {buttonProps?.label || 'Confirm'}
+      <Button onPress={onOpen} fullWidth {...props}>
+        {props?.children || 'Confirm'}
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">
         <ModalContent>
@@ -40,7 +41,7 @@ export default function ConfirmButton({
                 <Button variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" onPress={onConfirm}>
                   Confirm
                 </Button>
               </ModalFooter>

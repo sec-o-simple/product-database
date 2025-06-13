@@ -1,12 +1,14 @@
 import client from '@/client'
+import ConfirmButton from '@/components/forms/ConfirmButton'
+import IconButton from '@/components/forms/IconButton'
 import { Input } from '@/components/forms/Input'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import useRouter from '@/utils/useRouter'
+import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Chip, Divider } from '@heroui/react'
 import { Tab, Tabs } from '@heroui/tabs'
-import { useNavigate } from 'react-router-dom'
 
 export function DashboardTabs({
   selectedKey,
@@ -37,7 +39,15 @@ export function DashboardTabs({
 }
 
 export function ProductItem({ product }: { product: any }) {
-  const navigate = useNavigate()
+  const { navigate, location } = useRouter()
+
+  const handleOnActionClick = (href: string) => {
+    navigate(href, {
+      state: {
+        backgroundLocation: location,
+      },
+    })
+  }
 
   return (
     <ListItem
@@ -49,6 +59,25 @@ export function ProductItem({ product }: { product: any }) {
           <p>{product.name}</p>
         </div>
       }
+      actions={
+        <div className="flex flex-row gap-1">
+          <IconButton
+            icon={faEdit}
+            onPress={() => handleOnActionClick(`/products/${product.id}/edit`)}
+          />
+          <ConfirmButton
+            isIconOnly
+            variant="light"
+            className="text-neutral-foreground"
+            radius="full"
+            confirmTitle="Delete Product"
+            confirmText="Are you sure you want to delete this product?"
+            onConfirm={() => {}}
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </ConfirmButton>
+        </div>
+      }
       chips={product.type && <Chip radius="md">{product.type}</Chip>}
       description={product.description || 'No description'}
     />
@@ -56,8 +85,6 @@ export function ProductItem({ product }: { product: any }) {
 }
 
 export default function Products() {
-  const navigate = useNavigate()
-
   const { data: products } = client.useQuery('get', '/api/v1/products')
 
   return (

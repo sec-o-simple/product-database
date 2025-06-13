@@ -92,14 +92,14 @@ export default function VersionLayout() {
           actions={
             <div className="flex flex-row gap-2">
               <ConfirmButton
-                buttonProps={{
-                  color: 'danger',
-                  label: 'Delete',
-                  startContent: <FontAwesomeIcon icon={faTrash} />,
-                }}
+                color="danger"
+                startContent={<FontAwesomeIcon icon={faTrash} />}
                 confirmText="Are you sure you want to delete this version?"
                 confirmTitle="Delete Version"
-              />
+                onConfirm={() => {}}
+              >
+                Delete
+              </ConfirmButton>
 
               <Button
                 variant="solid"
@@ -120,7 +120,7 @@ export default function VersionLayout() {
           }
         />
 
-        <div className="p-4 w-full">
+        <div className="p-4 w-full overflow-scroll">
           <Outlet />
         </div>
       </div>

@@ -16,9 +16,18 @@ export default function useRouter() {
     }
   }
 
+  const navigateToModal = (href: string) => {
+    navigate(href, {
+      state: {
+        backgroundLocation: location,
+      },
+    })
+  }
+
   return {
     location,
     navigate,
+    navigateToModal,
     goBack,
     state,
     params,

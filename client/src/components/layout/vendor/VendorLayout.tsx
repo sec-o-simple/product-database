@@ -74,23 +74,24 @@ export default function VendorLayout() {
         <AddProductButton vendorId={vendor.id} />
       </TopBar>
 
-      <div className="flex flex-row h-full flex-grow">
+      <div className="flex flex-row h-screen flex-grow overflow-scroll">
         <Sidebar
           actions={
             <div className="flex flex-row gap-2">
               <ConfirmButton
-                buttonProps={{
-                  color: 'danger',
-                  label: 'Delete',
-                  startContent: <FontAwesomeIcon icon={faTrash} />,
-                }}
+                color="danger"
+                startContent={<FontAwesomeIcon icon={faTrash} />}
                 confirmText="Are you sure you want to delete this vendor?"
                 confirmTitle="Delete Vendor"
-              />
+                onConfirm={() => {}}
+              >
+                Delete
+              </ConfirmButton>
 
               <Button
                 variant="solid"
                 color="primary"
+                fullWidth
                 onPress={() =>
                   navigate(`/vendors/${vendor.id}/edit`, {
                     state: { backgroundLocation: location },

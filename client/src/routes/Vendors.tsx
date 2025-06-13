@@ -27,7 +27,7 @@ import {
   useDisclosure,
 } from '@heroui/react'
 import { cn } from '@heroui/theme'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { DashboardTabs } from './Products'
 
 type EditPopoverProps = {
@@ -117,12 +117,17 @@ export function EditPopover(
   )
 }
 
-export default function Vendors() {
+export function VendorItem({
+  vendor,
+}: {
+  vendor: {
+    id: string
+    name: string
+    description?: string
+    product_count: number
+  }
+}) {
   const navigate = useNavigate()
-  const location = useLocation()
-
-  const { data: vendors, refetch } = client.useQuery('get', '/api/v1/vendors')
-
   const handleOnActionClick = (href: string) => {
     navigate(href, {
       state: {
@@ -131,7 +136,37 @@ export default function Vendors() {
     })
   }
 
-  console.log('Vendors:', vendors)
+  return (
+    <ListItem
+      key={vendor.id}
+      onClick={() => navigate(`/vendors/${vendor.id}`)}
+      title={vendor.name}
+      description={vendor.description || 'No description'}
+      actions={
+        <div className="flex flex-row gap">
+          <IconButton
+            icon={faEdit}
+            onPress={() => handleOnActionClick(`/vendors/${vendor.id}/edit`)}
+          />
+          <IconButton
+            icon={faTrash}
+            onPress={() => handleOnActionClick(`/vendors/${vendor.id}/delete`)}
+          />
+        </div>
+      }
+      chips={
+        vendor.product_count !== 0 && (
+          <Chip variant="flat" color="primary" className="rounded-md">
+            Products: {vendor.product_count}
+          </Chip>
+        )
+      }
+    />
+  )
+}
+
+export default function Vendors() {
+  const { data: vendors } = client.useQuery('get', '/api/v1/vendors')
 
   return (
     <div className="flex grow flex-col items-center gap-4">
@@ -167,35 +202,7 @@ export default function Vendors() {
 
         <DataGrid addButton={<CreateEditVendor />}>
           {vendors?.map((vendor) => (
-            <ListItem
-              key={vendor.id}
-              onClick={() => navigate(`/vendors/${vendor.id}`)}
-              title={vendor.name}
-              description={vendor.description || 'No description'}
-              actions={
-                <div className="flex flex-row gap">
-                  <IconButton
-                    icon={faEdit}
-                    onPress={() =>
-                      handleOnActionClick(`/vendors/${vendor.id}/edit`)
-                    }
-                  />
-                  <IconButton
-                    icon={faTrash}
-                    onPress={() =>
-                      handleOnActionClick(`/vendors/${vendor.id}/delete`)
-                    }
-                  />
-                </div>
-              }
-              chips={
-                vendor.product_count !== 0 && (
-                  <Chip variant="flat" color="primary" className="rounded-md">
-                    Products: {vendor.product_count}
-                  </Chip>
-                )
-              }
-            />
+            <VendorItem key={vendor.id} vendor={vendor} />
           ))}
         </DataGrid>
       </div>

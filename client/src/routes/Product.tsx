@@ -1,12 +1,72 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import DataGrid from '@/components/forms/DataGrid'
+import IconButton from '@/components/forms/IconButton'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import PageContent from '@/components/forms/PageContent'
 import { AddVersionButton } from '@/components/layout/version/CreateEditVersion'
+import useRouter from '@/utils/useRouter'
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem, Chip } from '@heroui/react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+
+export function VersionItem({ version }: { version: any }) {
+  const {
+    params: { productId },
+    navigate,
+    navigateToModal,
+  } = useRouter()
+
+  const handleOnActionClick = (href: string) => navigateToModal(href)
+
+  return (
+    <ListItem
+      key={version.id}
+      onClick={() => navigate(`/products/${productId}/versions/${version.id}`)}
+      title={
+        <div className="flex gap-2 items-center">
+          {version.is_latest && <LatestChip />}
+
+          <p>{version.name}</p>
+        </div>
+      }
+      description={version.description || 'No description'}
+      actions={
+        <div className="flex flex-row gap">
+          <IconButton
+            icon={faEdit}
+            onPress={() =>
+              handleOnActionClick(
+                `/products/${productId}/versions/${version.id}/edit`,
+              )
+            }
+          />
+          <ConfirmButton
+            isIconOnly
+            variant="light"
+            className="text-neutral-foreground"
+            radius="full"
+            confirmTitle="Delete Version"
+            confirmText="Are you sure you want to delete this Version?"
+            onConfirm={() => {}}
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </ConfirmButton>
+        </div>
+      }
+      chips={[
+        version.release_date && (
+          <Chip key="version" variant="solid">
+            {version.release_date}
+          </Chip>
+        ),
+      ]}
+    />
+  )
+}
 
 export default function Product({
   hideBreadcrumbs = false,
@@ -14,7 +74,6 @@ export default function Product({
   hideBreadcrumbs?: boolean
 }) {
   const { productId } = useParams()
-  const navigate = useNavigate()
 
   const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
     params: {
@@ -68,27 +127,7 @@ export default function Product({
         {versions && versions.length === 0
           ? null
           : versions?.map((version) => (
-              <ListItem
-                key={version.id}
-                onClick={() =>
-                  navigate(`/products/${productId}/versions/${version.id}`)
-                }
-                title={
-                  <div className="flex gap-2 items-center">
-                    {version.is_latest && <LatestChip />}
-
-                    <p>{version.name}</p>
-                  </div>
-                }
-                description={version.description || 'No description'}
-                chips={[
-                  version.release_date && (
-                    <Chip key="version" variant="solid">
-                      {version.release_date}
-                    </Chip>
-                  ),
-                ]}
-              />
+              <VersionItem key={version.id} version={version} />
             ))}
       </DataGrid>
     </PageContent>
