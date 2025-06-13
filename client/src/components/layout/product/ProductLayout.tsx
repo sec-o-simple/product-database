@@ -1,11 +1,12 @@
 import client from '@/client'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
 import Sidebar from '@/components/forms/Sidebar'
 import {
   HelperTypeProps,
   idHelperTypes,
 } from '@/routes/IdentificationHelper/IdentificationOverview'
-import { faAdd, faFileExport } from '@fortawesome/free-solid-svg-icons'
+import { faAdd, faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import {
@@ -15,10 +16,10 @@ import {
   DropdownSection,
   DropdownTrigger,
 } from '@heroui/react'
-import { Outlet, useParams } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
-import AddVersion from './AddVersion'
+import { AddVersionButton } from '../version/CreateEditVersion'
 
 export function AddIdHelper({
   onAdd,
@@ -61,6 +62,8 @@ export function AddIdHelper({
 
 export default function ProductLayout() {
   const { productId } = useParams()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
     params: {
@@ -98,7 +101,7 @@ export default function ProductLayout() {
             Export
           </Button>
 
-          <AddVersion productBranchId={product.id} />
+          <AddVersionButton productId={product.id} />
         </div>
       </TopBar>
 
@@ -116,6 +119,31 @@ export default function ProductLayout() {
               href={`/vendors/${product.vendor_id}`}
             />,
           ]}
+          actions={
+            <div className="flex flex-row gap-2">
+              <ConfirmButton
+                buttonProps={{
+                  color: 'danger',
+                  label: 'Delete',
+                  startContent: <FontAwesomeIcon icon={faTrash} />,
+                }}
+                confirmText="Are you sure you want to delete this product?"
+                confirmTitle="Delete Product"
+              />
+
+              <Button
+                variant="solid"
+                color="primary"
+                onPress={() =>
+                  navigate(`products/${productId}/edit`, {
+                    state: { backgroundLocation: location },
+                  })
+                }
+              >
+                Edit Product
+              </Button>
+            </div>
+          }
         />
         <div className="p-4 w-full">
           <Outlet />

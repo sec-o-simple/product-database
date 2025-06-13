@@ -8,7 +8,7 @@ import { Button } from '@heroui/button'
 import { cn } from '@heroui/theme'
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
-import AddProduct from './AddProduct'
+import { AddProductButton } from '../product/CreateEditProduct'
 
 export function Attribute({
   label,
@@ -28,8 +28,8 @@ export function Attribute({
       </div>
       <div
         className={cn(
-          'group bg-gray-100 rounded-lg p-4 space-y-2',
-          href ? 'cursor-pointer hover:bg-gray-200' : '',
+          'group bg-gray-50 border rounded-lg p-4 space-y-2',
+          href ? 'cursor-pointer hover:bg-gray-200 hover:transition-all' : '',
         )}
         onClick={() => {
           if (href) navigate(href)
@@ -37,8 +37,8 @@ export function Attribute({
       >
         <div
           className={cn(
-            'group bg-gray-100 rounded-lg px-2 py-1 space-y-2',
-            href ? 'cursor-pointer hover:bg-gray-200' : '',
+            'rounded-lg px-2 py-1 space-y-2',
+            href ? 'cursor-pointer group-hover:underline text-primary' : '',
           )}
         >
           <p>{value}</p>
@@ -71,13 +71,13 @@ export default function VendorLayout() {
         title={`Vendor: ${vendor.name}`}
         historyLink={`/vendors/${vendorId}/history`}
       >
-        <AddProduct vendorId={vendor.id} />
+        <AddProductButton vendorId={vendor.id} />
       </TopBar>
 
       <div className="flex flex-row h-full flex-grow">
         <Sidebar
           actions={
-            <div className="flex flex-row gap-4">
+            <div className="flex flex-row gap-2">
               <ConfirmButton
                 buttonProps={{
                   color: 'danger',

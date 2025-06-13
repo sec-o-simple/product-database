@@ -23,7 +23,7 @@ export default function ConfirmButton({
 
   return (
     <>
-      <Button onPress={onOpen} {...buttonProps}>
+      <Button onPress={onOpen} fullWidth {...buttonProps}>
         {buttonProps?.label || 'Confirm'}
       </Button>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="xl">

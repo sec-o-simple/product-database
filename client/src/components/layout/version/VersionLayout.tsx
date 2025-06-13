@@ -1,17 +1,23 @@
 import client from '@/client'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
-import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
+import Sidebar from '@/components/forms/Sidebar'
+import {
+  faArrowUpRightFromSquare,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { Chip } from '@heroui/chip'
-import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import AddRelationship from '../product/AddRelationship'
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { AddRelationshipButton } from '../product/CreateRelationship'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 
 export default function VersionLayout() {
   const navigate = useNavigate()
   const { versionId, productId } = useParams()
+  const location = useLocation()
 
   const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
     params: {
@@ -53,16 +59,22 @@ export default function VersionLayout() {
           </div>
         }
       >
-        <AddRelationship />
+        <AddRelationshipButton />
       </TopBar>
 
       <div className="flex flex-row h-full">
-        <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
-          <Attribute label="Version" value={version.name} />
-          <Attribute label="Description" value="Version Description" />
-          <Attribute label="Relationships" value={relationships.length} />
-
-          <div className="flex flex-row items-center gap-2 mt-4">
+        <Sidebar
+          attributes={[
+            <Attribute label="Version" value={version.name} />,
+            <Attribute
+              label="Description"
+              value={version.description || '-/-'}
+            />,
+            <Attribute
+              label="Product"
+              value={product?.name || '-/-'}
+              href={`/products/${productId}`}
+            />,
             <Button
               variant="light"
               color="primary"
@@ -75,9 +87,39 @@ export default function VersionLayout() {
             >
               Identification Helpers
               <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-            </Button>
-          </div>
-        </div>
+            </Button>,
+          ]}
+          actions={
+            <div className="flex flex-row gap-2">
+              <ConfirmButton
+                buttonProps={{
+                  color: 'danger',
+                  label: 'Delete',
+                  startContent: <FontAwesomeIcon icon={faTrash} />,
+                }}
+                confirmText="Are you sure you want to delete this version?"
+                confirmTitle="Delete Version"
+              />
+
+              <Button
+                variant="solid"
+                color="primary"
+                fullWidth
+                onPress={() =>
+                  navigate(
+                    `/products/${productId}/versions/${versionId}/edit`,
+                    {
+                      state: { backgroundLocation: location },
+                    },
+                  )
+                }
+              >
+                Edit Version
+              </Button>
+            </div>
+          }
+        />
+
         <div className="p-4 w-full">
           <Outlet />
         </div>

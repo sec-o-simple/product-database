@@ -2,7 +2,9 @@ import client from '@/client'
 import DataGrid, { FilterButton } from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
-import CreateEditVendor from '@/components/layout/vendor/CreateEditVendor'
+import CreateEditVendor, {
+  CreateVendorButton,
+} from '@/components/layout/vendor/CreateEditVendor'
 import {
   faEdit,
   faSearch,
@@ -25,7 +27,7 @@ import {
   useDisclosure,
 } from '@heroui/react'
 import { cn } from '@heroui/theme'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { DashboardTabs } from './Products'
 
 type EditPopoverProps = {
@@ -117,8 +119,19 @@ export function EditPopover(
 
 export default function Vendors() {
   const navigate = useNavigate()
+  const location = useLocation()
 
   const { data: vendors, refetch } = client.useQuery('get', '/api/v1/vendors')
+
+  const handleOnActionClick = (href: string) => {
+    navigate(href, {
+      state: {
+        backgroundLocation: location,
+      },
+    })
+  }
+
+  console.log('Vendors:', vendors)
 
   return (
     <div className="flex grow flex-col items-center gap-4">
@@ -148,7 +161,8 @@ export default function Vendors() {
             <FilterButton title="Name" icon={faSortAlphaAsc} disabled />
             <FilterButton title="Products" icon={faSortAmountAsc} disabled />
           </div>
-          <CreateEditVendor onCreate={() => refetch()} />
+
+          <CreateVendorButton />
         </div>
 
         <DataGrid addButton={<CreateEditVendor />}>
@@ -162,11 +176,15 @@ export default function Vendors() {
                 <div className="flex flex-row gap">
                   <IconButton
                     icon={faEdit}
-                    onPress={() => navigate(`/vendors/${vendor.id}/edit`)}
+                    onPress={() =>
+                      handleOnActionClick(`/vendors/${vendor.id}/edit`)
+                    }
                   />
                   <IconButton
                     icon={faTrash}
-                    onPress={() => navigate(`/vendors/${vendor.id}/delete`)}
+                    onPress={() =>
+                      handleOnActionClick(`/vendors/${vendor.id}/delete`)
+                    }
                   />
                 </div>
               }

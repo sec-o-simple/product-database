@@ -1,8 +1,7 @@
 import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
-import { faAdd, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ButtonProps } from '@heroui/button'
 import {
   Button,
   Modal,
@@ -10,29 +9,51 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  useDisclosure,
 } from '@heroui/react'
 import { useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
-interface CreateEditVendorProps {
-  vendor?: any
-  onCreate?: () => void
-  variant?: ButtonProps['variant']
-  color?: ButtonProps['color']
+export function CreateVendorButton() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  return (
+    <Button
+      color="primary"
+      onPress={() =>
+        navigate('/vendors/create', {
+          state: {
+            backgroundLocation: location,
+          },
+        })
+      }
+    >
+      <FontAwesomeIcon icon={faAdd} className="mr-2" />
+      Create Vendor
+    </Button>
+  )
 }
 
-export default function CreateEditVendor({
-  vendor: initialVendor,
-  onCreate,
-  variant = 'solid',
-  color = 'primary',
-}: CreateEditVendorProps) {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
-  const isCreateForm = !initialVendor
+export default function CreateEditVendor() {
+  const navigate = useNavigate()
+  const { vendorId } = useParams()
+  const isCreateForm = !vendorId
+
+  const { data: previousData } = client.useQuery(
+    'get',
+    '/api/v1/vendors/{id}',
+    {
+      params: {
+        path: {
+          id: vendorId || '',
+        },
+      },
+    },
+  )
 
   const [vendor, setVendor] = useState<any>({
-    name: initialVendor?.name || '',
-    description: initialVendor?.description || '',
+    name: previousData?.name || '',
+    description: previousData?.description || '',
   })
 
   const mutation = isCreateForm
@@ -40,19 +61,17 @@ export default function CreateEditVendor({
         onSuccess: () => {
           setVendor({ name: '', description: '' })
           onClose()
-          onCreate?.()
         },
       })
     : client.useMutation('put', '/api/v1/vendors/{id}', {
         params: {
           path: {
-            id: initialVendor?.id || '',
+            id: vendor?.id || '',
           },
         },
         onSuccess: () => {
           setVendor({ name: '', description: '' })
           onClose()
-          onCreate?.()
         },
       })
 
@@ -74,78 +93,65 @@ export default function CreateEditVendor({
     })
   }
 
+  const onClose = () => {
+    navigate(`/vendors/${vendorId || ''}`, {
+      replace: true,
+    })
+  }
+
   return (
-    <>
-      <Button
-        variant={variant}
-        color={color}
-        onPress={onOpen}
-        startContent={
-          isCreateForm ? (
-            <FontAwesomeIcon icon={faAdd} />
-          ) : (
-            <FontAwesomeIcon icon={faEdit} />
-          )
-        }
-      >
-        {isCreateForm ? 'Add Vendor' : 'Edit Vendor'}
-      </Button>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                {isCreateForm ? 'Create Vendor' : 'Edit Vendor'}
-              </ModalHeader>
-              <ModalBody className="gap-4">
-                {mutation.isError ? (
-                  <div className="text-red-500">
-                    Error: {mutation.error?.title || 'Failed to create vendor'}
-                  </div>
-                ) : null}
+    <Modal
+      isOpen
+      onOpenChange={onClose}
+      isDismissable={false}
+      isKeyboardDismissDisabled
+    >
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">
+          {isCreateForm ? 'Create Vendor' : 'Edit Vendor'}
+        </ModalHeader>
+        <ModalBody className="gap-4">
+          {mutation.isError ? (
+            <div className="text-red-500">
+              Error: {mutation.error?.title || 'Failed to create vendor'}
+            </div>
+          ) : null}
 
-                <Input
-                  label="Name"
-                  placeholder="Enter the product name..."
-                  className="w-full"
-                  value={vendor.name}
-                  onChange={(e) =>
-                    setVendor({ ...vendor, name: e.target.value })
-                  }
-                  autoFocus
-                  type="text"
-                />
+          <Input
+            label="Name"
+            placeholder="Enter the product name..."
+            className="w-full"
+            value={vendor.name}
+            onChange={(e) => setVendor({ ...vendor, name: e.target.value })}
+            autoFocus
+            type="text"
+          />
 
-                <Textarea
-                  label="Description"
-                  multiple
-                  placeholder="Enter the description..."
-                  className="w-full"
-                  value={vendor.description}
-                  onChange={(e) =>
-                    setVendor({ ...vendor, description: e.target.value })
-                  }
-                  type="text"
-                />
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cancel
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={
-                    isCreateForm ? handleCreateVendor : handleUpdateVendor
-                  }
-                  isLoading={mutation.isPending}
-                >
-                  {isCreateForm ? 'Create' : 'Save'}
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-    </>
+          <Textarea
+            label="Description"
+            multiple
+            placeholder="Enter the description..."
+            className="w-full"
+            value={vendor.description}
+            onChange={(e) =>
+              setVendor({ ...vendor, description: e.target.value })
+            }
+            type="text"
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="light" onPress={onClose}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onPress={isCreateForm ? handleCreateVendor : handleUpdateVendor}
+            isLoading={mutation.isPending}
+          >
+            {isCreateForm ? 'Create' : 'Save'}
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }

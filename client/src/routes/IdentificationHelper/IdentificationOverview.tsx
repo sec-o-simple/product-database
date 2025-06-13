@@ -420,9 +420,7 @@ export default function IdentificationOverview({
           <BreadcrumbItem href={`/products/${product?.id}`}>
             {product?.name || 'Product'}
           </BreadcrumbItem>
-          <BreadcrumbItem href={`/products/${productId}/versions`}>
-            Versions
-          </BreadcrumbItem>
+          <BreadcrumbItem isDisabled>Versions</BreadcrumbItem>
           <BreadcrumbItem href={`/products/${productId}/versions/${versionId}`}>
             {version?.name || 'Version'}
           </BreadcrumbItem>

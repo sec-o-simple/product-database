@@ -36,6 +36,7 @@
     "@heroui/tabs": "^2.2.11",
     "@heroui/theme": "2.4.13",
     "@heroui/use-theme": "2.1.6",
+    "@internationalized/date": "^3.8.1",
     "@mui/x-tree-view": "^8.4.0",
     "@react-aria/visually-hidden": "3.8.21",
     "@react-types/shared": "3.28.0",

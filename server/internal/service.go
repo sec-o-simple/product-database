@@ -75,6 +75,7 @@ func (s *Service) GetVendorByID(ctx context.Context, id string) (VendorDTO, erro
 			VendorID:    product.ParentID,
 			Name:        product.Name,
 			Description: product.Description,
+			Type:        "software",
 		}
 	}
 
@@ -134,6 +135,7 @@ func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
 			VendorID:    node.ParentID,
 			Name:        node.Name,
 			Description: node.Description,
+			Type:        "software",
 		}
 	}
 

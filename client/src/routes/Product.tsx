@@ -1,10 +1,11 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
+import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import PageContent from '@/components/forms/PageContent'
-import AddVersion from '@/components/layout/product/AddVersion'
-import { BreadcrumbItem } from '@heroui/react'
+import { AddVersionButton } from '@/components/layout/version/CreateEditVersion'
+import { BreadcrumbItem, Chip } from '@heroui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 export default function Product({
@@ -62,7 +63,7 @@ export default function Product({
 
       <DataGrid
         title={`Versions (${versions?.length})`}
-        addButton={<AddVersion productBranchId={product.id} />}
+        addButton={<AddVersionButton productId={product.id} />}
       >
         {versions && versions.length === 0
           ? null
@@ -74,12 +75,19 @@ export default function Product({
                 }
                 title={
                   <div className="flex gap-2 items-center">
-                    {/* {version.id === 1 && <LatestChip />} */}
+                    {version.is_latest && <LatestChip />}
 
                     <p>{version.name}</p>
                   </div>
                 }
-                description={'No description'}
+                description={version.description || 'No description'}
+                chips={[
+                  version.release_date && (
+                    <Chip key="version" variant="solid">
+                      {version.release_date}
+                    </Chip>
+                  ),
+                ]}
               />
             ))}
       </DataGrid>

@@ -776,6 +776,7 @@ export interface components {
       id: string
       /** @example true */
       is_latest: boolean
+      release_date?: string | null
       /** @example Version Name */
       name: string
       /**

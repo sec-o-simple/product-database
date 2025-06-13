@@ -1,6 +1,6 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
-import AddRelationship from '@/components/layout/product/AddRelationship'
+import { AddRelationshipButton } from '@/components/layout/product/CreateRelationship'
 import { BreadcrumbItem } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 import { EmptyState } from './Vendor'
@@ -34,8 +34,7 @@ export default function Version({
     {
       params: {
         path: {
-          id: productId || '',
-          versionID: versionId || '',
+          id: versionId || '',
         },
       },
     },
@@ -59,11 +58,9 @@ export default function Version({
           <BreadcrumbItem>{version?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
-      <div className="flex w-full flex-col items-center gap-4">
-        <EmptyState add={<AddRelationship />} />
-        {/* {!version.source_relationships || version.source_relationships.length === 0 ? */}
-        {/* <EmptyState add={<AddRelationship />} /> : null} */}
 
+      <div className="flex w-full flex-col items-center gap-4">
+        <EmptyState add={<AddRelationshipButton />} />
         {/* {version.source_relationships?.map((relationship) => (
           <ListGroup title={relationship.category} key={`${relationship.category}-${relationship.id}`}>
             <ListItem

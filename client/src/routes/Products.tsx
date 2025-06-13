@@ -1,9 +1,10 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
+import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Divider } from '@heroui/react'
+import { Chip, Divider } from '@heroui/react'
 import { Tab, Tabs } from '@heroui/tabs'
 import { useNavigate } from 'react-router-dom'
 
@@ -35,6 +36,25 @@ export function DashboardTabs({
   )
 }
 
+export function ProductItem({ product }: { product: any }) {
+  const navigate = useNavigate()
+
+  return (
+    <ListItem
+      key={product.id}
+      onClick={() => navigate(`/products/${product.id}`)}
+      title={
+        <div className="flex gap-2 items-center">
+          {product.latest_versions && <LatestChip />}
+          <p>{product.name}</p>
+        </div>
+      }
+      chips={product.type && <Chip radius="md">{product.type}</Chip>}
+      description={product.description || 'No description'}
+    />
+  )
+}
+
 export default function Products() {
   const navigate = useNavigate()
 
@@ -63,18 +83,7 @@ export default function Products() {
       />
 
       {products?.map((product) => (
-        <ListItem
-          key={product.id}
-          onClick={() => navigate(`/products/${product.id}`)}
-          title={
-            <div className="flex gap-2 items-center">
-              {/* {product.id === 1 && <LatestChip />} */}
-
-              <p>{product.name}</p>
-            </div>
-          }
-          description={product.description || 'No description'}
-        />
+        <ProductItem key={product.id} product={product} />
       ))}
 
       {/* <Pagination /> */}

@@ -1,13 +1,13 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
-import ListItem from '@/components/forms/ListItem'
 import PageContent from '@/components/forms/PageContent'
-import AddProduct from '@/components/layout/vendor/AddProduct'
+import { AddProductButton } from '@/components/layout/product/CreateEditProduct'
 import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem } from '@heroui/react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { ProductItem } from './Products'
 
 export function EmptyState({ add }: { add?: React.ReactNode }) {
   return (
@@ -30,7 +30,6 @@ export default function Vendor({
   hideBreadcrumbs?: boolean
 }) {
   const { vendorId } = useParams()
-  const navigate = useNavigate()
 
   const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
     params: {
@@ -67,18 +66,12 @@ export default function Vendor({
 
       <DataGrid
         title={`Products (${products?.length ?? 0})`}
-        addButton={<AddProduct vendorId={vendor.id} />}
+        addButton={<AddProductButton vendorId={vendor.id} />}
       >
-        {!products || products.length === 0
-          ? null
-          : products.map((product) => (
-              <ListItem
-                key={product.id}
-                onClick={() => navigate(`/products/${product.id}`)}
-                title={product.name ?? 'Product Name'}
-                description={product.description ?? 'Vendor Description'}
-              />
-            ))}
+        {products &&
+          products.map((product) => (
+            <ProductItem key={product.id} product={product} />
+          ))}
       </DataGrid>
     </PageContent>
   )

@@ -1,6 +1,8 @@
 package internal
 
-import "github.com/go-fuego/fuego"
+import (
+	"github.com/go-fuego/fuego"
+)
 
 type Handler struct {
 	svc *Service

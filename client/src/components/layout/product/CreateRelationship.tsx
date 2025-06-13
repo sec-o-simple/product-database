@@ -1,4 +1,5 @@
 import Select from '@/components/forms/Select'
+import useRouter from '@/utils/useRouter'
 import { faAdd, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -7,11 +8,10 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  useDisclosure,
 } from '@heroui/modal'
 import { Button } from '@heroui/react'
 import { SelectItem } from '@heroui/select'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 interface RelationShipProps {
   sourceProducts: string[]
@@ -67,8 +67,37 @@ function ProductBox({
   )
 }
 
-export default function AddRelationship() {
-  const { isOpen, onClose, onOpen } = useDisclosure()
+export function AddRelationshipButton() {
+  const {
+    navigate,
+    location,
+    params: { productId, versionId },
+  } = useRouter()
+
+  return (
+    <Button
+      color="primary"
+      startContent={<FontAwesomeIcon icon={faAdd} />}
+      onPress={() =>
+        navigate(
+          `/products/${productId}/versions/${versionId}/relationships/create`,
+          {
+            state: {
+              backgroundLocation: location,
+            },
+          },
+        )
+      }
+    >
+      Add Relationship
+    </Button>
+  )
+}
+
+export default function CreateRelationship() {
+  const { goBack } = useRouter()
+  console.log('CreateRelationship')
+
   const [selected, setSelected] = useState<RelationShipProps>({
     sourceProducts: [],
     sourceVersions: [],
@@ -77,16 +106,6 @@ export default function AddRelationship() {
     relationshipType: '',
     description: '',
   })
-
-  useEffect(() => {
-    setSelected((prevState) => ({
-      ...prevState,
-      sourceProducts: [],
-      sourceVersions: [],
-      targetProducts: [],
-      targetVersions: [],
-    }))
-  }, [isOpen])
 
   const handleSelect = (key: React.ChangeEvent<HTMLSelectElement>) => {
     const value = key.target.value.split(',').filter((v) => v !== 'all')
@@ -121,22 +140,18 @@ export default function AddRelationship() {
     )
   }
 
+  const onClose = () => {
+    goBack()
+  }
+
   return (
-    <>
-      <Button
-        color="primary"
-        onPress={onOpen}
-        startContent={<FontAwesomeIcon icon={faAdd} />}
-      >
-        Add Relationship
-      </Button>
-      <Modal isOpen={isOpen} isDismissable={false} onClose={onClose} size="2xl">
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            Create Product Relationship
-          </ModalHeader>
-          <ModalBody className="gap-4">
-            {/* <div className="flex flex-row gap-2">
+    <Modal isOpen isDismissable={false} onClose={onClose} size="2xl">
+      <ModalContent>
+        <ModalHeader className="flex flex-col gap-1">
+          Create Product Relationship
+        </ModalHeader>
+        <ModalBody className="gap-4">
+          {/* <div className="flex flex-row gap-2">
               <Select
                 label="Source Product"
                 name="sourceProducts"
@@ -178,65 +193,65 @@ export default function AddRelationship() {
               </Select>
             </div> */}
 
-            <div className="flex flex-row gap-2">
-              <Select
-                label="Target Product"
-                name="targetProducts"
-                selectionMode="multiple"
-                onChange={handleSelect}
-                className="w-2/3"
-                selectedKeys={selected.targetProducts}
-              >
-                <>
-                  {products.map((product) => (
-                    <SelectItem key={product.id}>{product.name}</SelectItem>
-                  ))}
-                </>
-              </Select>
-
-              <Select
-                label="Version"
-                name="targetVersions"
-                selectionMode="multiple"
-                onChange={handleSelect}
-                className="w-1/3"
-                renderValue={(value) => {
-                  if (value.length === versions.length) return 'All'
-                  return value
-                    .map(
-                      (v) =>
-                        versions.find((version) => version.id === v.key)?.name,
-                    )
-                    .join(', ')
-                }}
-                selectedKeys={selected.targetVersions}
-              >
-                <>
-                  {SelectAll('targetVersions')}
-                  {versions.map((version) => (
-                    <SelectItem key={version.id}>{version.name}</SelectItem>
-                  ))}
-                </>
-              </Select>
-            </div>
+          <div className="flex flex-row gap-2">
+            <Select
+              label="Target Product"
+              name="targetProducts"
+              selectionMode="multiple"
+              onChange={handleSelect}
+              className="w-2/3"
+              selectedKeys={selected.targetProducts}
+            >
+              <>
+                {products.map((product) => (
+                  <SelectItem key={product.id}>{product.name}</SelectItem>
+                ))}
+              </>
+            </Select>
 
             <Select
-              label="Relationship Type"
-              placeholder="Select a type"
-              selectionMode="single"
-              selectedKeys={selected.relationshipType}
-              onChange={(key) =>
-                setSelected((prevState) => ({
-                  ...prevState,
-                  relationshipType: key.target.value as string,
-                }))
-              }
+              label="Version"
+              name="targetVersions"
+              selectionMode="multiple"
+              onChange={handleSelect}
+              className="w-1/3"
+              renderValue={(value) => {
+                if (value.length === versions.length) return 'All'
+                return value
+                  .map(
+                    (v) =>
+                      versions.find((version) => version.id === v.key)?.name,
+                  )
+                  .join(', ')
+              }}
+              selectedKeys={selected.targetVersions}
             >
-              {relationshipTypes.map((type) => (
-                <SelectItem key={type}>{type}</SelectItem>
-              ))}
+              <>
+                {SelectAll('targetVersions')}
+                {versions.map((version) => (
+                  <SelectItem key={version.id}>{version.name}</SelectItem>
+                ))}
+              </>
             </Select>
-            {/* 
+          </div>
+
+          <Select
+            label="Relationship Type"
+            placeholder="Select a type"
+            selectionMode="single"
+            selectedKeys={selected.relationshipType}
+            onChange={(key) =>
+              setSelected((prevState) => ({
+                ...prevState,
+                relationshipType: key.target.value as string,
+              }))
+            }
+          >
+            {relationshipTypes.map((type) => (
+              <SelectItem key={type}>{type}</SelectItem>
+            ))}
+          </Select>
+          {/* 
             <Input
               label="Description"
               placeholder="Enter the description..."
@@ -251,53 +266,52 @@ export default function AddRelationship() {
               }}
             /> */}
 
-            <div className="flex flex-row gap-2 bg-gray-100 items-center rounded-md p-4 justify-around">
-              <ProductBox
-                products={selected.sourceProducts.map(
-                  (product) =>
-                    products.find((p) => p.id === product)?.name as string,
-                )}
-                versions={selected.sourceVersions.map(
-                  (version) =>
-                    versions.find((v) => v.id === version)?.name as string,
-                )}
-              />
+          <div className="flex flex-row gap-2 bg-gray-100 items-center rounded-md p-4 justify-around">
+            <ProductBox
+              products={selected.sourceProducts.map(
+                (product) =>
+                  products.find((p) => p.id === product)?.name as string,
+              )}
+              versions={selected.sourceVersions.map(
+                (version) =>
+                  versions.find((v) => v.id === version)?.name as string,
+              )}
+            />
 
-              <div className="flex flex-col items-center space-y-2">
-                <FontAwesomeIcon
-                  icon={faArrowRight}
-                  size="xl"
-                  className="text-primary"
-                />
-                <p className="text-sm text-zinc-500">
-                  {relationshipTypes.find(
-                    (type) => type === selected.relationshipType,
-                  )}
-                </p>
-              </div>
-
-              <ProductBox
-                products={selected.targetProducts.map(
-                  (product) =>
-                    products.find((p) => p.id === product)?.name as string,
-                )}
-                versions={selected.targetVersions.map(
-                  (version) =>
-                    versions.find((v) => v.id === version)?.name as string,
-                )}
+            <div className="flex flex-col items-center space-y-2">
+              <FontAwesomeIcon
+                icon={faArrowRight}
+                size="xl"
+                className="text-primary"
               />
+              <p className="text-sm text-zinc-500">
+                {relationshipTypes.find(
+                  (type) => type === selected.relationshipType,
+                )}
+              </p>
             </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="light" onPress={onClose}>
-              Cancel
-            </Button>
-            <Button color="primary" onPress={onClose}>
-              Create
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+
+            <ProductBox
+              products={selected.targetProducts.map(
+                (product) =>
+                  products.find((p) => p.id === product)?.name as string,
+              )}
+              versions={selected.targetVersions.map(
+                (version) =>
+                  versions.find((v) => v.id === version)?.name as string,
+              )}
+            />
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button variant="light" onPress={onClose}>
+            Cancel
+          </Button>
+          <Button color="primary" onPress={onClose}>
+            Create
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   )
 }
