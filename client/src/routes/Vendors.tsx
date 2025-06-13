@@ -157,7 +157,7 @@ export function VendorItem({
       chips={
         vendor.product_count !== 0 && (
           <Chip variant="flat" color="primary" className="rounded-md">
-            Products: {vendor.product_count}
+            {vendor.product_count} Products
           </Chip>
         )
       }

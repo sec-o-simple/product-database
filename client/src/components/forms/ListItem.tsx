@@ -46,7 +46,7 @@ export default function ListItem({
         onClick?.()
       }}
       className={cn(
-        'group flex w-full flex-col gap-2 justify-between rounded-lg bg-white p-4 border-1 border-default-200 hover:bg-gray-50 group-hover:transition-background hover:cursor-pointer',
+        'group flex w-full flex-col gap-1 justify-between rounded-lg bg-white px-4 py-2 border-1 border-default-200 hover:bg-gray-50 group-hover:transition-background hover:cursor-pointer',
         classNames?.base,
       )}
     >
@@ -66,7 +66,7 @@ export default function ListItem({
         <div className="invisible group-hover:visible">{actions}</div>
       </div>
 
-      {chips}
+      <div className="pb-1">{chips}</div>
     </div>
   )
 }
