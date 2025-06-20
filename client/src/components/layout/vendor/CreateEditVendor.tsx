@@ -1,5 +1,7 @@
 import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
+import { getVendors, VendorProps } from '@/routes/Vendors'
+import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -10,8 +12,48 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@heroui/react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+
+export function useVendorMutation({
+  vendor,
+  onClose,
+  client,
+}: {
+  vendor: VendorProps
+  onClose: () => void
+  client: any
+}) {
+  const onSuccess = useCallback(() => {
+    onClose()
+  }, [onClose])
+  const isCreateForm = !vendor.id
+
+  const mutation = isCreateForm
+    ? client.useMutation('post', '/api/v1/vendors', { onSuccess })
+    : client.useMutation('put', '/api/v1/vendors/{id}', {
+        onSuccess,
+        params: { path: { id: vendor.id } },
+      })
+
+  const mutateVendor = useCallback(() => {
+    const body = {
+      name: vendor.name,
+      description: vendor.description,
+    }
+
+    mutation.mutate(
+      isCreateForm
+        ? { body }
+        : {
+            body,
+            params: { path: { id: vendor.id } },
+          },
+    )
+  }, [mutation, vendor])
+
+  return { mutateVendor, isPending: mutation.isPending, error: mutation.error }
+}
 
 export function CreateVendorButton() {
   const navigate = useNavigate()
@@ -35,69 +77,36 @@ export function CreateVendorButton() {
 }
 
 export default function CreateEditVendor() {
-  const navigate = useNavigate()
+  const { navigate } = useRouter()
   const { vendorId } = useParams()
   const isCreateForm = !vendorId
 
-  const { data: previousData } = client.useQuery(
-    'get',
-    '/api/v1/vendors/{id}',
-    {
-      params: {
-        path: {
-          id: vendorId || '',
-        },
-      },
-    },
-  )
+  const { data: previousData } = getVendors(vendorId) as {
+    data: VendorProps
+  }
 
-  const [vendor, setVendor] = useState<any>({
+  const [vendor, setVendor] = useState<VendorProps>({
+    id: previousData?.id || '',
     name: previousData?.name || '',
     description: previousData?.description || '',
   })
 
-  const mutation = isCreateForm
-    ? client.useMutation('post', '/api/v1/vendors', {
-        onSuccess: () => {
-          setVendor({ name: '', description: '' })
-          onClose()
-        },
-      })
-    : client.useMutation('put', '/api/v1/vendors/{id}', {
-        params: {
-          path: {
-            id: vendor?.id || '',
-          },
-        },
-        onSuccess: () => {
-          setVendor({ name: '', description: '' })
-          onClose()
-        },
-      })
-
-  function handleCreateVendor() {
-    mutation.mutate({
-      body: {
-        name: vendor.name,
-        description: vendor.description,
-      },
-    })
-  }
-
-  function handleUpdateVendor() {
-    mutation.mutate({
-      body: {
-        name: vendor.name,
-        description: vendor.description,
-      },
-    })
-  }
-
   const onClose = () => {
-    navigate(`/vendors/${vendorId || ''}`, {
+    setVendor({ name: '', description: '' })
+
+    navigate(isCreateForm ? '/vendors' : `/vendors/${vendorId}`, {
       replace: true,
+      state: {
+        shouldRefetch: true,
+      },
     })
   }
+
+  const { mutateVendor, isPending, error } = useVendorMutation({
+    vendor,
+    onClose: onClose,
+    client,
+  })
 
   return (
     <Modal
@@ -111,9 +120,9 @@ export default function CreateEditVendor() {
           {isCreateForm ? 'Create Vendor' : 'Edit Vendor'}
         </ModalHeader>
         <ModalBody className="gap-4">
-          {mutation.isError ? (
+          {error ? (
             <div className="text-red-500">
-              Error: {mutation.error?.title || 'Failed to create vendor'}
+              Error: {error?.title || 'Failed to create vendor'}
             </div>
           ) : null}
 
@@ -143,11 +152,7 @@ export default function CreateEditVendor() {
           <Button variant="light" onPress={onClose}>
             Cancel
           </Button>
-          <Button
-            color="primary"
-            onPress={isCreateForm ? handleCreateVendor : handleUpdateVendor}
-            isLoading={mutation.isPending}
-          >
+          <Button color="primary" onPress={mutateVendor} isLoading={isPending}>
             {isCreateForm ? 'Create' : 'Save'}
           </Button>
         </ModalFooter>

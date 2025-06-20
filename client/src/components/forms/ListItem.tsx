@@ -60,13 +60,15 @@ export default function ListItem({
           >
             {title}
           </div>
-          <div className="text-sm text-default-500">- {description}</div>
+          {description && (
+            <div className="text-sm text-default-500">- {description}</div>
+          )}
         </div>
 
         <div className="invisible group-hover:visible">{actions}</div>
       </div>
 
-      <div className="pb-1">{chips}</div>
+      {chips && <div className="pb-1">{chips}</div>}
     </div>
   )
 }

@@ -2,12 +2,17 @@ import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import DataGrid from '@/components/forms/DataGrid'
 import PageContent from '@/components/forms/PageContent'
-import { AddProductButton } from '@/components/layout/product/CreateEditProduct'
+import {
+  AddProductButton,
+  ProductProps,
+} from '@/components/layout/product/CreateEditProduct'
 import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem } from '@heroui/react'
-import { useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
 import { ProductItem } from './Products'
+import { getVendors, VendorProps } from './Vendors'
 
 export function EmptyState({ add }: { add?: React.ReactNode }) {
   return (
@@ -24,35 +29,46 @@ export function EmptyState({ add }: { add?: React.ReactNode }) {
   )
 }
 
+export function getProducts(vendorId?: string, productId?: string) {
+  const request = productId
+    ? client.useQuery('get', '/api/v1/products/{id}', {
+        params: {
+          path: {
+            id: vendorId || '',
+            productId: productId || '',
+          },
+        },
+      })
+    : client.useQuery('get', '/api/v1/vendors/{id}/products', {
+        params: {
+          path: {
+            id: vendorId || '',
+          },
+        },
+      })
+
+  const location = useLocation()
+  useEffect(() => {
+    if (location.state && location.state.shouldRefetch) {
+      request.refetch()
+    }
+  }, [location])
+
+  return request
+}
+
 export default function Vendor({
   hideBreadcrumbs = false,
 }: {
   hideBreadcrumbs?: boolean
 }) {
   const { vendorId } = useParams()
+  const { data: vendor } = getVendors(vendorId) as {
+    data: VendorProps
+  }
 
-  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
-    params: {
-      path: {
-        id: vendorId || '',
-      },
-    },
-  })
-
-  const { data: products } = client.useQuery(
-    'get',
-    '/api/v1/vendors/{id}/products',
-    {
-      params: {
-        path: {
-          id: vendorId || '',
-        },
-      },
-    },
-  )
-
-  if (!vendor) {
-    return null
+  const { data: products } = getProducts(vendorId) as {
+    data: ProductProps[]
   }
 
   return (
@@ -66,9 +82,10 @@ export default function Vendor({
 
       <DataGrid
         title={`Products (${products?.length ?? 0})`}
-        addButton={<AddProductButton vendorId={vendor.id} />}
+        addButton={<AddProductButton vendorId={vendor?.id ?? ''} />}
       >
         {products &&
+          products.length > 0 &&
           products.map((product) => (
             <ProductItem key={product.id} product={product} />
           ))}

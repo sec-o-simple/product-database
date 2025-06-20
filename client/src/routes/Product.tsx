@@ -11,7 +11,35 @@ import useRouter from '@/utils/useRouter'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem, Chip } from '@heroui/react'
-import { useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
+
+export function getVersions(versionId?: string, productId?: string) {
+  const request = versionId
+    ? client.useQuery('get', '/api/v1/product-versions/{id}', {
+        params: {
+          path: {
+            id: versionId || '',
+          },
+        },
+      })
+    : client.useQuery('get', '/api/v1/products/{id}/versions', {
+        params: {
+          path: {
+            id: productId || '',
+          },
+        },
+      })
+
+  const location = useLocation()
+  useEffect(() => {
+    if (location.state && location.state.shouldRefetch) {
+      request.refetch()
+    }
+  }, [location])
+
+  return request
+}
 
 export function VersionItem({ version }: { version: any }) {
   const {
@@ -57,13 +85,13 @@ export function VersionItem({ version }: { version: any }) {
           </ConfirmButton>
         </div>
       }
-      chips={[
-        version.release_date && (
+      chips={
+        version.release_date && [
           <Chip key="version" variant="solid">
             {version.release_date}
-          </Chip>
-        ),
-      ]}
+          </Chip>,
+        ]
+      }
     />
   )
 }
@@ -124,11 +152,11 @@ export default function Product({
         title={`Versions (${versions?.length})`}
         addButton={<AddVersionButton productId={product.id} />}
       >
-        {versions && versions.length === 0
-          ? null
-          : versions?.map((version) => (
-              <VersionItem key={version.id} version={version} />
-            ))}
+        {versions &&
+          versions.length > 0 &&
+          versions?.map((version) => (
+            <VersionItem key={version.id} version={version} />
+          ))}
       </DataGrid>
     </PageContent>
   )

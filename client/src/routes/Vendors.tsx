@@ -1,10 +1,12 @@
 import client from '@/client'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import DataGrid, { FilterButton } from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
 import CreateEditVendor, {
   CreateVendorButton,
 } from '@/components/layout/vendor/CreateEditVendor'
+import useRouter from '@/utils/useRouter'
 import {
   faEdit,
   faSearch,
@@ -27,7 +29,8 @@ import {
   useDisclosure,
 } from '@heroui/react'
 import { cn } from '@heroui/theme'
-import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { DashboardTabs } from './Products'
 
 type EditPopoverProps = {
@@ -44,6 +47,31 @@ type WithoutDelete = {
   onDelete?: undefined
   confirmText?: undefined
   title?: undefined
+}
+
+export type VendorProps = {
+  id?: string
+  name: string
+  description: string
+  product_count?: number
+}
+
+export function getVendors(id?: string) {
+  const request = id
+    ? client.useQuery('get', '/api/v1/vendors/{id}', {
+        params: { path: { id } },
+      })
+    : client.useQuery('get', '/api/v1/vendors')
+
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.state && location.state.shouldRefetch) {
+      request.refetch()
+    }
+  }, [location])
+
+  return request
 }
 
 export function EditPopover(
@@ -117,41 +145,33 @@ export function EditPopover(
   )
 }
 
-export function VendorItem({
-  vendor,
-}: {
-  vendor: {
-    id: string
-    name: string
-    description?: string
-    product_count: number
-  }
-}) {
-  const navigate = useNavigate()
-  const handleOnActionClick = (href: string) => {
-    navigate(href, {
-      state: {
-        backgroundLocation: location,
-      },
-    })
-  }
+export function VendorItem({ vendor }: { vendor: VendorProps }) {
+  const { navigate, navigateToModal } = useRouter()
 
   return (
     <ListItem
       key={vendor.id}
       onClick={() => navigate(`/vendors/${vendor.id}`)}
       title={vendor.name}
-      description={vendor.description || 'No description'}
+      description={vendor.description}
       actions={
         <div className="flex flex-row gap">
           <IconButton
             icon={faEdit}
-            onPress={() => handleOnActionClick(`/vendors/${vendor.id}/edit`)}
+            onPress={() => navigateToModal(`/vendors/${vendor.id}/edit`)}
           />
-          <IconButton
-            icon={faTrash}
-            onPress={() => handleOnActionClick(`/vendors/${vendor.id}/delete`)}
-          />
+
+          <ConfirmButton
+            isIconOnly
+            variant="light"
+            className="text-neutral-foreground"
+            radius="full"
+            confirmTitle="Delete Vendor"
+            confirmText={`Are you sure you want to delete the vendor "${vendor.name}"? This action cannot be undone.`}
+            onConfirm={() => {}}
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </ConfirmButton>
         </div>
       }
       chips={
@@ -166,7 +186,9 @@ export function VendorItem({
 }
 
 export default function Vendors() {
-  const { data: vendors } = client.useQuery('get', '/api/v1/vendors')
+  const { data: vendors } = getVendors() as {
+    data: VendorProps[] | undefined
+  }
 
   return (
     <div className="flex grow flex-col items-center gap-4">
@@ -182,6 +204,7 @@ export default function Vendors() {
                 'h-full font-normal text-default-500 bg-white rounded-lg',
             }}
             placeholder="Type to search..."
+            disabled
             size="sm"
             startContent={<FontAwesomeIcon icon={faSearch} />}
             type="search"

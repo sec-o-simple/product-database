@@ -1,5 +1,6 @@
 import client from '@/client'
 import ConfirmButton from '@/components/forms/ConfirmButton'
+import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import { Input } from '@/components/forms/Input'
 import LatestChip from '@/components/forms/Latest'
@@ -78,8 +79,14 @@ export function ProductItem({ product }: { product: any }) {
           </ConfirmButton>
         </div>
       }
-      chips={product.type && <Chip radius="md">{product.type}</Chip>}
-      description={product.description || 'No description'}
+      chips={
+        product.type && (
+          <Chip radius="md" size="sm">
+            {product.type}
+          </Chip>
+        )
+      }
+      description={product.description}
     />
   )
 }
@@ -101,6 +108,7 @@ export default function Products() {
                 'h-full font-normal text-default-500 bg-white rounded-lg',
             }}
             placeholder="Type to search..."
+            disabled
             size="sm"
             startContent={<FontAwesomeIcon icon={faSearch} />}
             type="search"
@@ -109,9 +117,11 @@ export default function Products() {
         }
       />
 
-      {products?.map((product) => (
-        <ProductItem key={product.id} product={product} />
-      ))}
+      <DataGrid>
+        {products?.map((product) => (
+          <ProductItem key={product.id} product={product} />
+        ))}
+      </DataGrid>
 
       {/* <Pagination /> */}
     </div>

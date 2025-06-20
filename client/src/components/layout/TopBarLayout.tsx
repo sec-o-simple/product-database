@@ -8,6 +8,7 @@ import { Button } from '@heroui/button'
 import { Tooltip } from '@heroui/react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import IconButton from '../forms/IconButton'
+import { PageOutlet } from '../forms/PageContent'
 
 interface TopBarProps {
   title?: string | React.ReactNode
@@ -73,12 +74,12 @@ export function TopBar({
 
 export default function TopBarLayout() {
   return (
-    <div className="flex h-screen flex-col bg-[#F9FAFB]">
+    <div className="flex flex-col bg-[#F9FAFB]">
       <TopBar title="Product Database" navigateBack={false} />
 
-      <div className="p-4">
+      <PageOutlet>
         <Outlet />
-      </div>
+      </PageOutlet>
     </div>
   )
 }

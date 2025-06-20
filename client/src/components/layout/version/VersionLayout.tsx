@@ -1,6 +1,7 @@
 import client from '@/client'
 import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
+import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
 import {
   faArrowUpRightFromSquare,
@@ -62,7 +63,7 @@ export default function VersionLayout() {
         <AddRelationshipButton />
       </TopBar>
 
-      <div className="flex flex-row h-full">
+      <div className="flex flex-row flex-grow h-full">
         <Sidebar
           attributes={[
             <Attribute label="Version" value={version.name} />,
@@ -120,9 +121,9 @@ export default function VersionLayout() {
           }
         />
 
-        <div className="p-4 w-full overflow-scroll">
+        <PageOutlet>
           <Outlet />
-        </div>
+        </PageOutlet>
       </div>
     </PageContainer>
   )

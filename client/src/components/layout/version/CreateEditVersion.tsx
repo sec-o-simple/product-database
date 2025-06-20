@@ -1,5 +1,7 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
+import { getVersions } from '@/routes/Product'
+import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
@@ -14,11 +16,52 @@ import {
 import type { DateValue } from '@internationalized/date'
 import { parseDate } from '@internationalized/date'
 import { I18nProvider } from '@react-aria/i18n'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 interface CreateEditVersionProps {
   productId?: string
+}
+
+export type VersionProps = {
+  id?: string
+  name: string
+  releaseDate?: DateValue | null
+}
+
+export function useVersionMutation({
+  productId,
+  version,
+  onClose,
+  client,
+}: {
+  productId?: string
+  version: VersionProps
+  onClose: () => void
+  client: any
+}) {
+  const onSuccess = useCallback(() => {
+    onClose()
+  }, [onClose])
+
+  const mutation = version.id
+    ? client.useMutation('put', '/api/v1/product-versions/{id}', { onSuccess })
+    : client.useMutation('post', '/api/v1/product-versions', {
+        onSuccess,
+      })
+
+  const mutateVersion = useCallback(() => {
+    const body = {
+      product_id: productId || '',
+      version: version.name,
+      release_date: version.releaseDate?.toString() ?? undefined,
+    }
+
+    mutation.mutate(
+      version.id ? { body, params: { path: { id: version.id } } } : { body },
+    )
+  }, [mutation, productId, version])
+  return { mutateVersion, isPending: mutation.isPending, error: mutation.error }
 }
 
 export function AddVersionButton({ productId }: CreateEditVersionProps) {
@@ -43,82 +86,50 @@ export function AddVersionButton({ productId }: CreateEditVersionProps) {
 }
 
 export default function CreateEditVersion() {
-  const { productId, versionId } = useParams<{
-    productId: string
-    versionId?: string
-  }>()
-  const navigate = useNavigate()
-  const isCreateForm = !versionId
+  const { navigate } = useRouter()
+  const { productId, versionId } = useParams()
 
-  const { data: previousData } = client.useQuery(
-    'get',
-    `/api/v1/product-versions/{id}`,
-    {
-      params: {
-        path: {
-          id: versionId || '',
-        },
-      },
-    },
-  )
+  const { data: previousData } = getVersions(versionId, productId) as {
+    data: VersionProps
+  }
 
-  const [version, setVersion] = useState<{
-    name: string
-    releaseDate: DateValue | null | undefined
-  }>({
+  const [version, setVersion] = useState<VersionProps>({
     name: previousData?.name || '',
-    releaseDate: previousData?.release_date
-      ? parseDate(previousData.release_date)
+    releaseDate: previousData?.releaseDate
+      ? parseDate(previousData.releaseDate.toString())
       : null,
   })
 
-  const mutation = isCreateForm
-    ? client.useMutation('post', '/api/v1/product-versions', {
-        onSuccess: () => {
-          onClose()
-        },
-      })
-    : client.useMutation('post', '/api/v1/product-versions', {
-        onSuccess: () => {
-          onClose()
-        },
-      })
+  const onClose = (shouldRefetch?: boolean) => {
+    setVersion({ name: '', releaseDate: null })
 
-  function handleCreateVersion() {
-    mutation.mutate({
-      body: {
-        product_id: productId || '',
-        version: version.name,
-        // ToDo
-        release_date: version.releaseDate?.toString() ?? undefined,
-      },
+    navigate(`/products/${productId}`, {
+      replace: true,
+      state: { shouldRefetch: shouldRefetch ?? true },
     })
   }
 
-  function handleUpdateVersion() {
-    mutation.mutate({
-      body: {
-        product_id: productId || '',
-        version: version.name,
-        // ToDo
-        release_date: version.releaseDate?.toString() ?? undefined,
-      },
-    })
-  }
-
-  const onClose = () => navigate(-1)
+  const { mutateVersion, isPending, error } = useVersionMutation({
+    productId,
+    version: {
+      id: previousData?.id || versionId,
+      name: version.name,
+      releaseDate: version.releaseDate,
+    },
+    onClose: onClose,
+    client,
+  })
 
   return (
     <Modal isOpen onOpenChange={onClose} size="xl" isDismissable={false}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          Add New Version
+          {versionId ? 'Edit Version' : 'Create Version'}
         </ModalHeader>
         <ModalBody className="gap-4">
-          {mutation.error && (
+          {error && (
             <div className="text-red-500">
-              {mutation.error.title ||
-                'An error occurred while creating the product.'}
+              {error.title || 'An error occurred while creating the product.'}
             </div>
           )}
 
@@ -146,15 +157,11 @@ export default function CreateEditVersion() {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button variant="light" onPress={onClose}>
+          <Button variant="light" onPress={() => onClose(false)}>
             Cancel
           </Button>
-          <Button
-            color="primary"
-            onPress={isCreateForm ? handleCreateVersion : handleUpdateVersion}
-            isLoading={mutation.isPending}
-          >
-            {isCreateForm ? 'Create' : 'Save'}
+          <Button color="primary" onPress={mutateVersion} isLoading={isPending}>
+            {versionId ? 'Save' : 'Create'}
           </Button>
         </ModalFooter>
       </ModalContent>

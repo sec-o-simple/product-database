@@ -1,6 +1,7 @@
 import client from '@/client'
 import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
+import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
 import {
   HelperTypeProps,
@@ -105,7 +106,7 @@ export default function ProductLayout() {
         </div>
       </TopBar>
 
-      <div className="flex flex-row h-screen flex-grow overflow-scroll">
+      <div className="flex flex-row flex-grow overflow-scroll">
         <Sidebar
           attributes={[
             <Attribute label="Name" value={product.name} />,
@@ -146,9 +147,9 @@ export default function ProductLayout() {
             </div>
           }
         />
-        <div className="p-4 w-full overflow-scroll">
+        <PageOutlet>
           <Outlet />
-        </div>
+        </PageOutlet>
       </div>
     </PageContainer>
   )

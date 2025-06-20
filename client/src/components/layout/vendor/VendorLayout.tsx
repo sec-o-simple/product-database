@@ -1,6 +1,7 @@
 import client from '@/client'
 import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
+import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -28,7 +29,7 @@ export function Attribute({
       </div>
       <div
         className={cn(
-          'group bg-gray-50 border rounded-lg p-4 space-y-2',
+          'group bg-gray-50 border rounded-lg p-2 space-y-2',
           href ? 'cursor-pointer hover:bg-gray-200 hover:transition-all' : '',
         )}
         onClick={() => {
@@ -74,7 +75,7 @@ export default function VendorLayout() {
         <AddProductButton vendorId={vendor.id} />
       </TopBar>
 
-      <div className="flex flex-row h-screen flex-grow overflow-scroll">
+      <div className="flex flex-row flex-grow overflow-scroll">
         <Sidebar
           actions={
             <div className="flex flex-row gap-2">
@@ -111,9 +112,9 @@ export default function VendorLayout() {
           ]}
         />
 
-        <div className="p-4 flex-grow">
+        <PageOutlet>
           <Outlet />
-        </div>
+        </PageOutlet>
       </div>
     </PageContainer>
   )

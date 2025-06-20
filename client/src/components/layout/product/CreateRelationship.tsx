@@ -1,4 +1,7 @@
+import client from '@/client'
 import Select from '@/components/forms/Select'
+import { getVersions } from '@/routes/Product'
+import { getProducts } from '@/routes/Vendor'
 import useRouter from '@/utils/useRouter'
 import { faAdd, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -12,6 +15,8 @@ import {
 import { Button } from '@heroui/react'
 import { SelectItem } from '@heroui/select'
 import React, { useState } from 'react'
+import { VersionProps } from '../version/CreateEditVersion'
+import { ProductProps } from './CreateEditProduct'
 
 interface RelationShipProps {
   sourceProducts: string[]
@@ -21,21 +26,6 @@ interface RelationShipProps {
   relationshipType: string
   description: string
 }
-
-const versions = [
-  { id: '1', name: '1.0' },
-  { id: '2', name: '1.1' },
-  { id: '3', name: '1.2' },
-  { id: '4', name: '1.3' },
-  { id: '5', name: '2.0' },
-]
-
-const products = [
-  { id: '1', name: 'Product 1' },
-  { id: '2', name: 'Product 2' },
-  { id: '3', name: 'Product 3' },
-  { id: '4', name: 'Product 4' },
-]
 
 const relationshipTypes = [
   'Installed On',
@@ -95,17 +85,36 @@ export function AddRelationshipButton() {
 }
 
 export default function CreateRelationship() {
-  const { goBack } = useRouter()
-  console.log('CreateRelationship')
+  const {
+    goBack,
+    params: { versionId },
+  } = useRouter()
 
   const [selected, setSelected] = useState<RelationShipProps>({
-    sourceProducts: [],
+    sourceProducts: [versionId || ''],
     sourceVersions: [],
     targetProducts: [],
     targetVersions: [],
     relationshipType: '',
     description: '',
   })
+
+  const { data: products } = getProducts() as {
+    data: ProductProps[]
+  }
+
+  let versions = []
+  if (products && products.length > 0) {
+    for (const product of products) {
+      const { data: productVersions } = getVersions(versionId, product.id) as {
+        data: VersionProps[]
+      }
+
+      if (versions) {
+        versions.push(...(productVersions || []))
+      }
+    }
+  }
 
   const handleSelect = (key: React.ChangeEvent<HTMLSelectElement>) => {
     const value = key.target.value.split(',').filter((v) => v !== 'all')
@@ -142,6 +151,32 @@ export default function CreateRelationship() {
 
   const onClose = () => {
     goBack()
+  }
+
+  const mutation = client.useMutation('post', '/api/v1/products', {
+    onSuccess: onClose,
+  })
+
+  const handleCreateRelationship = () => {
+    const body = {
+      source_products: selected.sourceProducts,
+      source_versions: selected.sourceVersions,
+      target_products: selected.targetProducts,
+      target_versions: selected.targetVersions,
+      relationship_type: selected.relationshipType,
+      description: selected.description,
+      name: `${selected.sourceProducts.join(
+        ', ',
+      )} ${selected.sourceVersions.join(', ')} to ${selected.targetProducts.join(
+        ', ',
+      )} ${selected.targetVersions.join(', ')}`,
+      type: selected.relationshipType,
+      vendor_id: '1', // Assuming a vendor ID is required, replace with actual logic
+    }
+
+    mutation.mutate({
+      body: body,
+    })
   }
 
   return (
@@ -203,7 +238,7 @@ export default function CreateRelationship() {
               selectedKeys={selected.targetProducts}
             >
               <>
-                {products.map((product) => (
+                {products?.map((product) => (
                   <SelectItem key={product.id}>{product.name}</SelectItem>
                 ))}
               </>
@@ -270,7 +305,7 @@ export default function CreateRelationship() {
             <ProductBox
               products={selected.sourceProducts.map(
                 (product) =>
-                  products.find((p) => p.id === product)?.name as string,
+                  products?.find((p) => p.id === product)?.name as string,
               )}
               versions={selected.sourceVersions.map(
                 (version) =>
@@ -294,7 +329,7 @@ export default function CreateRelationship() {
             <ProductBox
               products={selected.targetProducts.map(
                 (product) =>
-                  products.find((p) => p.id === product)?.name as string,
+                  products?.find((p) => p.id === product)?.name as string,
               )}
               versions={selected.targetVersions.map(
                 (version) =>
@@ -307,7 +342,11 @@ export default function CreateRelationship() {
           <Button variant="light" onPress={onClose}>
             Cancel
           </Button>
-          <Button color="primary" onPress={onClose}>
+          <Button
+            color="primary"
+            onPress={handleCreateRelationship}
+            isLoading={mutation.isPending}
+          >
             Create
           </Button>
         </ModalFooter>

@@ -1,6 +1,8 @@
 import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
+import { getProducts } from '@/routes/Vendor'
+import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -12,11 +14,65 @@ import {
   ModalHeader,
   SelectItem,
 } from '@heroui/react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 interface CreateEditProductProps {
   vendorId: string
+}
+
+export type ProductProps = {
+  id?: string
+  name: string
+  description: string
+  type: string
+  vendor_id: string
+}
+
+export function useProductMutation({
+  vendorId,
+  product,
+  onClose,
+  client,
+}: {
+  vendorId: string
+  product: ProductProps
+  onClose: () => void
+  client: any
+}) {
+  const isCreateForm = !product.id
+
+  const onSuccess = () => {
+    onClose()
+  }
+
+  const mutation = isCreateForm
+    ? client.useMutation('post', '/api/v1/products', { onSuccess })
+    : client.useMutation('put', '/api/v1/products/{id}', {
+        params: { path: { id: product.id } },
+        onSuccess,
+      })
+
+  const mutateProduct = useCallback(() => {
+    const body = {
+      name: product.name,
+      description: product.description,
+      type: product.type,
+      vendor_id: vendorId,
+    }
+
+    mutation.mutate(
+      isCreateForm
+        ? { body }
+        : { body, params: { path: { id: product.vendor_id } } },
+    )
+  }, [mutation, product, vendorId])
+
+  return {
+    mutateProduct,
+    isPending: mutation.isPending,
+    error: mutation.error,
+  }
 }
 
 export function AddProductButton({ vendorId }: CreateEditProductProps) {
@@ -29,6 +85,7 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() => {
         navigate(`vendors/${vendorId}/products/create`, {
+          replace: true,
           state: {
             backgroundLocation: location,
           },
@@ -41,92 +98,43 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
 }
 
 export default function CreateEditProduct() {
-  const { vendorId, productId } = useParams<{
-    vendorId?: string
-    productId?: string
-  }>()
-  const navigate = useNavigate()
+  const { navigate } = useRouter()
+  const { vendorId, productId } = useParams()
   const isCreateForm = !productId
 
-  const { data: previousData } = client.useQuery(
-    'get',
-    '/api/v1/products/{id}',
-    {
-      params: {
-        path: {
-          id: productId || '',
-        },
-      },
-    },
-  )
+  const { data: previousData } = getProducts(productId) as {
+    data: ProductProps
+  }
 
-  const [product, setProduct] = useState<{
-    name: string
-    description: string
-    type: string
-    vendor_id: string
-  }>({
+  const [product, setProduct] = useState<ProductProps>({
     name: previousData?.name || '',
     description: previousData?.description || '',
     type: previousData?.type || 'software',
     vendor_id: vendorId || '',
   })
 
-  const mutation = isCreateForm
-    ? client.useMutation('post', '/api/v1/products', {
-        onSuccess: () => {
-          onClose()
-
-          navigate(0)
-        },
-      })
-    : client.useMutation('put', '/api/v1/products/{id}', {
-        params: {
-          path: {
-            id: product.vendor_id || '',
-          },
-        },
-        onSuccess: () => {
-          setProduct({
-            name: '',
-            description: '',
-            type: 'software',
-            vendor_id: vendorId || '',
-          })
-          onClose()
-        },
-      })
-
-  // We need a vendorId to create a product
-  if (!vendorId && isCreateForm) {
-    return null
-  }
-
-  function handleCreateProduct() {
-    mutation.mutate({
-      body: {
-        name,
-        description,
-        type,
-        vendor_id: vendorId ?? '',
-      },
-    })
-  }
-
-  function handleUpdateProduct() {
-    mutation.mutate({
-      body: {
-        name,
-        description,
-        type,
-        vendor_id: vendorId ?? '',
-      },
-    })
-  }
-
   const onClose = () => {
-    navigate(-1)
+    setProduct({
+      name: '',
+      description: '',
+      type: 'software',
+      vendor_id: vendorId || '',
+    })
+
+    navigate(`/vendors/${vendorId}`, {
+      replace: true,
+      state: {
+        shouldRefetch: true,
+      },
+    })
   }
+
+  const { mutateProduct, isPending, error } = useProductMutation({
+    vendorId: product.vendor_id,
+    product,
+    onClose: onClose,
+    client,
+  })
 
   return (
     <Modal
@@ -137,12 +145,13 @@ export default function CreateEditProduct() {
       isKeyboardDismissDisabled
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Add Product</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">
+          {isCreateForm ? 'Add New Product' : 'Edit Product'}
+        </ModalHeader>
         <ModalBody className="gap-4">
-          {mutation.error && (
+          {error && (
             <div className="text-red-500">
-              {mutation.error.title ||
-                'An error occurred while creating the product.'}
+              {error.title || 'An error occurred while creating the product.'}
             </div>
           )}
 
@@ -184,11 +193,7 @@ export default function CreateEditProduct() {
           <Button variant="light" onPress={onClose}>
             Cancel
           </Button>
-          <Button
-            color="primary"
-            onPress={isCreateForm ? handleCreateProduct : handleUpdateProduct}
-            isLoading={mutation.isPending}
-          >
+          <Button color="primary" onPress={mutateProduct} isLoading={isPending}>
             {isCreateForm ? 'Create' : 'Save'}
           </Button>
         </ModalFooter>
