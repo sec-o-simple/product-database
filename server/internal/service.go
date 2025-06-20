@@ -85,6 +85,55 @@ func (s *Service) GetVendorByID(ctx context.Context, id string) (VendorDTO, erro
 	}, nil
 }
 
+func (s *Service) UpdateVendor(ctx context.Context, id string, update UpdateVendorDTO) (VendorDTO, error) {
+	vendor, err := s.repo.GetNodeByID(ctx, id)
+	if err != nil || vendor.Category != Vendor {
+		return VendorDTO{}, fuego.BadRequestError{
+			Title: "Invalid vendor ID",
+		}
+	}
+
+	// Update only non-null fields
+	if update.Name != nil {
+		vendor.Name = *update.Name
+	}
+	if update.Description != nil {
+		vendor.Description = *update.Description
+	}
+
+	// Save the updated vendor
+	if err := s.repo.UpdateNode(ctx, vendor); err != nil {
+		return VendorDTO{}, fuego.InternalServerError{
+			Title: "Failed to update vendor",
+			Err:   err,
+		}
+	}
+
+	return VendorDTO{
+		ID:          vendor.ID,
+		Name:        vendor.Name,
+		Description: vendor.Description,
+	}, nil
+}
+
+func (s *Service) DeleteVendor(ctx context.Context, id string) error {
+	vendor, err := s.repo.GetNodeByID(ctx, id)
+	if err != nil || vendor.Category != Vendor {
+		return fuego.BadRequestError{
+			Title: "Invalid vendor ID",
+		}
+	}
+
+	if err := s.repo.DeleteNode(ctx, vendor.ID); err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to delete vendor",
+			Err:   err,
+		}
+	}
+
+	return nil
+}
+
 // Products
 
 func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (ProductDTO, error) {
@@ -119,6 +168,54 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 		Name:        createdNode.Name,
 		Description: createdNode.Description,
 	}, nil
+}
+
+func (s *Service) UpdateProduct(ctx context.Context, id string, update UpdateProductDTO) (ProductDTO, error) {
+	product, err := s.repo.GetNodeByID(ctx, id)
+	if err != nil || product.Category != ProductName {
+		return ProductDTO{}, fuego.BadRequestError{
+			Title: "Invalid product ID",
+		}
+	}
+
+	if update.Name != nil {
+		product.Name = *update.Name
+	}
+	if update.Description != nil {
+		product.Description = *update.Description
+	}
+
+	if err := s.repo.UpdateNode(ctx, product); err != nil {
+		return ProductDTO{}, fuego.InternalServerError{
+			Title: "Failed to update product",
+			Err:   err,
+		}
+	}
+
+	return ProductDTO{
+		ID:          product.ID,
+		VendorID:    product.ParentID,
+		Name:        product.Name,
+		Description: product.Description,
+	}, nil
+}
+
+func (s *Service) DeleteProduct(ctx context.Context, id string) error {
+	product, err := s.repo.GetNodeByID(ctx, id)
+	if err != nil || product.Category != ProductName {
+		return fuego.BadRequestError{
+			Title: "Invalid product ID",
+		}
+	}
+
+	if err := s.repo.DeleteNode(ctx, product.ID); err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to delete product",
+			Err:   err,
+		}
+	}
+
+	return nil
 }
 
 func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
@@ -210,6 +307,71 @@ func (s *Service) CreateProductVersion(ctx context.Context, version CreateProduc
 	}, nil
 }
 
+func (s *Service) UpdateProductVersion(ctx context.Context, id string, update UpdateProductVersionDTO) (ProductVersionDTO, error) {
+	version, err := s.repo.GetNodeByID(ctx, id)
+	if err != nil || version.Category != ProductVersion {
+		return ProductVersionDTO{}, fuego.BadRequestError{
+			Title: "Invalid product version ID",
+		}
+	}
+
+	if update.Version != nil {
+		version.Name = *update.Version
+	}
+
+	if update.PredecessorID != nil {
+		predecessor, err := s.repo.GetNodeByID(ctx, *update.PredecessorID)
+		if err != nil || predecessor.Category != ProductVersion {
+			return ProductVersionDTO{}, fuego.BadRequestError{
+				Title: "Invalid predecessor ID",
+			}
+		}
+		version.SuccessorID = &predecessor.ID
+	}
+
+	if update.ProductID != nil {
+		product, err := s.repo.GetNodeByID(ctx, *update.ProductID)
+		if err != nil || product.Category != ProductName {
+			return ProductVersionDTO{}, fuego.BadRequestError{
+				Title: "Invalid product ID",
+			}
+		}
+		version.ParentID = &product.ID
+	}
+
+	if err := s.repo.UpdateNode(ctx, version); err != nil {
+		return ProductVersionDTO{}, fuego.InternalServerError{
+			Title: "Failed to update product version",
+			Err:   err,
+		}
+	}
+
+	return ProductVersionDTO{
+		ID:          version.ID,
+		ProductID:   version.ParentID,
+		Name:        version.Name,
+		Description: version.Description,
+	}, nil
+}
+
+func (s *Service) DeleteProductVersion(ctx context.Context, id string) error {
+	version, err := s.repo.GetNodeByID(ctx, id)
+	if err != nil || version.Category != ProductVersion {
+		return fuego.BadRequestError{
+			Title: "Invalid product version ID",
+		}
+	}
+
+	if err := s.repo.DeleteNode(ctx, version.ID); err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to delete product version",
+			Err:   err,
+		}
+	}
+
+	return nil
+}
+
 func (s *Service) ListProductVersions(ctx context.Context, productID string) ([]ProductVersionDTO, error) {
 	product, err := s.repo.GetNodeByID(ctx, productID, WithChildren())
 
@@ -257,4 +419,226 @@ func (s *Service) GetProductVersionByID(ctx context.Context, id string) (Product
 		Name:        version.Name,
 		Description: version.Description,
 	}, nil
+}
+
+// Relationships
+
+func (s *Service) CreateRelationship(ctx context.Context, create CreateRelationshipDTO) (RelationshipDTO, error) {
+	// Validate source node exists and is a product version
+	sourceNode, err := s.repo.GetNodeByID(ctx, create.SourceNodeID)
+	if err != nil || sourceNode.Category != ProductVersion {
+		return RelationshipDTO{}, fuego.BadRequestError{
+			Title: "Invalid source node ID - must be a product version",
+		}
+	}
+
+	// Validate target node exists and is a product version
+	targetNode, err := s.repo.GetNodeByID(ctx, create.TargetNodeID)
+	if err != nil || targetNode.Category != ProductVersion {
+		return RelationshipDTO{}, fuego.BadRequestError{
+			Title: "Invalid target node ID - must be a product version",
+		}
+	}
+
+	// Create the relationship
+	relationship := Relationship{
+		ID:           uuid.New().String(),
+		Category:     RelationshipCategory(create.Category),
+		SourceNodeID: create.SourceNodeID,
+		SourceNode:   &sourceNode,
+		TargetNodeID: create.TargetNodeID,
+		TargetNode:   &targetNode,
+	}
+
+	createdRelationship, err := s.repo.CreateRelationship(ctx, relationship)
+	if err != nil {
+		return RelationshipDTO{}, fuego.InternalServerError{
+			Title: "Failed to create relationship",
+			Err:   err,
+		}
+	}
+
+	return RelationshipToDTO(createdRelationship), nil
+}
+
+func (s *Service) GetRelationshipByID(ctx context.Context, id string) (RelationshipDTO, error) {
+	relationship, err := s.repo.GetRelationshipByID(ctx, id)
+	if err != nil {
+		return RelationshipDTO{}, fuego.BadRequestError{
+			Title: "Invalid relationship ID",
+		}
+	}
+
+	sourceNode := relationship.SourceNode
+	targetNode := relationship.TargetNode
+
+	if sourceNode == nil || targetNode == nil {
+		return RelationshipDTO{}, fuego.InternalServerError{
+			Title: "Relationship source or target node not found",
+		}
+	}
+
+	return RelationshipToDTO(relationship), nil
+}
+
+func (s *Service) UpdateRelationship(ctx context.Context, id string, update UpdateRelationshipDTO) (RelationshipDTO, error) {
+	relationship, err := s.repo.GetRelationshipByID(ctx, id)
+
+	if err != nil {
+		return RelationshipDTO{}, fuego.BadRequestError{
+			Title: "Invalid relationship ID",
+		}
+	}
+
+	if update.Category != nil {
+		relationship.Category = RelationshipCategory(*update.Category)
+	}
+
+	if update.SourceNodeID != nil {
+		sourceNode, err := s.repo.GetNodeByID(ctx, *update.SourceNodeID)
+
+		if err != nil || sourceNode.Category != ProductVersion {
+			return RelationshipDTO{}, fuego.BadRequestError{
+				Title: "Invalid source node ID",
+			}
+		}
+
+		relationship.SourceNodeID = *update.SourceNodeID
+		relationship.SourceNode = &sourceNode
+	}
+
+	if update.TargetNodeID != nil {
+		targetNode, err := s.repo.GetNodeByID(ctx, *update.TargetNodeID)
+
+		if err != nil || targetNode.Category != ProductVersion {
+			return RelationshipDTO{}, fuego.BadRequestError{
+				Title: "Invalid target node ID",
+			}
+		}
+
+		relationship.TargetNodeID = *update.TargetNodeID
+		relationship.TargetNode = &targetNode
+	}
+
+	if err := s.repo.UpdateRelationship(ctx, relationship); err != nil {
+		return RelationshipDTO{}, fuego.InternalServerError{
+			Title: "Failed to update relationship",
+			Err:   err,
+		}
+	}
+
+	return RelationshipToDTO(relationship), nil
+}
+
+func (s *Service) DeleteRelationship(ctx context.Context, id string) error {
+	_, err := s.repo.GetRelationshipByID(ctx, id)
+	if err != nil {
+		return fuego.BadRequestError{
+			Title: "Invalid relationship ID",
+		}
+	}
+
+	if err := s.repo.DeleteRelationship(ctx, id); err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to delete relationship",
+			Err:   err,
+		}
+	}
+
+	return nil
+}
+
+// Identification Helpers
+
+func (s *Service) CreateIdentificationHelper(ctx context.Context, create CreateIdentificationHelperDTO) (IdentificationHelperDTO, error) {
+	node, err := s.repo.GetNodeByID(ctx, create.ProductVersionID)
+	if err != nil || node.Category != ProductVersion {
+		return IdentificationHelperDTO{}, fuego.BadRequestError{
+			Title: "Invalid product version ID",
+		}
+	}
+
+	helper := IdentificationHelper{
+		ID:       uuid.New().String(),
+		Category: IdentificationHelperCategory(create.Category),
+		Metadata: []byte(create.Metadata),
+		NodeID:   create.ProductVersionID,
+		Node:     &node,
+	}
+
+	createdHelper, err := s.repo.CreateIdentificationHelper(ctx, helper)
+	if err != nil {
+		return IdentificationHelperDTO{}, fuego.InternalServerError{
+			Title: "Failed to create identification helper",
+			Err:   err,
+		}
+	}
+
+	return IdentificationHelperToDTO(createdHelper), nil
+}
+
+func (s *Service) GetIdentificationHelperByID(ctx context.Context, id string) (IdentificationHelperDTO, error) {
+	helper, err := s.repo.GetIdentificationHelperByID(ctx, id)
+	if err != nil {
+		return IdentificationHelperDTO{}, fuego.BadRequestError{
+			Title: "Invalid identification helper ID",
+		}
+	}
+
+	return IdentificationHelperToDTO(helper), nil
+}
+
+func (s *Service) UpdateIdentificationHelper(ctx context.Context, id string, update UpdateIdentificationHelperDTO) (IdentificationHelperDTO, error) {
+	helper, err := s.repo.GetIdentificationHelperByID(ctx, id)
+	if err != nil {
+		return IdentificationHelperDTO{}, fuego.BadRequestError{
+			Title: "Invalid identification helper ID",
+		}
+	}
+
+	if update.ProductVersionID != "" {
+		node, err := s.repo.GetNodeByID(ctx, update.ProductVersionID)
+		if err != nil || node.Category != ProductVersion {
+			return IdentificationHelperDTO{}, fuego.BadRequestError{
+				Title: "Invalid product version ID",
+			}
+		}
+		helper.NodeID = update.ProductVersionID
+		helper.Node = &node
+	}
+
+	if update.Category != "" {
+		helper.Category = IdentificationHelperCategory(update.Category)
+	}
+
+	if update.Metadata != nil {
+		helper.Metadata = []byte(*update.Metadata)
+	}
+
+	if err := s.repo.UpdateIdentificationHelper(ctx, helper); err != nil {
+		return IdentificationHelperDTO{}, fuego.InternalServerError{
+			Title: "Failed to update identification helper",
+			Err:   err,
+		}
+	}
+
+	return IdentificationHelperToDTO(helper), nil
+}
+
+func (s *Service) DeleteIdentificationHelper(ctx context.Context, id string) error {
+	_, err := s.repo.GetIdentificationHelperByID(ctx, id)
+	if err != nil {
+		return fuego.BadRequestError{
+			Title: "Invalid identification helper ID",
+		}
+	}
+
+	if err := s.repo.DeleteIdentificationHelper(ctx, id); err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to delete identification helper",
+			Err:   err,
+		}
+	}
+
+	return nil
 }

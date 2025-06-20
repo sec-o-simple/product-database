@@ -68,24 +68,45 @@ type ProductVersionDTO struct {
 	PredecessorID *string `json:"predecessor_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
 }
 
+func NodeToProductVersionDTO(node Node) ProductVersionDTO {
+	return ProductVersionDTO{
+		ID:            node.ID,
+		ProductID:     node.ParentID,
+		Name:          node.Name,
+		FullName:      node.Name,
+		Description:   node.Description,
+		IsLatest:      false,
+		PredecessorID: nil,
+	}
+}
+
 // Relationships
 type CreateRelationshipDTO struct {
-	Category       string `json:"category" example:"default_component_of" validate:"required"`
-	SourceNodeID   string `json:"source_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
-	SourceNodeName string `json:"source_node_name" example:"Source Node Name" validate:"required"`
+	Category     string `json:"category" example:"default_component_of" validate:"required"`
+	SourceNodeID string `json:"source_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
+	TargetNodeID string `json:"target_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
 }
 
 type UpdateRelationshipDTO struct {
-	Category       *string `json:"category" example:"default_component_of"`
-	SourceNodeID   *string `json:"source_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
-	SourceNodeName *string `json:"source_node_name" example:"Source Node Name"`
+	Category     *string `json:"category" example:"default_component_of"`
+	SourceNodeID *string `json:"source_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
+	TargetNodeID *string `json:"target_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
 }
 
 type RelationshipDTO struct {
-	ID       string              `json:"id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required"`
-	Category string              `json:"category" example:"default_component_of" validate:"required"`
-	Source   ProductVersionDTO   `json:"source" validate:"required"`
-	Target   []ProductVersionDTO `json:"target" validate:"required,dive"`
+	ID       string            `json:"id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required"`
+	Category string            `json:"category" example:"default_component_of" validate:"required"`
+	Source   ProductVersionDTO `json:"source" validate:"required"`
+	Target   ProductVersionDTO `json:"target" validate:"required,dive"`
+}
+
+func RelationshipToDTO(relationship Relationship) RelationshipDTO {
+	return RelationshipDTO{
+		ID:       relationship.ID,
+		Category: string(relationship.Category),
+		Source:   NodeToProductVersionDTO(*relationship.SourceNode),
+		Target:   NodeToProductVersionDTO(*relationship.TargetNode),
+	}
 }
 
 type RelationshipGroupDTO struct {
@@ -127,4 +148,13 @@ type IdentificationHelperDTO struct {
 	Category         string `json:"category" example:"hashes" validate:"required"`
 	ProductVersionID string `json:"product_version_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
 	Metadata         string `json:"metadata" example:"{\"hash\":\"abc123\"}" validate:"required,json"` // JSON string
+}
+
+func IdentificationHelperToDTO(helper IdentificationHelper) IdentificationHelperDTO {
+	return IdentificationHelperDTO{
+		ID:               helper.ID,
+		Category:         string(helper.Category),
+		ProductVersionID: helper.NodeID,
+		Metadata:         string(helper.Metadata),
+	}
 }
