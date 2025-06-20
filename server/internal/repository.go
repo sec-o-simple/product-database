@@ -13,7 +13,8 @@ func NewRepository(db *gorm.DB) *repository {
 }
 
 type LoadOptions struct {
-	LoadChildren bool
+	LoadChildren      bool
+	LoadRelationships bool
 }
 
 type LoadOption func(*LoadOptions)
@@ -22,6 +23,36 @@ func WithChildren() LoadOption {
 	return func(o *LoadOptions) {
 		o.LoadChildren = true
 	}
+}
+
+func WithRelationships() LoadOption {
+	return func(o *LoadOptions) {
+		o.LoadRelationships = true
+	}
+}
+
+func (r *repository) GetNodeByID(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+	options := &LoadOptions{}
+	for _, opt := range opts {
+		opt(options)
+	}
+
+	query := r.db.WithContext(ctx).Where("id = ?", id)
+
+	if options.LoadChildren {
+		query = query.Preload("Children")
+	}
+	if options.LoadRelationships {
+		query = query.Preload("SourceRelationships")
+	}
+
+	var node Node
+	err := query.First(&node).Error
+	if err != nil {
+		return Node{}, err
+	}
+
+	return node, nil
 }
 
 func (r *repository) CreateNode(ctx context.Context, node Node) (Node, error) {
@@ -38,27 +69,6 @@ func (r *repository) GetNodesByCategory(ctx context.Context, category NodeCatego
 		return nil, err
 	}
 	return nodes, nil
-}
-
-func (r *repository) GetNodeByID(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
-	options := &LoadOptions{}
-	for _, opt := range opts {
-		opt(options)
-	}
-
-	query := r.db.WithContext(ctx).Where("id = ?", id)
-
-	if options.LoadChildren {
-		query = query.Preload("Children")
-	}
-
-	var node Node
-	err := query.First(&node).Error
-	if err != nil {
-		return Node{}, err
-	}
-
-	return node, nil
 }
 
 func (r *repository) UpdateNode(ctx context.Context, node Node) error {

@@ -1,15 +1,36 @@
 import client from '@/client'
-import ConfirmButton from '@/components/forms/ConfirmButton'
 import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import { Input } from '@/components/forms/Input'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
+import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
-import { faEdit, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Chip, Divider } from '@heroui/react'
 import { Tab, Tabs } from '@heroui/tabs'
+import { DeleteProduct } from './Product'
+
+export function useProductListQuery() {
+  const request = client.useQuery('get', '/api/v1/products')
+
+  useRefetchQuery(request)
+  return request
+}
+
+export function useVendorProductListQuery(vendorId: string) {
+  const request = client.useQuery('get', '/api/v1/vendors/{id}/products', {
+    params: {
+      path: {
+        id: vendorId || '',
+      },
+    },
+  })
+
+  useRefetchQuery(request)
+  return request
+}
 
 export function DashboardTabs({
   selectedKey,
@@ -66,17 +87,8 @@ export function ProductItem({ product }: { product: any }) {
             icon={faEdit}
             onPress={() => handleOnActionClick(`/products/${product.id}/edit`)}
           />
-          <ConfirmButton
-            isIconOnly
-            variant="light"
-            className="text-neutral-foreground"
-            radius="full"
-            confirmTitle="Delete Product"
-            confirmText="Are you sure you want to delete this product?"
-            onConfirm={() => {}}
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </ConfirmButton>
+
+          <DeleteProduct product={product} isIconButton />
         </div>
       }
       chips={

@@ -1,11 +1,10 @@
 import client from '@/client'
 import PageContent from '@/components/forms/PageContent'
-import { faAdd, faEllipsisV } from '@fortawesome/free-solid-svg-icons'
+import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Button, Popover, PopoverContent, PopoverTrigger } from '@heroui/react'
+import { Button } from '@heroui/react'
 import React from 'react'
 import { Navigate, useParams } from 'react-router-dom'
-import { EditPopover } from '../Vendors'
 
 const hashes = [
   {
@@ -48,24 +47,6 @@ function IdentificationItem() {
             <FontAwesomeIcon icon={faAdd} />
             Add New Item
           </Button>
-
-          {!edit && (
-            <Popover placement="bottom-end">
-              <PopoverTrigger>
-                <Button
-                  isIconOnly
-                  variant="light"
-                  className="rounded-full text-neutral-foreground"
-                >
-                  <FontAwesomeIcon icon={faEllipsisV} />
-                </Button>
-              </PopoverTrigger>
-
-              <PopoverContent className="p-0 rounded-medium">
-                <EditPopover />
-              </PopoverContent>
-            </Popover>
-          )}
         </div>
       </div>
 
@@ -74,25 +55,6 @@ function IdentificationItem() {
           <div className="flex flex-col bg-gray-50 border-1 border-gray-200 p-4 gap-2 rounded-md">
             <div className="flex justify-between items-center">
               <p className="text-gray-600">{hash.id}</p>
-
-              {!edit && (
-                <Popover placement="bottom-end">
-                  <PopoverTrigger>
-                    <Button
-                      size="sm"
-                      isIconOnly
-                      variant="light"
-                      className="rounded-full text-neutral-foreground"
-                    >
-                      <FontAwesomeIcon icon={faEllipsisV} />
-                    </Button>
-                  </PopoverTrigger>
-
-                  <PopoverContent className="p-0 rounded-medium">
-                    <EditPopover onEdit={() => {}} />
-                  </PopoverContent>
-                </Popover>
-              )}
             </div>
 
             <div className="space-y-2 p-4 bg-white rounded-md border border-gray-300">

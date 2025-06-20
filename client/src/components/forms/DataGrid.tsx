@@ -1,7 +1,7 @@
-import { EmptyState } from '@/routes/Vendor'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, ButtonProps } from '@heroui/button'
 import React from 'react'
+import { EmptyState } from '../table/EmptyState'
 
 export function Titlebar({ title }: { title: string }) {
   return (
@@ -45,7 +45,6 @@ export default function DataGrid({
         </div>
       )}
 
-      {/** Empty State */}
       {!children && <EmptyState add={addButton} />}
 
       <div className="flex flex-col w-full gap-2">{children}</div>

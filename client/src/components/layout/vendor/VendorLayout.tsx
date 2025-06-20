@@ -1,9 +1,7 @@
-import client from '@/client'
 import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
-import { DeleteVendor } from '@/routes/Vendor'
-import { getVendors, VendorProps } from '@/routes/Vendors'
+import { DeleteVendor, useVendorQuery } from '@/routes/Vendor'
 import useRouter from '@/utils/useRouter'
 import { Button } from '@heroui/button'
 import { cn } from '@heroui/theme'
@@ -53,11 +51,7 @@ export default function VendorLayout() {
   const { navigateToModal, navigate } = useRouter()
 
   const { vendorId } = useParams()
-  const { data: vendor } = getVendors(vendorId) as {
-    data: VendorProps
-  }
-
-  const mutation = client.useMutation('delete', '/api/v1/vendors/{id}')
+  const { data: vendor } = useVendorQuery(vendorId || '')
 
   if (!vendor) {
     navigate('/vendors')
@@ -71,7 +65,7 @@ export default function VendorLayout() {
         title={`Vendor: ${vendor.name}`}
         historyLink={`/vendors/${vendorId}/history`}
       >
-        <AddProductButton vendorId={vendor.id?.toString() ?? ''} />
+        <AddProductButton vendorId={vendor.id?.toString()} />
       </TopBar>
 
       <div className="flex flex-row flex-grow overflow-scroll">

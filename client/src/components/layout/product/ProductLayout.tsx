@@ -1,5 +1,4 @@
 import client from '@/client'
-import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
@@ -7,8 +6,8 @@ import {
   HelperTypeProps,
   idHelperTypes,
 } from '@/routes/IdentificationHelper/IdentificationOverview'
-import { getProducts } from '@/routes/Vendor'
-import { faAdd, faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { DeleteProduct, useProductQuery } from '@/routes/Product'
+import { faAdd, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import {
@@ -22,7 +21,6 @@ import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { AddVersionButton } from '../version/CreateEditVersion'
-import { ProductProps } from './CreateEditProduct'
 
 export function AddIdHelper({
   onAdd,
@@ -64,14 +62,11 @@ export function AddIdHelper({
 }
 
 export default function ProductLayout() {
-  const { productId, vendorId } = useParams()
+  const { productId } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { data: product } = getProducts(vendorId, productId) as {
-    data: ProductProps
-  }
-
+  const { data: product } = useProductQuery(productId || '')
   const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
     params: {
       path: {
@@ -112,6 +107,7 @@ export default function ProductLayout() {
               label="Description"
               value={product.description || '-/-'}
             />,
+            <Attribute label="Type" value={product.type || '-/-'} />,
             <Attribute
               label="Vendor"
               value={vendor?.name || '-/-'}
@@ -120,23 +116,18 @@ export default function ProductLayout() {
           ]}
           actions={
             <div className="flex flex-row gap-2">
-              <ConfirmButton
-                color="danger"
-                startContent={<FontAwesomeIcon icon={faTrash} />}
-                confirmText="Are you sure you want to delete this product?"
-                confirmTitle="Delete Product"
-                onConfirm={() => {}}
-              >
-                Delete
-              </ConfirmButton>
+              <DeleteProduct product={product} />
 
               <Button
                 variant="solid"
                 color="primary"
                 fullWidth
                 onPress={() =>
-                  navigate(`products/${productId}/edit`, {
-                    state: { backgroundLocation: location },
+                  navigate(`/products/${productId}/edit`, {
+                    state: {
+                      backgroundLocation: location,
+                      returnTo: `/products/${productId}`,
+                    },
                   })
                 }
               >

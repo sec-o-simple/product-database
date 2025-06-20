@@ -75,7 +75,7 @@ func (s *Service) GetVendorByID(ctx context.Context, id string) (VendorDTO, erro
 			VendorID:    product.ParentID,
 			Name:        product.Name,
 			Description: product.Description,
-			Type:        "software",
+			Type:        string(*product.ProductType),
 		}
 	}
 
@@ -232,7 +232,7 @@ func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
 			VendorID:    node.ParentID,
 			Name:        node.Name,
 			Description: node.Description,
-			Type:        "software",
+			Type:        string(*node.ProductType),
 		}
 	}
 
@@ -271,6 +271,7 @@ func (s *Service) GetProductByID(ctx context.Context, id string) (ProductDTO, er
 		VendorID:    product.ParentID,
 		Name:        product.Name,
 		Description: product.Description,
+		Type:        string(*product.ProductType),
 	}, nil
 }
 
@@ -424,6 +425,41 @@ func (s *Service) GetProductVersionByID(ctx context.Context, id string) (Product
 }
 
 // Relationships
+
+func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionID string) ([]RelationshipGroupDTO, error) {
+	version, err := s.repo.GetNodeByID(ctx, versionID, WithRelationships(), WithChildren())
+
+	if err != nil || version.Category != ProductVersion {
+		return nil, fuego.BadRequestError{
+			Title: "Invalid product version ID",
+		}
+	}
+
+	groups := make(map[string][]RelationshipGroupItemDTO)
+
+	for _, rel := range version.SourceRelationships {
+		item := RelationshipGroupItemDTO{
+			Product: NodeToProductDTO(*rel.TargetNode),
+			VersionRelationships: []ProductionVersionRelationshipDTO{
+				{
+					RelationshipID: rel.ID,
+					Version:        NodeToProductVersionDTO(*rel.TargetNode),
+				},
+			},
+		}
+		groups[string(rel.Category)] = append(groups[string(rel.Category)], item)
+	}
+
+	var result []RelationshipGroupDTO
+	for category, items := range groups {
+		result = append(result, RelationshipGroupDTO{
+			Category: category,
+			Products: items,
+		})
+	}
+
+	return result, nil
+}
 
 func (s *Service) CreateRelationship(ctx context.Context, create CreateRelationshipDTO) (RelationshipDTO, error) {
 	// Validate source node exists and is a product version

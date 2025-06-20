@@ -1,33 +1,9 @@
-import { EmptyState } from '@/routes/Vendor'
 import { faRefresh, faTimeline } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { Chip } from '@heroui/chip'
-import { format } from 'date-fns'
 import ListItem from '../forms/ListItem'
-
-const updates = [
-  {
-    id: '1',
-    title: 'Title updated',
-    description:
-      "Updated from: 'Microsoft Windows 10 Pro 64-bit' to 'Microsoft Windows 11 Pro 64-bit'",
-    date: format(new Date(), 'dd.MM.yyyy'),
-  },
-  {
-    id: '2',
-    title: 'New Version added',
-    description: 'Version: Microsoft Windows 11 Pro 64-bit',
-    date: format(new Date(), 'dd.MM.yyyy'),
-  },
-  {
-    id: '3',
-    title: 'Description updated',
-    description:
-      "Updated to: 'Not available' to 'Microsoft Windows 11 Pro 64-bit with all features'",
-    date: format(new Date(), 'dd.MM.yyyy'),
-  },
-]
+import { EmptyState } from '../table/EmptyState'
 
 export default function History({
   updates,

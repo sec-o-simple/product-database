@@ -6,7 +6,9 @@ import IconButton from '@/components/forms/IconButton'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import PageContent from '@/components/forms/PageContent'
+import { ProductProps } from '@/components/layout/product/CreateEditProduct'
 import { AddVersionButton } from '@/components/layout/version/CreateEditVersion'
+import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -14,22 +16,65 @@ import { BreadcrumbItem, Chip } from '@heroui/react'
 import { useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
-export function getVersions(versionId?: string, productId?: string) {
-  const request = versionId
-    ? client.useQuery('get', '/api/v1/product-versions/{id}', {
-        params: {
-          path: {
-            id: versionId || '',
+export function useProductQuery(productId: string) {
+  const request = client.useQuery('get', '/api/v1/products/{id}', {
+    params: {
+      path: {
+        id: productId || '',
+      },
+    },
+  })
+
+  useRefetchQuery(request)
+  return request
+}
+
+export function DeleteProduct({
+  product,
+  isIconButton,
+}: {
+  product: ProductProps
+  isIconButton?: boolean
+}) {
+  const mutation = client.useMutation('delete', '/api/v1/products/{id}')
+  const { navigate } = useRouter()
+
+  return (
+    <ConfirmButton
+      isIconOnly={isIconButton}
+      variant={isIconButton ? 'light' : 'solid'}
+      radius={isIconButton ? 'full' : 'md'}
+      color="danger"
+      confirmTitle="Delete Product"
+      confirmText={`Are you sure you want to delete the product "${product.name}"? This action cannot be undone.`}
+      onConfirm={() => {
+        mutation.mutate({
+          params: { path: { id: product.id?.toString() ?? '' } },
+        })
+
+        navigate(`/vendors/${product.vendor_id}`, {
+          state: {
+            shouldRefetch: true,
+            message: `Product "${product.name}" has been deleted successfully.`,
+            type: 'success',
           },
-        },
-      })
-    : client.useQuery('get', '/api/v1/products/{id}/versions', {
-        params: {
-          path: {
-            id: productId || '',
-          },
-        },
-      })
+        })
+      }}
+    >
+      <FontAwesomeIcon icon={faTrash} />
+      {!isIconButton && 'Delete'}
+    </ConfirmButton>
+  )
+}
+
+export function getVersions(productId?: string) {
+  const request = client.useQuery('get', '/api/v1/products/{id}/versions', {
+    params: {
+      path: {
+        id: productId || '',
+      },
+    },
+  })
 
   const location = useLocation()
   useEffect(() => {
@@ -38,6 +83,28 @@ export function getVersions(versionId?: string, productId?: string) {
     }
   }, [location])
 
+  return request
+}
+
+export function getVersion(versionId?: string): {
+  data: any
+  isLoading: boolean
+  refetch: () => void
+} {
+  const request = client.useQuery('get', '/api/v1/product-versions/{id}', {
+    params: {
+      path: {
+        id: versionId || '',
+      },
+    },
+  })
+
+  const location = useLocation()
+  useEffect(() => {
+    if (location.state && location.state.shouldRefetch) {
+      request.refetch()
+    }
+  }, [location])
   return request
 }
 

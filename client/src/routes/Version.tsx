@@ -1,9 +1,9 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import { AddRelationshipButton } from '@/components/layout/product/CreateRelationship'
+import { EmptyState } from '@/components/table/EmptyState'
 import { BreadcrumbItem } from '@heroui/react'
 import { useParams } from 'react-router-dom'
-import { EmptyState } from './Vendor'
 
 export default function Version({
   hideBreadcrumbs = false,
@@ -40,9 +40,17 @@ export default function Version({
     },
   )
 
-  if (!version) {
-    return null
-  }
+  const { data: relationships } = client.useQuery(
+    'get',
+    `/api/v1/product-versions/{id}/relationships`,
+    {
+      params: {
+        path: {
+          id: versionId || '',
+        },
+      },
+    },
+  )
 
   return (
     <div className="flex grow flex-col w-full gap-4 p-2">

@@ -1,7 +1,7 @@
 import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
-import { getProducts } from '@/routes/Vendor'
+import { useProductQuery } from '@/routes/Product'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -58,13 +58,11 @@ export function useProductMutation({
       name: product.name,
       description: product.description,
       type: product.type,
-      vendor_id: vendorId,
+      vendor_id: product.vendor_id,
     }
 
     mutation.mutate(
-      isCreateForm
-        ? { body }
-        : { body, params: { path: { id: product.vendor_id } } },
+      isCreateForm ? { body } : { body, params: { path: { id: product.id } } },
     )
   }, [mutation, product, vendorId])
 
@@ -84,7 +82,7 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() => {
-        navigate(`vendors/${vendorId}/products/create`, {
+        navigate(`/vendors/${vendorId}/products/create`, {
           replace: true,
           state: {
             backgroundLocation: location,
@@ -98,19 +96,18 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
 }
 
 export default function CreateEditProduct() {
-  const { navigate } = useRouter()
-  const { vendorId, productId } = useParams()
+  const { navigate, location } = useRouter()
+  const { productId, vendorId } = useParams()
   const isCreateForm = !productId
 
-  const { data: previousData } = getProducts(productId) as {
-    data: ProductProps
-  }
+  const { data: previousData } = useProductQuery(productId || '')
 
   const [product, setProduct] = useState<ProductProps>({
+    id: previousData?.id || '',
     name: previousData?.name || '',
     description: previousData?.description || '',
-    type: previousData?.type || 'software',
-    vendor_id: vendorId || '',
+    type: 'software',
+    vendor_id: previousData?.vendor_id || '',
   })
 
   const onClose = () => {
@@ -121,7 +118,7 @@ export default function CreateEditProduct() {
       vendor_id: vendorId || '',
     })
 
-    navigate(`/vendors/${vendorId}`, {
+    navigate(location.state.returnTo ?? `/products/${product.id}`, {
       replace: true,
       state: {
         shouldRefetch: true,
@@ -130,7 +127,7 @@ export default function CreateEditProduct() {
   }
 
   const { mutateProduct, isPending, error } = useProductMutation({
-    vendorId: product.vendor_id,
+    vendorId: vendorId || '',
     product,
     onClose: onClose,
     client,
@@ -159,7 +156,7 @@ export default function CreateEditProduct() {
             label="Type"
             placeholder="Select a type"
             className="w-full"
-            value={product.type}
+            selectedKeys={[product.type]}
             onChange={(e) => setProduct({ ...product, type: e.target.value })}
           >
             <SelectItem key="firmware">Firmware</SelectItem>

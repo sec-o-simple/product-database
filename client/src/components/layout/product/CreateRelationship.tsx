@@ -1,7 +1,7 @@
 import client from '@/client'
 import Select from '@/components/forms/Select'
 import { getVersions } from '@/routes/Product'
-import { getProducts } from '@/routes/Vendor'
+import { useProductListQuery } from '@/routes/Products'
 import useRouter from '@/utils/useRouter'
 import { faAdd, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -16,7 +16,6 @@ import { Button } from '@heroui/react'
 import { SelectItem } from '@heroui/select'
 import React, { useState } from 'react'
 import { VersionProps } from '../version/CreateEditVersion'
-import { ProductProps } from './CreateEditProduct'
 
 interface RelationShipProps {
   sourceProducts: string[]
@@ -99,14 +98,12 @@ export default function CreateRelationship() {
     description: '',
   })
 
-  const { data: products } = getProducts() as {
-    data: ProductProps[]
-  }
+  const { data: products } = useProductListQuery()
 
   let versions = []
   if (products && products.length > 0) {
     for (const product of products) {
-      const { data: productVersions } = getVersions(versionId, product.id) as {
+      const { data: productVersions } = getVersions(product.id) as {
         data: VersionProps[]
       }
 
@@ -153,29 +150,17 @@ export default function CreateRelationship() {
     goBack()
   }
 
-  const mutation = client.useMutation('post', '/api/v1/products', {
+  const mutation = client.useMutation('post', '/api/v1/relationships', {
     onSuccess: onClose,
   })
 
   const handleCreateRelationship = () => {
-    const body = {
-      source_products: selected.sourceProducts,
-      source_versions: selected.sourceVersions,
-      target_products: selected.targetProducts,
-      target_versions: selected.targetVersions,
-      relationship_type: selected.relationshipType,
-      description: selected.description,
-      name: `${selected.sourceProducts.join(
-        ', ',
-      )} ${selected.sourceVersions.join(', ')} to ${selected.targetProducts.join(
-        ', ',
-      )} ${selected.targetVersions.join(', ')}`,
-      type: selected.relationshipType,
-      vendor_id: '1', // Assuming a vendor ID is required, replace with actual logic
-    }
-
     mutation.mutate({
-      body: body,
+      body: {
+        category: 'installed_on',
+        source_node_id: selected.sourceProducts[0],
+        target_node_id: selected.targetVersions[0],
+      },
     })
   }
 

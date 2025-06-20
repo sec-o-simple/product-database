@@ -88,12 +88,12 @@ function App() {
             element={<CreateEditProduct />}
           />
           <Route
-            path="products/:productId/edit"
+            path="/products/:productId/edit"
             element={<CreateEditProduct />}
           />
 
           <Route
-            path="products/:productId/versions/create"
+            path="vendors/:vendorId/products/:productId/versions/create"
             element={<CreateEditVersion />}
           />
           <Route

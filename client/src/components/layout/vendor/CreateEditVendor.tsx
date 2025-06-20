@@ -1,6 +1,7 @@
 import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
-import { getVendors, VendorProps } from '@/routes/Vendors'
+import { useVendorQuery } from '@/routes/Vendor'
+import { VendorProps } from '@/routes/Vendors'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -81,9 +82,7 @@ export default function CreateEditVendor() {
   const { vendorId } = useParams()
   const isCreateForm = !vendorId
 
-  const { data: previousData } = getVendors(vendorId) as {
-    data: VendorProps
-  }
+  const { data: previousData } = useVendorQuery(vendorId || '')
 
   const [vendor, setVendor] = useState<VendorProps>({
     id: previousData?.id || '',
@@ -112,6 +111,7 @@ export default function CreateEditVendor() {
     <Modal
       isOpen
       onOpenChange={onClose}
+      size="lg"
       isDismissable={false}
       isKeyboardDismissDisabled
     >

@@ -2,22 +2,18 @@ import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import { Input } from '@/components/forms/Input'
 import PageContent from '@/components/forms/PageContent'
-import { faAdd, faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { EmptyState } from '@/components/table/EmptyState'
+import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import {
   Accordion,
   AccordionItem,
   BreadcrumbItem,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Tooltip,
 } from '@heroui/react'
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { EmptyState } from '../Vendor'
-import { EditPopover } from '../Vendors'
 import { AddIdHelper } from './AddIDHelper'
 
 interface IDTypeProps {
@@ -219,24 +215,6 @@ function IndentificationItem({
             </div>
           )}
         </div>
-
-        {!edit && (
-          <Popover placement="bottom-end">
-            <PopoverTrigger>
-              <Button
-                isIconOnly
-                variant="light"
-                className="rounded-full text-neutral-foreground"
-              >
-                <FontAwesomeIcon icon={faEllipsisV} />
-              </Button>
-            </PopoverTrigger>
-
-            <PopoverContent className="p-0 rounded-medium">
-              <EditPopover onEdit={() => setEdit(true)} />
-            </PopoverContent>
-          </Popover>
-        )}
       </div>
 
       {chips}

@@ -16,10 +16,11 @@ export default function useRouter() {
     }
   }
 
-  const navigateToModal = (href: string) => {
+  const navigateToModal = (href: string, returnTo?: string) => {
     navigate(href, {
       state: {
         backgroundLocation: location,
+        returnTo: returnTo || undefined,
       },
     })
   }

@@ -4,19 +4,12 @@ import {
   AddIdHelper,
   idHelperTypes,
 } from '@/components/layout/product/ProductLayout'
-import { faAdd, faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { EmptyState } from '@/components/table/EmptyState'
+import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
-import {
-  BreadcrumbItem,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Tooltip,
-} from '@heroui/react'
+import { BreadcrumbItem, Tooltip } from '@heroui/react'
 import React, { useState } from 'react'
-import { EmptyState } from './Vendor'
-import { EditPopover } from './Vendors'
 
 interface IDTypeProps {
   id: number
@@ -104,24 +97,6 @@ function IndentificationItem({
             </div>
           )}
         </div>
-
-        {!edit && (
-          <Popover placement="bottom-end">
-            <PopoverTrigger>
-              <Button
-                isIconOnly
-                variant="light"
-                className="rounded-full text-neutral-foreground"
-              >
-                <FontAwesomeIcon icon={faEllipsisV} />
-              </Button>
-            </PopoverTrigger>
-
-            <PopoverContent className="p-0 rounded-medium">
-              <EditPopover onDelete={onDelete} onEdit={() => setEdit(true)} />
-            </PopoverContent>
-          </Popover>
-        )}
       </div>
 
       {chips}

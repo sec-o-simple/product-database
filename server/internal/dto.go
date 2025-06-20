@@ -47,7 +47,7 @@ type ProductDTO struct {
 type CreateProductVersionDTO struct {
 	Version       string  `json:"version" example:"Version Name" validate:"required"`
 	ProductID     string  `json:"product_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
-	ReleaseDate   *string `json:"release_date" example:"2023-10-01" validate:"datetime=2006-01-02"`
+	ReleaseDate   *string `json:"release_date,omitempty" example:"2023-10-01" validate:"omitempty,datetime=2006-01-02"`
 	PredecessorID *string `json:"predecessor_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
 }
 
