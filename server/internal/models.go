@@ -67,11 +67,15 @@ type IdentificationHelper struct {
 	ID       string `gorm:"primaryKey"`
 	Category IdentificationHelperCategory
 	Metadata []byte `gorm:"serializer:json"`
+
+	NodeID string
+	Node   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func Models() []interface{} {
 	return []interface{}{
 		&Node{},
 		&Relationship{},
+		&IdentificationHelper{},
 	}
 }

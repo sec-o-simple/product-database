@@ -316,26 +316,26 @@ export default function IdentificationHelper({
                   className="border-dashed text-gray border-gray"
                   startContent={<FontAwesomeIcon icon={faAdd} />}
                   onPress={() => {
-                    setHelper((prev) =>
-                      prev.map((h, index) => {
-                        if (h.label === existingType.label) {
-                          return {
-                            ...h,
-                            items: [
-                              ...h.items,
-                              {
-                                id: index + 1,
-                                fields: existingType.fields.map((f) => ({
-                                  ...f,
-                                  value: '',
-                                })),
-                              },
-                            ],
-                          }
-                        }
-                        return h
-                      }),
-                    )
+                    // setHelper((prev) =>
+                    //   prev.map((h, index) => {
+                    //     if (h.label === existingType.label) {
+                    //       return {
+                    //         ...h,
+                    //         items: [
+                    //           ...h.items,
+                    //           {
+                    //             id: index + 1,
+                    //             fields: existingType.fields.map((f) => ({
+                    //               ...f,
+                    //               value: '',
+                    //             })),
+                    //           },
+                    //         ],
+                    //       }
+                    //     }
+                    //     return h
+                    //   }),
+                    // )
                   }}
                 >
                   Add {helper.label}

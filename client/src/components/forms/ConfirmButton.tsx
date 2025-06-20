@@ -41,7 +41,13 @@ export default function ConfirmButton({
                 <Button variant="light" onPress={onClose}>
                   Cancel
                 </Button>
-                <Button color="primary" onPress={onConfirm}>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    onConfirm()
+                    onClose()
+                  }}
+                >
                   Confirm
                 </Button>
               </ModalFooter>

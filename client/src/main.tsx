@@ -1,4 +1,4 @@
-import { HeroUIProvider } from '@heroui/react'
+import { HeroUIProvider, ToastProvider } from '@heroui/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import ReactDOM from 'react-dom/client'
@@ -21,6 +21,8 @@ root.render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <HeroUIProvider>
+        <ToastProvider />
+
         <Router>
           <App />
         </Router>

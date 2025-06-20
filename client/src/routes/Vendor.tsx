@@ -1,12 +1,14 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import DataGrid from '@/components/forms/DataGrid'
 import PageContent from '@/components/forms/PageContent'
 import {
   AddProductButton,
   ProductProps,
 } from '@/components/layout/product/CreateEditProduct'
-import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
+import useRouter from '@/utils/useRouter'
+import { faFolderOpen, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem } from '@heroui/react'
 import { useEffect } from 'react'
@@ -34,8 +36,7 @@ export function getProducts(vendorId?: string, productId?: string) {
     ? client.useQuery('get', '/api/v1/products/{id}', {
         params: {
           path: {
-            id: vendorId || '',
-            productId: productId || '',
+            id: productId || '',
           },
         },
       })
@@ -55,6 +56,44 @@ export function getProducts(vendorId?: string, productId?: string) {
   }, [location])
 
   return request
+}
+
+export function DeleteVendor({
+  vendor,
+  isIconButton,
+}: {
+  vendor: VendorProps
+  isIconButton?: boolean
+}) {
+  const mutation = client.useMutation('delete', '/api/v1/vendors/{id}')
+  const { navigate } = useRouter()
+
+  return (
+    <ConfirmButton
+      isIconOnly={isIconButton}
+      variant={isIconButton ? 'light' : 'solid'}
+      radius={isIconButton ? 'full' : 'md'}
+      color="danger"
+      confirmTitle="Delete Vendor"
+      confirmText={`Are you sure you want to delete the vendor "${vendor.name}"? This action cannot be undone.`}
+      onConfirm={() => {
+        mutation.mutate({
+          params: { path: { id: vendor.id?.toString() ?? '' } },
+        })
+
+        navigate('/vendors', {
+          state: {
+            shouldRefetch: true,
+            message: `Vendor "${vendor.name}" has been deleted successfully.`,
+            type: 'success',
+          },
+        })
+      }}
+    >
+      <FontAwesomeIcon icon={faTrash} />
+      {!isIconButton && 'Delete'}
+    </ConfirmButton>
+  )
 }
 
 export default function Vendor({

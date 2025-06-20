@@ -4,693 +4,683 @@
  */
 
 export interface paths {
-  '/api/v1/health': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * func1
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.RegisterRoutes.func1`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/health']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/identification-helper': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * create identification helper
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).CreateIdentificationHelper`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    post: operations['POST_/api/v1/identification-helper']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/identification-helper/{id}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * get identification helper
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).GetIdentificationHelper`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/identification-helper/:id']
-    /**
-     * update identification helper
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).UpdateIdentificationHelper`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    put: operations['PUT_/api/v1/identification-helper/:id']
-    post?: never
-    /**
-     * delete identification helper
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).DeleteIdentificationHelper`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    delete: operations['DELETE_/api/v1/identification-helper/:id']
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/product-versions': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * create product version
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).CreateProductVersion`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    post: operations['POST_/api/v1/product-versions']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/product-versions/{id}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * get product version
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).GetProductVersion`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/product-versions/:id']
-    /**
-     * update product version
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).UpdateProductVersion`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    put: operations['PUT_/api/v1/product-versions/:id']
-    post?: never
-    /**
-     * delete product version
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).DeleteProductVersion`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    delete: operations['DELETE_/api/v1/product-versions/:id']
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/product-versions/{id}/identification-helpers': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * list identification helpers by product version
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).ListIdentificationHelpersByProductVersion`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/product-versions/:id/identification-helpers']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/product-versions/{id}/relationships': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * list relationships by product version
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).ListRelationshipsByProductVersion`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/product-versions/:id/relationships']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/products': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * list products
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).ListProducts`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/products']
-    put?: never
-    /**
-     * create product
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).CreateProduct`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    post: operations['POST_/api/v1/products']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/products/{id}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * get product
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).GetProduct`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/products/:id']
-    /**
-     * update product
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).UpdateProduct`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    put: operations['PUT_/api/v1/products/:id']
-    post?: never
-    /**
-     * delete product
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).DeleteProduct`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    delete: operations['DELETE_/api/v1/products/:id']
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/products/{id}/versions': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * list product versions
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).ListProductVersions`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/products/:id/versions']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/relationships': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get?: never
-    put?: never
-    /**
-     * create relationship
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).CreateRelationship`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    post: operations['POST_/api/v1/relationships']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/relationships/{id}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * get relationship
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).GetRelationship`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/relationships/:id']
-    /**
-     * update relationship
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).UpdateRelationship`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    put: operations['PUT_/api/v1/relationships/:id']
-    post?: never
-    /**
-     * delete relationship
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).DeleteRelationship`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    delete: operations['DELETE_/api/v1/relationships/:id']
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/vendors': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * list vendors
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).ListVendors`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/vendors']
-    put?: never
-    /**
-     * create vendor
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).CreateVendor`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    post: operations['POST_/api/v1/vendors']
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/vendors/{id}': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * get vendor
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).GetVendor`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/vendors/:id']
-    /**
-     * update vendor
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).UpdateVendor`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    put: operations['PUT_/api/v1/vendors/:id']
-    post?: never
-    /**
-     * delete vendor
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).DeleteVendor`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    delete: operations['DELETE_/api/v1/vendors/:id']
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  '/api/v1/vendors/{id}/products': {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    /**
-     * list vendor products
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).ListVendorProducts`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *
-     */
-    get: operations['GET_/api/v1/vendors/:id/products']
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
+    "/api/v1/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * func1
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.RegisterRoutes.func1`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *
+         */
+        get: operations["GET_/api/v1/health"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/identification-helper": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Identification helper operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).CreateIdentificationHelper`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing identification helpers
+         */
+        post: operations["POST_/api/v1/identification-helper"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/identification-helper/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Identification helper operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).GetIdentificationHelper`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing identification helpers
+         */
+        get: operations["GET_/api/v1/identification-helper/:id"];
+        /**
+         * Identification helper operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateIdentificationHelper`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing identification helpers
+         */
+        put: operations["PUT_/api/v1/identification-helper/:id"];
+        post?: never;
+        /**
+         * Identification helper operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteIdentificationHelper`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing identification helpers
+         */
+        delete: operations["DELETE_/api/v1/identification-helper/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Product version operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).CreateProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing product versions
+         */
+        post: operations["POST_/api/v1/product-versions"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-versions/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Product version operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).GetProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing product versions
+         */
+        get: operations["GET_/api/v1/product-versions/:id"];
+        /**
+         * Product version operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing product versions
+         */
+        put: operations["PUT_/api/v1/product-versions/:id"];
+        post?: never;
+        /**
+         * Product version operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing product versions
+         */
+        delete: operations["DELETE_/api/v1/product-versions/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-versions/{id}/identification-helpers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Product version operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListIdentificationHelpersByProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing product versions
+         */
+        get: operations["GET_/api/v1/product-versions/:id/identification-helpers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-versions/{id}/relationships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Product version operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListRelationshipsByProductVersion`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing product versions
+         */
+        get: operations["GET_/api/v1/product-versions/:id/relationships"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Product operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListProducts`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing products
+         */
+        get: operations["GET_/api/v1/products"];
+        put?: never;
+        /**
+         * Product operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).CreateProduct`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing products
+         */
+        post: operations["POST_/api/v1/products"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Product operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).GetProduct`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing products
+         */
+        get: operations["GET_/api/v1/products/:id"];
+        /**
+         * Product operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateProduct`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing products
+         */
+        put: operations["PUT_/api/v1/products/:id"];
+        post?: never;
+        /**
+         * Product operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteProduct`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing products
+         */
+        delete: operations["DELETE_/api/v1/products/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{id}/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Product operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListProductVersions`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing products
+         */
+        get: operations["GET_/api/v1/products/:id/versions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/relationships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Relationship operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).CreateRelationship`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing relationships
+         */
+        post: operations["POST_/api/v1/relationships"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/relationships/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Relationship operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).GetRelationship`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing relationships
+         */
+        get: operations["GET_/api/v1/relationships/:id"];
+        /**
+         * Relationship operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateRelationship`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing relationships
+         */
+        put: operations["PUT_/api/v1/relationships/:id"];
+        post?: never;
+        /**
+         * Relationship operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteRelationship`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing relationships
+         */
+        delete: operations["DELETE_/api/v1/relationships/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vendors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vendor operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListVendors`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing vendors
+         */
+        get: operations["GET_/api/v1/vendors"];
+        put?: never;
+        /**
+         * Vendor operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).CreateVendor`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing vendors
+         */
+        post: operations["POST_/api/v1/vendors"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vendors/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vendor operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).GetVendor`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing vendors
+         */
+        get: operations["GET_/api/v1/vendors/:id"];
+        /**
+         * Vendor operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateVendor`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing vendors
+         */
+        put: operations["PUT_/api/v1/vendors/:id"];
+        post?: never;
+        /**
+         * Vendor operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteVendor`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing vendors
+         */
+        delete: operations["DELETE_/api/v1/vendors/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vendors/{id}/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vendor operations
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListVendorProducts`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Operations for managing vendors
+         */
+        get: operations["GET_/api/v1/vendors/:id/products"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>
 export interface components {
-  schemas: {
-    /** @description CreateIdentificationHelperDTO schema */
-    CreateIdentificationHelperDTO: {
-      /** @example hashes */
-      category: string
-      /** @example {"hash":"abc123"} */
-      metadata: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      product_version_id: string
-    }
-    /** @description CreateProductDTO schema */
-    CreateProductDTO: {
-      /** @example Product Description */
-      description?: string
-      /** @example Product Name */
-      name: string
-      /** @example software */
-      type: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      vendor_id: string
-    }
-    /** @description CreateProductVersionDTO schema */
-    CreateProductVersionDTO: {
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      predecessor_id?: string | null
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      product_id: string
-      /**
-       * @description string schema
-       * @example 2023-10-01
-       */
-      release_date?: string
-      /** @example Version Name */
-      version: string
-    }
-    /** @description CreateRelationshipDTO schema */
-    CreateRelationshipDTO: {
-      /** @example default_component_of */
-      category: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      source_node_id: string
-      /** @example Source Node Name */
-      source_node_name: string
-    }
-    /** @description CreateVendorDTO schema */
-    CreateVendorDTO: {
-      /** @example Vendor Description */
-      description?: string
-      /** @example Vendor Name */
-      name: string
-    }
-    /** @description HTTPError schema */
-    HTTPError: {
-      /** @description Human readable error message */
-      detail?: string | null
-      errors?:
-        | {
-            /** @description Additional information about the error */
-            more?: {
-              [key: string]: unknown
-            } | null
-            /** @description For example, name of the parameter that caused the error */
-            name?: string
+    schemas: {
+        /** @description CreateIdentificationHelperDTO schema */
+        CreateIdentificationHelperDTO: {
+            /** @example hashes */
+            category: string;
+            /** @example {"hash":"abc123"} */
+            metadata: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_version_id: string;
+        };
+        /** @description CreateProductDTO schema */
+        CreateProductDTO: {
+            /** @example Product Description */
+            description?: string;
+            /** @example Product Name */
+            name: string;
+            /** @example software */
+            type: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            vendor_id: string;
+        };
+        /** @description CreateProductVersionDTO schema */
+        CreateProductVersionDTO: {
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            predecessor_id?: string | null;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_id: string;
+            /**
+             * @description string schema
+             * @example 2023-10-01
+             */
+            release_date?: string;
+            /** @example Version Name */
+            version: string;
+        };
+        /** @description CreateRelationshipDTO schema */
+        CreateRelationshipDTO: {
+            /** @example default_component_of */
+            category: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            source_node_id: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            target_node_id: string;
+        };
+        /** @description CreateVendorDTO schema */
+        CreateVendorDTO: {
+            /** @example Vendor Description */
+            description?: string;
+            /** @example Vendor Name */
+            name: string;
+        };
+        /** @description HTTPError schema */
+        HTTPError: {
             /** @description Human readable error message */
             reason?: string
           }[]
@@ -894,11 +884,153 @@ export interface components {
             /** @example Product Name - Version Name */
             full_name: string
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
-            id: string
-            /** @example true */
-            is_latest: boolean
-            /** @example Version Name */
-            name: string
+            id: string;
+            source: {
+                /** @example Version Description */
+                description?: string;
+                /** @example Product Name - Version Name */
+                full_name: string;
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                id: string;
+                /** @example true */
+                is_latest: boolean;
+                /** @example Version Name */
+                name: string;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                predecessor_id?: string | null;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                product_id?: string;
+            };
+            target: {
+                /** @example Version Description */
+                description?: string;
+                /** @example Product Name - Version Name */
+                full_name: string;
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                id: string;
+                /** @example true */
+                is_latest: boolean;
+                /** @example Version Name */
+                name: string;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                predecessor_id?: string | null;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                product_id?: string;
+            };
+        };
+        /** @description RelationshipGroupDTO schema */
+        RelationshipGroupDTO: {
+            /** @example default_component_of */
+            category: string;
+            products: {
+                product: {
+                    /** @example Product Description */
+                    description?: string;
+                    /** @example Vendor Name - Product Name */
+                    full_name: string;
+                    /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                    id: string;
+                    latest_versions?: {
+                        /** @example Version Description */
+                        description?: string;
+                        /** @example Product Name - Version Name */
+                        full_name: string;
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                        id: string;
+                        /** @example true */
+                        is_latest: boolean;
+                        /** @example Version Name */
+                        name: string;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        predecessor_id?: string | null;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        product_id?: string;
+                    }[];
+                    /** @example Product Name */
+                    name: string;
+                    /** @example software */
+                    type: string;
+                    /**
+                     * @description string schema
+                     * @example 123e4567-e89b-12d3-a456-426614174000
+                     */
+                    vendor_id?: string;
+                };
+                version_relationships: {
+                    /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                    id: string;
+                    version: {
+                        /** @example Version Description */
+                        description?: string;
+                        /** @example Product Name - Version Name */
+                        full_name: string;
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                        id: string;
+                        /** @example true */
+                        is_latest: boolean;
+                        /** @example Version Name */
+                        name: string;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        predecessor_id?: string | null;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        product_id?: string;
+                    };
+                }[];
+            }[];
+        };
+        /** @description UpdateIdentificationHelperDTO schema */
+        UpdateIdentificationHelperDTO: {
+            /** @example hashes */
+            category?: string;
+            /**
+             * @description string schema
+             * @example {"key":"value"}
+             */
+            metadata?: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_version_id?: string;
+        };
+        /** @description UpdateProductDTO schema */
+        UpdateProductDTO: {
+            /**
+             * @description string schema
+             * @example Product Description
+             */
+            description?: string;
+            /**
+             * @description string schema
+             * @example Product Name
+             */
+            name?: string;
+            /**
+             * @description string schema
+             * @example software
+             */
+            type?: string;
             /**
              * @description string schema
              * @example 123e4567-e89b-12d3-a456-426614174000
@@ -908,121 +1040,75 @@ export interface components {
              * @description string schema
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
-            product_id?: string
-          }
-        }[]
-      }[]
-    }
-    /** @description UpdateIdentificationHelperDTO schema */
-    UpdateIdentificationHelperDTO: {
-      /** @example hashes */
-      category?: string
-      /**
-       * @description string schema
-       * @example {"key":"value"}
-       */
-      metadata?: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      product_version_id?: string
-    }
-    /** @description UpdateProductDTO schema */
-    UpdateProductDTO: {
-      /**
-       * @description string schema
-       * @example Product Description
-       */
-      description?: string
-      /**
-       * @description string schema
-       * @example Product Name
-       */
-      name?: string
-      /**
-       * @description string schema
-       * @example software
-       */
-      type?: string
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      vendor_id?: string
-    }
-    /** @description UpdateProductVersionDTO schema */
-    UpdateProductVersionDTO: {
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      predecessor_id?: string | null
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      product_id?: string
-      /**
-       * @description string schema
-       * @example 2023-10-01
-       */
-      release_date?: string
-      /**
-       * @description string schema
-       * @example Version Name
-       */
-      version?: string
-    }
-    /** @description UpdateRelationshipDTO schema */
-    UpdateRelationshipDTO: {
-      /**
-       * @description string schema
-       * @example default_component_of
-       */
-      category?: string
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      source_node_id?: string
-      /**
-       * @description string schema
-       * @example Source Node Name
-       */
-      source_node_name?: string
-    }
-    /** @description UpdateVendorDTO schema */
-    UpdateVendorDTO: {
-      /**
-       * @description string schema
-       * @example Vendor Description
-       */
-      description?: string
-      /**
-       * @description string schema
-       * @example Vendor Name
-       */
-      name?: string
-    }
-    /** @description VendorDTO schema */
-    VendorDTO: {
-      /** @example Vendor Description */
-      description: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      id: string
-      /** @example Vendor Name */
-      name: string
-      /** @example 10 */
-      product_count: number
-    }
-    /** @description string schema */
-    string: string
-    /** @description unknown-interface schema */
-    'unknown-interface': unknown
-  }
-  responses: never
-  parameters: never
-  requestBodies: never
-  headers: never
-  pathItems: never
+            predecessor_id?: string | null;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            product_id?: string;
+            /**
+             * @description string schema
+             * @example 2023-10-01
+             */
+            release_date?: string;
+            /**
+             * @description string schema
+             * @example Version Name
+             */
+            version?: string;
+        };
+        /** @description UpdateRelationshipDTO schema */
+        UpdateRelationshipDTO: {
+            /**
+             * @description string schema
+             * @example default_component_of
+             */
+            category?: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            source_node_id?: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            target_node_id?: string;
+        };
+        /** @description UpdateVendorDTO schema */
+        UpdateVendorDTO: {
+            /**
+             * @description string schema
+             * @example Vendor Description
+             */
+            description?: string;
+            /**
+             * @description string schema
+             * @example Vendor Name
+             */
+            name?: string;
+        };
+        /** @description VendorDTO schema */
+        VendorDTO: {
+            /** @example Vendor Description */
+            description: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            id: string;
+            /** @example Vendor Name */
+            name: string;
+            /** @example 10 */
+            product_count: number;
+        };
+        /** @description string schema */
+        string: string;
+        /** @description unknown-interface schema */
+        "unknown-interface": unknown;
+    };
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>
 export interface operations {

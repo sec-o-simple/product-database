@@ -7,6 +7,7 @@ import {
   HelperTypeProps,
   idHelperTypes,
 } from '@/routes/IdentificationHelper/IdentificationOverview'
+import { getProducts } from '@/routes/Vendor'
 import { faAdd, faFileExport, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
@@ -21,6 +22,7 @@ import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { AddVersionButton } from '../version/CreateEditVersion'
+import { ProductProps } from './CreateEditProduct'
 
 export function AddIdHelper({
   onAdd,
@@ -62,17 +64,13 @@ export function AddIdHelper({
 }
 
 export default function ProductLayout() {
-  const { productId } = useParams()
+  const { productId, vendorId } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
-    params: {
-      path: {
-        id: productId || '',
-      },
-    },
-  })
+  const { data: product } = getProducts(vendorId, productId) as {
+    data: ProductProps
+  }
 
   const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
     params: {

@@ -1,5 +1,4 @@
 import client from '@/client'
-import ConfirmButton from '@/components/forms/ConfirmButton'
 import DataGrid, { FilterButton } from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
@@ -32,6 +31,7 @@ import { cn } from '@heroui/theme'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { DashboardTabs } from './Products'
+import { DeleteVendor } from './Vendor'
 
 type EditPopoverProps = {
   onEdit?: () => void
@@ -56,15 +56,18 @@ export type VendorProps = {
   product_count?: number
 }
 
-export function getVendors(id?: string) {
-  const request = id
+export function getVendors(vendorId?: string) {
+  const request = vendorId
     ? client.useQuery('get', '/api/v1/vendors/{id}', {
-        params: { path: { id } },
+        params: {
+          path: {
+            id: vendorId || '',
+          },
+        },
       })
     : client.useQuery('get', '/api/v1/vendors')
 
   const location = useLocation()
-
   useEffect(() => {
     if (location.state && location.state.shouldRefetch) {
       request.refetch()
@@ -161,17 +164,7 @@ export function VendorItem({ vendor }: { vendor: VendorProps }) {
             onPress={() => navigateToModal(`/vendors/${vendor.id}/edit`)}
           />
 
-          <ConfirmButton
-            isIconOnly
-            variant="light"
-            className="text-neutral-foreground"
-            radius="full"
-            confirmTitle="Delete Vendor"
-            confirmText={`Are you sure you want to delete the vendor "${vendor.name}"? This action cannot be undone.`}
-            onConfirm={() => {}}
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </ConfirmButton>
+          <DeleteVendor vendor={vendor} isIconButton />
         </div>
       }
       chips={

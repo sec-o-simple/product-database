@@ -1,13 +1,13 @@
 import client from '@/client'
-import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { DeleteVendor } from '@/routes/Vendor'
+import { getVendors, VendorProps } from '@/routes/Vendors'
+import useRouter from '@/utils/useRouter'
 import { Button } from '@heroui/button'
 import { cn } from '@heroui/theme'
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { AddProductButton } from '../product/CreateEditProduct'
 
@@ -50,19 +50,18 @@ export function Attribute({
 }
 
 export default function VendorLayout() {
-  const { vendorId } = useParams()
-  const location = useLocation()
-  const navigate = useNavigate()
+  const { navigateToModal, navigate } = useRouter()
 
-  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
-    params: {
-      path: {
-        id: vendorId || '',
-      },
-    },
-  })
+  const { vendorId } = useParams()
+  const { data: vendor } = getVendors(vendorId) as {
+    data: VendorProps
+  }
+
+  const mutation = client.useMutation('delete', '/api/v1/vendors/{id}')
 
   if (!vendor) {
+    navigate('/vendors')
+
     return null
   }
 
@@ -72,32 +71,20 @@ export default function VendorLayout() {
         title={`Vendor: ${vendor.name}`}
         historyLink={`/vendors/${vendorId}/history`}
       >
-        <AddProductButton vendorId={vendor.id} />
+        <AddProductButton vendorId={vendor.id?.toString() ?? ''} />
       </TopBar>
 
       <div className="flex flex-row flex-grow overflow-scroll">
         <Sidebar
           actions={
             <div className="flex flex-row gap-2">
-              <ConfirmButton
-                color="danger"
-                startContent={<FontAwesomeIcon icon={faTrash} />}
-                confirmText="Are you sure you want to delete this vendor?"
-                confirmTitle="Delete Vendor"
-                onConfirm={() => {}}
-              >
-                Delete
-              </ConfirmButton>
+              <DeleteVendor vendor={vendor} />
 
               <Button
                 variant="solid"
                 color="primary"
                 fullWidth
-                onPress={() =>
-                  navigate(`/vendors/${vendor.id}/edit`, {
-                    state: { backgroundLocation: location },
-                  })
-                }
+                onPress={() => navigateToModal(`/vendors/${vendor.id}/edit`)}
               >
                 Edit Vendor
               </Button>
