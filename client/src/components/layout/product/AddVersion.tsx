@@ -1,11 +1,9 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
-import Select from '@/components/forms/Select'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, ButtonProps } from '@heroui/button'
 import {
-  Checkbox,
   DatePicker,
   DateValue,
   Modal,
@@ -13,7 +11,6 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  SelectItem,
   useDisclosure,
 } from '@heroui/react'
 import { I18nProvider } from '@react-aria/i18n'

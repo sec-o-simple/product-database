@@ -44,7 +44,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * create identification helper
+         * Identification helper operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateIdentificationHelper`
@@ -55,7 +55,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing identification helpers
          */
         post: operations["POST_/api/v1/identification-helper"];
         delete?: never;
@@ -72,7 +72,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get identification helper
+         * Identification helper operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetIdentificationHelper`
@@ -83,11 +83,11 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing identification helpers
          */
         get: operations["GET_/api/v1/identification-helper/:id"];
         /**
-         * update identification helper
+         * Identification helper operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateIdentificationHelper`
@@ -98,12 +98,12 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing identification helpers
          */
         put: operations["PUT_/api/v1/identification-helper/:id"];
         post?: never;
         /**
-         * delete identification helper
+         * Identification helper operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteIdentificationHelper`
@@ -114,7 +114,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing identification helpers
          */
         delete: operations["DELETE_/api/v1/identification-helper/:id"];
         options?: never;
@@ -132,7 +132,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * create product version
+         * Product version operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateProductVersion`
@@ -143,7 +143,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing product versions
          */
         post: operations["POST_/api/v1/product-versions"];
         delete?: never;
@@ -160,7 +160,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get product version
+         * Product version operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetProductVersion`
@@ -171,11 +171,11 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing product versions
          */
         get: operations["GET_/api/v1/product-versions/:id"];
         /**
-         * update product version
+         * Product version operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateProductVersion`
@@ -186,12 +186,12 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing product versions
          */
         put: operations["PUT_/api/v1/product-versions/:id"];
         post?: never;
         /**
-         * delete product version
+         * Product version operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteProductVersion`
@@ -202,7 +202,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing product versions
          */
         delete: operations["DELETE_/api/v1/product-versions/:id"];
         options?: never;
@@ -218,7 +218,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * list identification helpers by product version
+         * Product version operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListIdentificationHelpersByProductVersion`
@@ -229,7 +229,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing product versions
          */
         get: operations["GET_/api/v1/product-versions/:id/identification-helpers"];
         put?: never;
@@ -248,7 +248,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * list relationships by product version
+         * Product version operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListRelationshipsByProductVersion`
@@ -259,7 +259,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing product versions
          */
         get: operations["GET_/api/v1/product-versions/:id/relationships"];
         put?: never;
@@ -278,7 +278,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * list products
+         * Product operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListProducts`
@@ -289,12 +289,12 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing products
          */
         get: operations["GET_/api/v1/products"];
         put?: never;
         /**
-         * create product
+         * Product operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateProduct`
@@ -305,7 +305,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing products
          */
         post: operations["POST_/api/v1/products"];
         delete?: never;
@@ -322,7 +322,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get product
+         * Product operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetProduct`
@@ -333,11 +333,11 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing products
          */
         get: operations["GET_/api/v1/products/:id"];
         /**
-         * update product
+         * Product operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateProduct`
@@ -348,12 +348,12 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing products
          */
         put: operations["PUT_/api/v1/products/:id"];
         post?: never;
         /**
-         * delete product
+         * Product operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteProduct`
@@ -364,7 +364,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing products
          */
         delete: operations["DELETE_/api/v1/products/:id"];
         options?: never;
@@ -380,7 +380,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * list product versions
+         * Product operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListProductVersions`
@@ -391,7 +391,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing products
          */
         get: operations["GET_/api/v1/products/:id/versions"];
         put?: never;
@@ -412,7 +412,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * create relationship
+         * Relationship operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateRelationship`
@@ -423,7 +423,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing relationships
          */
         post: operations["POST_/api/v1/relationships"];
         delete?: never;
@@ -440,7 +440,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get relationship
+         * Relationship operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetRelationship`
@@ -451,11 +451,11 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing relationships
          */
         get: operations["GET_/api/v1/relationships/:id"];
         /**
-         * update relationship
+         * Relationship operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateRelationship`
@@ -466,12 +466,12 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing relationships
          */
         put: operations["PUT_/api/v1/relationships/:id"];
         post?: never;
         /**
-         * delete relationship
+         * Relationship operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteRelationship`
@@ -482,7 +482,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing relationships
          */
         delete: operations["DELETE_/api/v1/relationships/:id"];
         options?: never;
@@ -498,7 +498,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * list vendors
+         * Vendor operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListVendors`
@@ -509,12 +509,12 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing vendors
          */
         get: operations["GET_/api/v1/vendors"];
         put?: never;
         /**
-         * create vendor
+         * Vendor operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateVendor`
@@ -525,7 +525,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing vendors
          */
         post: operations["POST_/api/v1/vendors"];
         delete?: never;
@@ -542,7 +542,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get vendor
+         * Vendor operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetVendor`
@@ -553,11 +553,11 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing vendors
          */
         get: operations["GET_/api/v1/vendors/:id"];
         /**
-         * update vendor
+         * Vendor operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateVendor`
@@ -568,12 +568,12 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing vendors
          */
         put: operations["PUT_/api/v1/vendors/:id"];
         post?: never;
         /**
-         * delete vendor
+         * Vendor operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteVendor`
@@ -584,7 +584,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing vendors
          */
         delete: operations["DELETE_/api/v1/vendors/:id"];
         options?: never;
@@ -600,7 +600,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * list vendor products
+         * Vendor operations
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListVendorProducts`
@@ -611,7 +611,7 @@ export interface paths {
          *
          *     ---
          *
-         *
+         *     Operations for managing vendors
          */
         get: operations["GET_/api/v1/vendors/:id/products"];
         put?: never;
@@ -669,8 +669,8 @@ export interface components {
             category: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
             source_node_id: string;
-            /** @example Source Node Name */
-            source_node_name: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            target_node_id: string;
         };
         /** @description CreateVendorDTO schema */
         CreateVendorDTO: {
@@ -836,7 +836,7 @@ export interface components {
                  * @example 123e4567-e89b-12d3-a456-426614174000
                  */
                 product_id?: string;
-            }[];
+            };
         };
         /** @description RelationshipGroupDTO schema */
         RelationshipGroupDTO: {
@@ -982,9 +982,9 @@ export interface components {
             source_node_id?: string;
             /**
              * @description string schema
-             * @example Source Node Name
+             * @example 123e4567-e89b-12d3-a456-426614174000
              */
-            source_node_name?: string;
+            target_node_id?: string;
         };
         /** @description UpdateVendorDTO schema */
         UpdateVendorDTO: {
