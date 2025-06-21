@@ -46,12 +46,13 @@ export function useProductMutation({
     onClose()
   }
 
-  const mutation = isCreateForm
-    ? client.useMutation('post', '/api/v1/products', { onSuccess })
-    : client.useMutation('put', '/api/v1/products/{id}', {
-        params: { path: { id: product.id } },
-        onSuccess,
-      })
+  const createMutation = client.useMutation('post', '/api/v1/products', {
+    onSuccess,
+  })
+  const updateMutation = client.useMutation('put', '/api/v1/products/{id}', {
+    params: { path: { id: product.id } },
+    onSuccess,
+  })
 
   const mutateProduct = useCallback(() => {
     const body = {
@@ -61,16 +62,16 @@ export function useProductMutation({
       vendor_id: product.vendor_id,
     }
 
-    mutation.mutate(
-      isCreateForm ? { body } : { body, params: { path: { id: product.id } } },
-    )
-  }, [mutation, product, vendorId])
+    if (isCreateForm) {
+      createMutation.mutate({ body })
+    } else {
+      updateMutation.mutate({ body, params: { path: { id: product.id } } })
+    }
+  }, [product, vendorId])
 
-  return {
-    mutateProduct,
-    isPending: mutation.isPending,
-    error: mutation.error,
-  }
+  const mutation = isCreateForm ? createMutation : updateMutation
+
+  return { mutateProduct, isPending: mutation.isPending, error: mutation.error }
 }
 
 export function AddProductButton({ vendorId }: CreateEditProductProps) {

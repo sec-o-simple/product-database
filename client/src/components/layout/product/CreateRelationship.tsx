@@ -1,6 +1,6 @@
 import client from '@/client'
 import Select from '@/components/forms/Select'
-import { getVersions } from '@/routes/Product'
+import { useVersionListQuery } from '@/routes/Product'
 import { useProductListQuery } from '@/routes/Products'
 import useRouter from '@/utils/useRouter'
 import { faAdd, faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -103,7 +103,7 @@ export default function CreateRelationship() {
   let versions = []
   if (products && products.length > 0) {
     for (const product of products) {
-      const { data: productVersions } = getVersions(product.id) as {
+      const { data: productVersions } = useVersionListQuery(product.id) as {
         data: VersionProps[]
       }
 

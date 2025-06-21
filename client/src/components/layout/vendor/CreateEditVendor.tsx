@@ -28,30 +28,33 @@ export function useVendorMutation({
   const onSuccess = useCallback(() => {
     onClose()
   }, [onClose])
+
   const isCreateForm = !vendor.id
 
-  const mutation = isCreateForm
-    ? client.useMutation('post', '/api/v1/vendors', { onSuccess })
-    : client.useMutation('put', '/api/v1/vendors/{id}', {
-        onSuccess,
-        params: { path: { id: vendor.id } },
-      })
+  const createMutation = client.useMutation('post', '/api/v1/vendors', {
+    onSuccess,
+  })
+  const updateMutation = client.useMutation('put', '/api/v1/vendors/{id}', {
+    onSuccess,
+    params: { path: { id: vendor.id } },
+  })
 
   const mutateVendor = useCallback(() => {
     const body = {
       name: vendor.name,
       description: vendor.description,
     }
+    if (isCreateForm) {
+      createMutation.mutate({ body })
+    } else {
+      updateMutation.mutate({
+        body,
+        params: { path: { id: vendor.id } },
+      })
+    }
+  }, [isCreateForm, createMutation, updateMutation, vendor])
 
-    mutation.mutate(
-      isCreateForm
-        ? { body }
-        : {
-            body,
-            params: { path: { id: vendor.id } },
-          },
-    )
-  }, [mutation, vendor])
+  const mutation = isCreateForm ? createMutation : updateMutation
 
   return { mutateVendor, isPending: mutation.isPending, error: mutation.error }
 }
@@ -78,7 +81,7 @@ export function CreateVendorButton() {
 }
 
 export default function CreateEditVendor() {
-  const { navigate } = useRouter()
+  const { navigate, location } = useRouter()
   const { vendorId } = useParams()
   const isCreateForm = !vendorId
 
@@ -93,7 +96,7 @@ export default function CreateEditVendor() {
   const onClose = () => {
     setVendor({ name: '', description: '' })
 
-    navigate(isCreateForm ? '/vendors' : `/vendors/${vendorId}`, {
+    navigate(location.state.returnTo ?? '/vendors', {
       replace: true,
       state: {
         shouldRefetch: true,

@@ -1,6 +1,6 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
-import { getVersions } from '@/routes/Product'
+import { useVersionQuery } from '@/routes/Version'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -17,10 +17,12 @@ import type { DateValue } from '@internationalized/date'
 import { parseDate } from '@internationalized/date'
 import { I18nProvider } from '@react-aria/i18n'
 import { useCallback, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { ProductProps } from '../product/CreateEditProduct'
 
 interface CreateEditVersionProps {
-  productId?: string
+  product?: ProductProps
+  returnTo?: string
 }
 
 export type VersionProps = {
@@ -44,11 +46,23 @@ export function useVersionMutation({
     onClose()
   }, [onClose])
 
-  const mutation = version.id
-    ? client.useMutation('put', '/api/v1/product-versions/{id}', { onSuccess })
-    : client.useMutation('post', '/api/v1/product-versions', {
-        onSuccess,
-      })
+  const isCreateForm = !version.id
+
+  const createMutation = client.useMutation(
+    'post',
+    '/api/v1/product-versions',
+    {
+      onSuccess,
+    },
+  )
+  const updateMutation = client.useMutation(
+    'put',
+    '/api/v1/product-versions/{id}',
+    {
+      params: { path: { id: version.id } },
+      onSuccess,
+    },
+  )
 
   const mutateVersion = useCallback(() => {
     const body = {
@@ -57,27 +71,33 @@ export function useVersionMutation({
       release_date: version.releaseDate?.toString() ?? undefined,
     }
 
-    mutation.mutate(
-      version.id ? { body, params: { path: { id: version.id } } } : { body },
-    )
-  }, [mutation, productId, version])
+    if (isCreateForm) {
+      createMutation.mutate({ body })
+    } else {
+      updateMutation.mutate({ body, params: { path: { id: version.id } } })
+    }
+  }, [productId, version])
+
+  const mutation = isCreateForm ? createMutation : updateMutation
+
   return { mutateVersion, isPending: mutation.isPending, error: mutation.error }
 }
 
-export function AddVersionButton({ productId }: CreateEditVersionProps) {
-  const navigate = useNavigate()
-  const location = useLocation()
+export function AddVersionButton({
+  product,
+  returnTo,
+}: CreateEditVersionProps) {
+  const { navigateToModal } = useRouter()
 
   return (
     <Button
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() => {
-        navigate(`/products/${productId}/versions/create`, {
-          state: {
-            backgroundLocation: location,
-          },
-        })
+        navigateToModal(
+          `/vendors/${product?.vendor_id}/products/${product?.id}/versions/create`,
+          returnTo,
+        )
       }}
     >
       Add Version
@@ -85,13 +105,26 @@ export function AddVersionButton({ productId }: CreateEditVersionProps) {
   )
 }
 
+function VersionSkeleton() {
+  return (
+    <div className="flex flex-row gap-2 w-full animate-pulse">
+      <div className="flex-1">
+        <div className="h-5 w-24 bg-gray-200 rounded mb-1" />
+        <div className="h-10 bg-gray-200 rounded" />
+      </div>
+      <div className="flex-1">
+        <div className="h-5 w-24 bg-gray-200 rounded mb-1" />
+        <div className="h-10 bg-gray-200 rounded" />
+      </div>
+    </div>
+  )
+}
+
 export default function CreateEditVersion() {
-  const { navigate } = useRouter()
+  const { navigate, location } = useRouter()
   const { productId, versionId } = useParams()
 
-  const { data: previousData } = getVersions(versionId, productId) as {
-    data: VersionProps
-  }
+  const { data: previousData, isLoading } = useVersionQuery(versionId || '')
 
   const [version, setVersion] = useState<VersionProps>({
     name: previousData?.name || '',
@@ -103,7 +136,7 @@ export default function CreateEditVersion() {
   const onClose = (shouldRefetch?: boolean) => {
     setVersion({ name: '', releaseDate: null })
 
-    navigate(`/products/${productId}`, {
+    navigate(location.state.returnTo ?? `/products/${productId}`, {
       replace: true,
       state: { shouldRefetch: shouldRefetch ?? true },
     })
@@ -133,28 +166,34 @@ export default function CreateEditVersion() {
             </div>
           )}
 
-          <div className="flex flex-row gap-2">
-            <Input
-              label="Version Number"
-              placeholder="1.0.0"
-              className="w-full"
-              value={version.name}
-              onChange={(e) => setVersion({ ...version, name: e.target.value })}
-              type="text"
-            />
-
-            <I18nProvider locale="de-DE">
-              <DatePicker
-                label="Release Date"
-                variant="bordered"
-                labelPlacement="outside"
-                classNames={{
-                  inputWrapper: 'border-1 shadow-none',
-                  base: 'gap-1',
-                }}
+          {isLoading ? (
+            <VersionSkeleton />
+          ) : (
+            <div className="flex flex-row gap-2">
+              <Input
+                label="Version Number"
+                placeholder="1.0.0"
+                className="w-full"
+                value={version.name}
+                onChange={(e) =>
+                  setVersion({ ...version, name: e.target.value })
+                }
+                type="text"
               />
-            </I18nProvider>
-          </div>
+
+              <I18nProvider locale="de-DE">
+                <DatePicker
+                  label="Release Date"
+                  variant="bordered"
+                  labelPlacement="outside"
+                  classNames={{
+                    inputWrapper: 'border-1 shadow-none',
+                    base: 'gap-1',
+                  }}
+                />
+              </I18nProvider>
+            </div>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={() => onClose(false)}>

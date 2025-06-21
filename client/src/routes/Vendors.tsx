@@ -31,7 +31,13 @@ export function useVendorListQuery() {
   return request
 }
 
-export function VendorItem({ vendor }: { vendor: VendorProps }) {
+export function VendorItem({
+  vendor,
+  returnTo,
+}: {
+  vendor: VendorProps
+  returnTo?: string
+}) {
   const { navigate, navigateToModal } = useRouter()
 
   return (
@@ -44,7 +50,12 @@ export function VendorItem({ vendor }: { vendor: VendorProps }) {
         <div className="flex flex-row gap">
           <IconButton
             icon={faEdit}
-            onPress={() => navigateToModal(`/vendors/${vendor.id}/edit`)}
+            onPress={() =>
+              navigateToModal(
+                `/vendors/${vendor.id}/edit`,
+                returnTo || '/vendors',
+              )
+            }
           />
 
           <DeleteVendor vendor={vendor} isIconButton />
@@ -99,7 +110,7 @@ export default function Vendors() {
 
         <DataGrid addButton={<CreateEditVendor />}>
           {vendors?.map((vendor) => (
-            <VendorItem key={vendor.id} vendor={vendor} />
+            <VendorItem key={vendor.id} vendor={vendor} returnTo="/vendors" />
           ))}
         </DataGrid>
       </div>

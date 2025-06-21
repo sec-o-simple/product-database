@@ -13,8 +13,9 @@ import useRouter from '@/utils/useRouter'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem, Chip } from '@heroui/react'
-import { useEffect } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useVendorQuery } from './Vendor'
+import { DeleteVersion } from './Version'
 
 export function useProductQuery(productId: string) {
   const request = client.useQuery('get', '/api/v1/products/{id}', {
@@ -67,7 +68,7 @@ export function DeleteProduct({
   )
 }
 
-export function getVersions(productId?: string) {
+export function useVersionListQuery(productId?: string) {
   const request = client.useQuery('get', '/api/v1/products/{id}/versions', {
     params: {
       path: {
@@ -75,36 +76,7 @@ export function getVersions(productId?: string) {
       },
     },
   })
-
-  const location = useLocation()
-  useEffect(() => {
-    if (location.state && location.state.shouldRefetch) {
-      request.refetch()
-    }
-  }, [location])
-
-  return request
-}
-
-export function getVersion(versionId?: string): {
-  data: any
-  isLoading: boolean
-  refetch: () => void
-} {
-  const request = client.useQuery('get', '/api/v1/product-versions/{id}', {
-    params: {
-      path: {
-        id: versionId || '',
-      },
-    },
-  })
-
-  const location = useLocation()
-  useEffect(() => {
-    if (location.state && location.state.shouldRefetch) {
-      request.refetch()
-    }
-  }, [location])
+  useRefetchQuery(request)
   return request
 }
 
@@ -130,7 +102,7 @@ export function VersionItem({ version }: { version: any }) {
       }
       description={version.description || 'No description'}
       actions={
-        <div className="flex flex-row gap">
+        <div className="flex flex-row gap-1">
           <IconButton
             icon={faEdit}
             onPress={() =>
@@ -139,17 +111,7 @@ export function VersionItem({ version }: { version: any }) {
               )
             }
           />
-          <ConfirmButton
-            isIconOnly
-            variant="light"
-            className="text-neutral-foreground"
-            radius="full"
-            confirmTitle="Delete Version"
-            confirmText="Are you sure you want to delete this Version?"
-            onConfirm={() => {}}
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </ConfirmButton>
+          <DeleteVersion version={version} isIconButton />
         </div>
       }
       chips={
@@ -170,33 +132,9 @@ export default function Product({
 }) {
   const { productId } = useParams()
 
-  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
-    params: {
-      path: {
-        id: productId || '',
-      },
-    },
-  })
-
-  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
-    params: {
-      path: {
-        id: product?.vendor_id || '',
-      },
-    },
-  })
-
-  const { data: versions } = client.useQuery(
-    'get',
-    `/api/v1/products/{id}/versions`,
-    {
-      params: {
-        path: {
-          id: productId || '',
-        },
-      },
-    },
-  )
+  const { data: product } = useProductQuery(productId || '')
+  const { data: vendor } = useVendorQuery(product?.vendor_id || '')
+  const { data: versions } = useVersionListQuery(product?.id)
 
   if (!product) {
     return null
@@ -217,7 +155,12 @@ export default function Product({
 
       <DataGrid
         title={`Versions (${versions?.length})`}
-        addButton={<AddVersionButton productId={product.id} />}
+        addButton={
+          <AddVersionButton
+            product={product}
+            returnTo={`products/${product.id}`}
+          />
+        }
       >
         {versions &&
           versions.length > 0 &&

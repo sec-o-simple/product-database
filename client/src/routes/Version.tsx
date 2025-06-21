@@ -1,9 +1,71 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import { AddRelationshipButton } from '@/components/layout/product/CreateRelationship'
+import { VersionProps } from '@/components/layout/version/CreateEditVersion'
 import { EmptyState } from '@/components/table/EmptyState'
+import useRefetchQuery from '@/utils/useRefetchQuery'
+import useRouter from '@/utils/useRouter'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem } from '@heroui/react'
 import { useParams } from 'react-router-dom'
+import { useProductQuery } from './Product'
+import { useVendorQuery } from './Vendor'
+
+export function useVersionQuery(versionId?: string) {
+  const request = client.useQuery('get', '/api/v1/product-versions/{id}', {
+    params: {
+      path: {
+        id: versionId || '',
+      },
+    },
+  })
+
+  useRefetchQuery(request)
+  return request
+}
+
+export function DeleteVersion({
+  version,
+  isIconButton,
+}: {
+  version: VersionProps
+  isIconButton?: boolean
+}) {
+  const mutation = client.useMutation('delete', '/api/v1/vendors/{id}')
+  const {
+    navigate,
+    params: { productId },
+  } = useRouter()
+
+  return (
+    <ConfirmButton
+      isIconOnly={isIconButton}
+      variant={isIconButton ? 'light' : 'solid'}
+      radius={isIconButton ? 'full' : 'md'}
+      color="danger"
+      confirmTitle="Delete Version"
+      confirmText={`Are you sure you want to delete the version "${version.name}"? This action cannot be undone.`}
+      onConfirm={() => {
+        mutation.mutate({
+          params: { path: { id: version.id?.toString() ?? '' } },
+        })
+
+        navigate(`/products/${productId || ''}`, {
+          state: {
+            shouldRefetch: true,
+            message: `Version "${version.name}" has been deleted successfully.`,
+            type: 'success',
+          },
+        })
+      }}
+    >
+      <FontAwesomeIcon icon={faTrash} />
+      {!isIconButton && 'Delete'}
+    </ConfirmButton>
+  )
+}
 
 export default function Version({
   hideBreadcrumbs = false,
@@ -12,34 +74,9 @@ export default function Version({
 }) {
   const { productId, versionId } = useParams()
 
-  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
-    params: {
-      path: {
-        id: productId || '',
-      },
-    },
-  })
-
-  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
-    params: {
-      path: {
-        id: product?.vendor_id || '',
-      },
-    },
-  })
-
-  const { data: version } = client.useQuery(
-    'get',
-    `/api/v1/product-versions/{id}`,
-    {
-      params: {
-        path: {
-          id: versionId || '',
-        },
-      },
-    },
-  )
-
+  const { data: product } = useProductQuery(productId || '')
+  const { data: vendor } = useVendorQuery(product.vendor_id || '')
+  const { data: version } = useVersionQuery(versionId)
   const { data: relationships } = client.useQuery(
     'get',
     `/api/v1/product-versions/{id}/relationships`,

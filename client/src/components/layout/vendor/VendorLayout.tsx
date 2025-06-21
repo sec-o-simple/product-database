@@ -78,7 +78,12 @@ export default function VendorLayout() {
                 variant="solid"
                 color="primary"
                 fullWidth
-                onPress={() => navigateToModal(`/vendors/${vendor.id}/edit`)}
+                onPress={() =>
+                  navigateToModal(
+                    `/vendors/${vendor.id}/edit`,
+                    `/vendors/${vendor.id}`,
+                  )
+                }
               >
                 Edit Vendor
               </Button>

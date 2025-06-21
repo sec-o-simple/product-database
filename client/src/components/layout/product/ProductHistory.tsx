@@ -1,5 +1,6 @@
-import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
+import { useProductQuery } from '@/routes/Product'
+import { useVendorQuery } from '@/routes/Vendor'
 import { BreadcrumbItem } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 import History from '../History'
@@ -7,21 +8,8 @@ import History from '../History'
 export default function ProductHistory() {
   const { productId } = useParams()
 
-  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
-    params: {
-      path: {
-        id: productId || '',
-      },
-    },
-  })
-
-  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
-    params: {
-      path: {
-        id: product?.vendor_id || '',
-      },
-    },
-  })
+  const { data: product } = useProductQuery(productId || '')
+  const { data: vendor } = useVendorQuery(product?.vendor_id || '')
 
   return (
     <div className="flex grow flex-col w-full gap-4 p-2">

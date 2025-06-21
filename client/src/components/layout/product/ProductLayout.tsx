@@ -1,4 +1,3 @@
-import client from '@/client'
 import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
@@ -7,6 +6,7 @@ import {
   idHelperTypes,
 } from '@/routes/IdentificationHelper/IdentificationOverview'
 import { DeleteProduct, useProductQuery } from '@/routes/Product'
+import { useVendorQuery } from '@/routes/Vendor'
 import { faAdd, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
@@ -67,13 +67,7 @@ export default function ProductLayout() {
   const location = useLocation()
 
   const { data: product } = useProductQuery(productId || '')
-  const { data: vendor } = client.useQuery('get', `/api/v1/vendors/{id}`, {
-    params: {
-      path: {
-        id: product?.vendor_id || '',
-      },
-    },
-  })
+  const { data: vendor } = useVendorQuery(product?.vendor_id || '')
 
   if (!product) {
     return null
@@ -95,7 +89,10 @@ export default function ProductLayout() {
             Export
           </Button>
 
-          <AddVersionButton productId={product.id} />
+          <AddVersionButton
+            product={product}
+            returnTo={`/products/${productId}`}
+          />
         </div>
       </TopBar>
 

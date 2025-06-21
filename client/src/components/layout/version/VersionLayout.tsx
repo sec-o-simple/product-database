@@ -1,50 +1,37 @@
-import client from '@/client'
-import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
-import {
-  faArrowUpRightFromSquare,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons'
+import { EmptyState } from '@/components/table/EmptyState'
+import { useProductQuery } from '@/routes/Product'
+import { DeleteVersion, useVersionQuery } from '@/routes/Version'
+import useRouter from '@/utils/useRouter'
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { Chip } from '@heroui/chip'
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Outlet, useParams } from 'react-router-dom'
 import { AddRelationshipButton } from '../product/CreateRelationship'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 
 export default function VersionLayout() {
-  const navigate = useNavigate()
+  const { navigateToModal, navigate } = useRouter()
   const { versionId, productId } = useParams()
-  const location = useLocation()
 
-  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
-    params: {
-      path: {
-        id: productId || '',
+  const { data: product } = useProductQuery(productId || '')
+  const { data: version } = useVersionQuery(versionId || '')
+
+  if (!version || !product) {
+    navigate(`/products/${productId}`, {
+      state: {
+        shouldRefetch: true,
+        message: 'Version or Product not found.',
+        type: 'error',
       },
-    },
-  })
+    })
 
-  const { data: version } = client.useQuery(
-    'get',
-    `/api/v1/product-versions/{id}`,
-    {
-      params: {
-        path: {
-          id: versionId || '',
-        },
-      },
-    },
-  )
-
-  if (!version) {
-    return null
+    return <EmptyState />
   }
-
-  const relationships = []
 
   return (
     <PageContainer>
@@ -92,26 +79,16 @@ export default function VersionLayout() {
           ]}
           actions={
             <div className="flex flex-row gap-2">
-              <ConfirmButton
-                color="danger"
-                startContent={<FontAwesomeIcon icon={faTrash} />}
-                confirmText="Are you sure you want to delete this version?"
-                confirmTitle="Delete Version"
-                onConfirm={() => {}}
-              >
-                Delete
-              </ConfirmButton>
+              <DeleteVersion version={version} />
 
               <Button
                 variant="solid"
                 color="primary"
                 fullWidth
                 onPress={() =>
-                  navigate(
+                  navigateToModal(
                     `/products/${productId}/versions/${versionId}/edit`,
-                    {
-                      state: { backgroundLocation: location },
-                    },
+                    `/products/${productId}/versions/${versionId}`,
                   )
                 }
               >
