@@ -29,11 +29,13 @@ export function useVersionQuery(versionId?: string) {
 export function DeleteVersion({
   version,
   isIconButton,
+  returnTo,
 }: {
   version: VersionProps
   isIconButton?: boolean
+  returnTo?: string
 }) {
-  const mutation = client.useMutation('delete', '/api/v1/vendors/{id}')
+  const mutation = client.useMutation('delete', `/api/v1/product-versions/{id}`)
   const {
     navigate,
     params: { productId },
@@ -52,7 +54,7 @@ export function DeleteVersion({
           params: { path: { id: version.id?.toString() ?? '' } },
         })
 
-        navigate(`/products/${productId || ''}`, {
+        navigate(returnTo ?? `/products/${productId || ''}`, {
           state: {
             shouldRefetch: true,
             message: `Version "${version.name}" has been deleted successfully.`,

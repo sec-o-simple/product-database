@@ -111,7 +111,12 @@ export function VersionItem({ version }: { version: any }) {
               )
             }
           />
-          <DeleteVersion version={version} isIconButton />
+
+          <DeleteVersion
+            version={version}
+            isIconButton
+            returnTo={`/products/${productId}`}
+          />
         </div>
       }
       chips={
