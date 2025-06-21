@@ -58,7 +58,7 @@ function ProductBox({
 
 export function AddRelationshipButton() {
   const {
-    navigate,
+    navigateToModal,
     location,
     params: { productId, versionId },
   } = useRouter()
@@ -68,13 +68,8 @@ export function AddRelationshipButton() {
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() =>
-        navigate(
+        navigateToModal(
           `/products/${productId}/versions/${versionId}/relationships/create`,
-          {
-            state: {
-              backgroundLocation: location,
-            },
-          },
         )
       }
     >

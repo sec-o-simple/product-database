@@ -7,6 +7,7 @@ import {
 } from '@/routes/IdentificationHelper/IdentificationOverview'
 import { DeleteProduct, useProductQuery } from '@/routes/Product'
 import { useVendorQuery } from '@/routes/Vendor'
+import useRouter from '@/utils/useRouter'
 import { faAdd, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
@@ -17,7 +18,7 @@ import {
   DropdownSection,
   DropdownTrigger,
 } from '@heroui/react'
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { AddVersionButton } from '../version/CreateEditVersion'
@@ -62,9 +63,10 @@ export function AddIdHelper({
 }
 
 export default function ProductLayout() {
-  const { productId } = useParams()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const {
+    params: { productId },
+    navigateToModal,
+  } = useRouter()
 
   const { data: product } = useProductQuery(productId || '')
   const { data: vendor } = useVendorQuery(product?.vendor_id || '')
@@ -120,12 +122,10 @@ export default function ProductLayout() {
                 color="primary"
                 fullWidth
                 onPress={() =>
-                  navigate(`/products/${productId}/edit`, {
-                    state: {
-                      backgroundLocation: location,
-                      returnTo: `/products/${productId}`,
-                    },
-                  })
+                  navigateToModal(
+                    `/products/${productId}/edit`,
+                    `/products/${productId}`,
+                  )
                 }
               >
                 Edit Product

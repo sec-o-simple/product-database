@@ -15,7 +15,7 @@ import {
   SelectItem,
 } from '@heroui/react'
 import { useCallback, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 interface CreateEditProductProps {
   vendorId: string
@@ -75,20 +75,14 @@ export function useProductMutation({
 }
 
 export function AddProductButton({ vendorId }: CreateEditProductProps) {
-  const navigate = useNavigate()
-  const location = useLocation()
+  const { navigateToModal } = useRouter()
 
   return (
     <Button
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() => {
-        navigate(`/vendors/${vendorId}/products/create`, {
-          replace: true,
-          state: {
-            backgroundLocation: location,
-          },
-        })
+        navigateToModal(`/vendors/${vendorId}/products/create`)
       }}
     >
       Add Product

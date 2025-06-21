@@ -14,7 +14,7 @@ import {
   ModalHeader,
 } from '@heroui/react'
 import { useCallback, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 export function useVendorMutation({
   vendor,
@@ -60,20 +60,10 @@ export function useVendorMutation({
 }
 
 export function CreateVendorButton() {
-  const navigate = useNavigate()
-  const location = useLocation()
+  const { navigateToModal } = useRouter()
 
   return (
-    <Button
-      color="primary"
-      onPress={() =>
-        navigate('/vendors/create', {
-          state: {
-            backgroundLocation: location,
-          },
-        })
-      }
-    >
+    <Button color="primary" onPress={() => navigateToModal('/vendors/create')}>
       <FontAwesomeIcon icon={faAdd} className="mr-2" />
       Create Vendor
     </Button>
