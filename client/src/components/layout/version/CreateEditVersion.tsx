@@ -107,7 +107,7 @@ export function AddVersionButton({
 
 function VersionSkeleton() {
   return (
-    <div className="flex flex-row gap-2 w-full animate-pulse">
+    <div className="flex flex- gap-2 w-full animate-pulse">
       <div className="flex-1">
         <div className="h-5 w-24 bg-gray-200 rounded mb-1" />
         <div className="h-10 bg-gray-200 rounded" />
