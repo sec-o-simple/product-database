@@ -13,8 +13,9 @@ import {
   ModalFooter,
   ModalHeader,
   SelectItem,
+  Spinner,
 } from '@heroui/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 interface CreateEditProductProps {
@@ -95,15 +96,27 @@ export default function CreateEditProduct() {
   const { productId, vendorId } = useParams()
   const isCreateForm = !productId
 
-  const { data: previousData } = useProductQuery(productId || '')
+  const { data: previousData, isLoading } = useProductQuery(productId || '')
 
   const [product, setProduct] = useState<ProductProps>({
-    id: previousData?.id || '',
-    name: previousData?.name || '',
-    description: previousData?.description || '',
+    id: '',
+    name: '',
+    description: '',
     type: 'software',
-    vendor_id: previousData?.vendor_id || '',
+    vendor_id: '',
   })
+
+  useEffect(() => {
+    if (previousData) {
+      setProduct({
+        id: previousData.id,
+        name: previousData.name,
+        description: previousData.description,
+        type: previousData.type,
+        vendor_id: previousData.vendor_id,
+      })
+    }
+  }, [previousData])
 
   const onClose = () => {
     setProduct({
@@ -127,6 +140,16 @@ export default function CreateEditProduct() {
     onClose: onClose,
     client,
   })
+
+  if (!isCreateForm && isLoading) {
+    return (
+      <Modal isOpen>
+        <ModalBody>
+          <Spinner />
+        </ModalBody>
+      </Modal>
+    )
+  }
 
   return (
     <Modal

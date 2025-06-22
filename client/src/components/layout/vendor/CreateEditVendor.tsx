@@ -12,8 +12,9 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
 } from '@heroui/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 export function useVendorMutation({
@@ -75,13 +76,23 @@ export default function CreateEditVendor() {
   const { vendorId } = useParams()
   const isCreateForm = !vendorId
 
-  const { data: previousData } = useVendorQuery(vendorId || '')
+  const { data: previousData, isLoading } = useVendorQuery(vendorId || '')
 
   const [vendor, setVendor] = useState<VendorProps>({
     id: previousData?.id || '',
     name: previousData?.name || '',
     description: previousData?.description || '',
   })
+
+  useEffect(() => {
+    if (previousData) {
+      setVendor({
+        id: previousData.id,
+        name: previousData.name,
+        description: previousData.description,
+      })
+    }
+  }, [previousData])
 
   const onClose = () => {
     setVendor({ name: '', description: '' })
@@ -99,6 +110,16 @@ export default function CreateEditVendor() {
     onClose: onClose,
     client,
   })
+
+  if (!isCreateForm && isLoading) {
+    return (
+      <Modal isOpen>
+        <ModalBody>
+          <Spinner />
+        </ModalBody>
+      </Modal>
+    )
+  }
 
   return (
     <Modal

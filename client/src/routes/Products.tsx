@@ -61,7 +61,7 @@ export function DashboardTabs({
 }
 
 export function ProductItem({ product }: { product: any }) {
-  const { navigateToModal, location } = useRouter()
+  const { navigateToModal, navigate } = useRouter()
 
   const handleOnActionClick = (href: string) => {
     navigateToModal(href)

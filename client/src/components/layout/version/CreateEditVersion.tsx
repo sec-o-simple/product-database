@@ -12,11 +12,11 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
 } from '@heroui/react'
-import type { DateValue } from '@internationalized/date'
-import { parseDate } from '@internationalized/date'
+import { parseDate, type DateValue } from '@internationalized/date'
 import { I18nProvider } from '@react-aria/i18n'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ProductProps } from '../product/CreateEditProduct'
 
@@ -124,14 +124,27 @@ export default function CreateEditVersion() {
   const { navigate, location } = useRouter()
   const { productId, versionId } = useParams()
 
+  const isCreateForm = !versionId
+
   const { data: previousData, isLoading } = useVersionQuery(versionId || '')
 
   const [version, setVersion] = useState<VersionProps>({
-    name: previousData?.name || '',
-    releaseDate: previousData?.releaseDate
-      ? parseDate(previousData.releaseDate.toString())
-      : null,
+    name: '',
+    releaseDate: null,
   })
+
+  useEffect(() => {
+    console.log('previousData', previousData)
+    if (previousData) {
+      setVersion({
+        id: previousData.id,
+        name: previousData.name,
+        releaseDate: previousData.release_date
+          ? parseDate(previousData.releaseDate.toString())
+          : null,
+      })
+    }
+  }, [previousData])
 
   const onClose = (shouldRefetch?: boolean) => {
     setVersion({ name: '', releaseDate: null })
@@ -152,6 +165,16 @@ export default function CreateEditVersion() {
     onClose: onClose,
     client,
   })
+
+  if (!isCreateForm && isLoading) {
+    return (
+      <Modal isOpen>
+        <ModalBody>
+          <Spinner />
+        </ModalBody>
+      </Modal>
+    )
+  }
 
   return (
     <Modal isOpen onOpenChange={onClose} size="xl" isDismissable={false}>
