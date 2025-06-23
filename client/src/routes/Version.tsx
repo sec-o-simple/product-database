@@ -14,13 +14,20 @@ import { useProductQuery } from './Product'
 import { useVendorQuery } from './Vendor'
 
 export function useVersionQuery(versionId?: string) {
-  const request = client.useQuery('get', '/api/v1/product-versions/{id}', {
-    params: {
-      path: {
-        id: versionId || '',
+  const request = client.useQuery(
+    'get',
+    '/api/v1/product-versions/{id}',
+    {
+      params: {
+        path: {
+          id: versionId || '',
+        },
       },
     },
-  })
+    {
+      enabled: !!versionId,
+    },
+  )
 
   useRefetchQuery(request)
   return request
@@ -69,6 +76,11 @@ export function DeleteVersion({
   )
 }
 
+/**
+ *
+ * @param hideBreadcrumbs - Whether to hide the breadcrumbs at the top of the page.
+ * @returns
+ */
 export default function Version({
   hideBreadcrumbs = false,
 }: {

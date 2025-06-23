@@ -36,6 +36,7 @@ export function TopBar({
             radius="full"
             size="md"
             onPress={() => navigate('/')}
+            href="/"
           >
             <FontAwesomeIcon icon={faDatabase} size="lg" />
           </Button>

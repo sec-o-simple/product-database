@@ -14,13 +14,20 @@ import { ProductItem, useVendorProductListQuery } from './Products'
 import { VendorProps } from './Vendors'
 
 export function useVendorQuery(vendorId: string) {
-  const request = client.useQuery('get', '/api/v1/vendors/{id}', {
-    params: {
-      path: {
-        id: vendorId || '',
+  const request = client.useQuery(
+    'get',
+    '/api/v1/vendors/{id}',
+    {
+      params: {
+        path: {
+          id: vendorId || '',
+        },
       },
     },
-  })
+    {
+      enabled: !!vendorId,
+    },
+  )
 
   useRefetchQuery(request)
 
@@ -65,14 +72,28 @@ export function DeleteVendor({
   )
 }
 
+/**
+ *
+ * @param vendorId - The ID of the vendor to display. If not provided, it will be taken from the URL parameters.
+ * @param hideBreadcrumbs - If true, the breadcrumbs will not be displayed.
+ * @returns
+ */
 export default function Vendor({
+  vendorId,
   hideBreadcrumbs = false,
 }: {
+  vendorId?: string
   hideBreadcrumbs?: boolean
 }) {
-  const { vendorId } = useParams()
-  const { data: vendor } = useVendorQuery(vendorId || '')
-  const { data: products } = useVendorProductListQuery(vendorId || '')
+  let vendorIdParam = vendorId
+
+  if (!vendorIdParam) {
+    const { vendorId: paramVendorId } = useParams()
+    vendorIdParam = paramVendorId
+  }
+
+  const { data: vendor } = useVendorQuery(vendorIdParam || '')
+  const { data: products } = useVendorProductListQuery(vendorIdParam || '')
 
   return (
     <PageContent>

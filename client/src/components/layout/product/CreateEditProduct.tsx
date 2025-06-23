@@ -62,6 +62,7 @@ export function useProductMutation({
       type: product.type,
       vendor_id: product.vendor_id,
     }
+    console.log('Mutating product:', body)
 
     if (isCreateForm) {
       createMutation.mutate({ body })
@@ -103,7 +104,7 @@ export default function CreateEditProduct() {
     name: '',
     description: '',
     type: 'software',
-    vendor_id: '',
+    vendor_id: vendorId || '',
   })
 
   useEffect(() => {
@@ -117,6 +118,8 @@ export default function CreateEditProduct() {
       })
     }
   }, [previousData])
+
+  console.log('Product state:', product)
 
   const onClose = () => {
     setProduct({

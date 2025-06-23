@@ -134,7 +134,6 @@ export default function CreateEditVersion() {
   })
 
   useEffect(() => {
-    console.log('previousData', previousData)
     if (previousData) {
       setVersion({
         id: previousData.id,

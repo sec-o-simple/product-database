@@ -2,8 +2,7 @@ import {
   faArrowDown,
   faArrowUp,
   faArrowUpRightFromSquare,
-  faBuilding,
-  faSitemap,
+  faClose,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
@@ -13,16 +12,17 @@ import {
   TreeItem,
   TreeViewBaseItem,
 } from '@mui/x-tree-view'
-import { useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Product from './Product'
-import { DashboardTabs } from './Products'
+import { DashboardTabs, useProductListQuery } from './Products'
 import Vendor from './Vendor'
+import { useVendorListQuery } from './Vendors'
 import Version from './Version'
 
 interface SelectedNode {
   type: 'vendor' | 'product' | 'version'
-  id: string | null
+  item: any
 }
 
 export function HydrateFallback() {
@@ -144,40 +144,21 @@ export default function TreeView() {
   const [selected, setSelected] = useState<SelectedNode | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
 
-  const fakeVendors = useMemo(() => {
-    return [
-      {
-        id: 1,
-        name: 'Vendor A',
-        products: [
-          {
-            id: 1,
-            name: 'Product A1',
-            versions: [
-              { id: 1, name: 'Version A1.1' },
-              { id: 2, name: 'Version A1.2' },
-            ],
-          },
-          {
-            id: 2,
-            name: 'Product A2',
-            versions: [{ id: 3, name: 'Version A2.1' }],
-          },
-        ],
-      },
-      {
-        id: 2,
-        name: 'Vendor B',
-        products: [
-          {
-            id: 3,
-            name: 'Product B1',
-            versions: [{ id: 4, name: 'Version B1.1' }],
-          },
-        ],
-      },
-    ]
-  }, [])
+  const { data: v } = useVendorListQuery()
+  const { data: products } = useProductListQuery()
+
+  const vendors = v?.map((vendor) => ({
+    ...vendor,
+    products: products
+      ?.filter((product) => product.vendor_id === vendor.id)
+      .map((product) => ({
+        ...product,
+        versions: product.versions?.sort((a, b) =>
+          a.name.localeCompare(b.name),
+        ),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name)),
+  }))
 
   const handleSelectedItemsChange = (_event: any, itemIds: string[] | null) => {
     if (itemIds === null) {
@@ -185,19 +166,25 @@ export default function TreeView() {
       return
     }
 
+    if (!vendors) {
+      setSelectedIds([])
+      return
+    }
+
     setSelectedIds(
       determineIdsToSet(
-        fakeVendors.map((vendor) => ({
+        vendors?.map((vendor) => ({
           id: String(vendor.id),
           label: vendor.name,
-          children: vendor.products?.map((product) => ({
-            id: vendor.id + '_' + product.id,
-            label: product.name,
-            children: product.versions?.map((version) => ({
-              id: vendor.id + '_' + product.id + '_' + version.id,
-              label: version.name,
-            })),
-          })),
+          children: products
+            ?.filter((product) => product.vendor_id === vendor.id)
+            .map((product) => ({
+              ...product,
+              versions: product.versions?.sort((a, b) =>
+                a.name.localeCompare(b.name),
+              ),
+            }))
+            .sort((a, b) => a.name.localeCompare(b.name)),
         })),
         itemIds,
         selectedIds,
@@ -208,36 +195,19 @@ export default function TreeView() {
   const navigate = useNavigate()
   const apiRef = useRef<any>(null)
 
-  const item = useMemo(() => {
-    if (!selected) return null
-
-    const [vendorId, productId, versionId] = selected.id?.split('_') || []
-    if (!vendorId) return null
-
-    const vendor = fakeVendors.find((v) => v.id === Number(vendorId))
-    if (!vendor) return null
-    if (selected.type === 'vendor') return vendor
-    const product = vendor.products?.find((p) => p.id === Number(productId))
-    if (!product) return null
-    if (selected.type === 'product') return product
-    const version = product.versions?.find((v) => v.id === Number(versionId))
-    if (!version) return null
-    return version
-  }, [selected])
-
   return (
     <div className="flex grow flex-col items-center gap-4">
       <DashboardTabs selectedKey="tree" />
 
       <div className="flex w-full gap-4">
-        <div className="flex flex-col gap-2 w-1/5">
+        <div className="flex flex-col gap-2 min-w-1/5">
           <div className="flex w-full items-center justify-between gap-2">
             <Button
               variant="flat"
               color={selected === null ? 'default' : 'primary'}
               className="w-full"
               disabled={selected === null}
-              onPress={() => setSelected(null)}
+              onPress={() => setSelectedIds([])}
             >
               Clear Selection
             </Button>
@@ -261,7 +231,7 @@ export default function TreeView() {
                   setExpandedItems((prev) => {
                     const newItems = [...prev]
                     if (newItems.length === 0) {
-                      fakeVendors.forEach((vendor) => {
+                      vendors?.forEach((vendor) => {
                         newItems.push(String(vendor.id))
                         vendor.products?.forEach((product) => {
                           newItems.push(vendor.id + '_' + product.id)
@@ -296,24 +266,16 @@ export default function TreeView() {
               }
               onSelectedItemsChange={handleSelectedItemsChange}
             >
-              {fakeVendors.map((vendor) => (
+              {vendors?.map((vendor) => (
                 <TreeItem
                   key={vendor.id}
                   itemId={String(vendor.id)}
-                  label={
-                    <div className="flex items-center gap-2">
-                      <FontAwesomeIcon
-                        icon={faBuilding}
-                        className="text-primary"
-                      />
-                      {vendor.name}
-                    </div>
-                  }
+                  label={vendor.name}
                   onClick={(event) => {
                     event.stopPropagation()
                     setSelected({
                       type: 'vendor',
-                      id: String(vendor.id),
+                      item: vendor,
                     })
                   }}
                 >
@@ -321,21 +283,13 @@ export default function TreeView() {
                     <TreeItem
                       key={vendor.id + '_' + product.id}
                       itemId={vendor.id + '_' + product.id}
-                      label={
-                        <div className="flex items-center gap-2">
-                          <FontAwesomeIcon
-                            icon={faSitemap}
-                            className="text-primary"
-                          />
-                          {product.name}
-                        </div>
-                      }
+                      label={product.name}
                       onClick={(event) => {
                         event.stopPropagation()
 
                         setSelected({
                           type: 'product',
-                          id: vendor.id + '_' + product.id,
+                          item: product,
                         })
                       }}
                     >
@@ -351,8 +305,7 @@ export default function TreeView() {
 
                             setSelected({
                               type: 'version',
-                              id:
-                                vendor.id + '_' + product.id + '_' + version.id,
+                              item: version,
                             })
                           }}
                         />
@@ -371,26 +324,47 @@ export default function TreeView() {
               <p className="font-semibold text-xl">
                 {TypeLabels[selected?.type] || 'Unknown Type'}
                 {': '}
-                {item?.name}
+                {selected?.item.name}
               </p>
 
-              <Button
-                endContent={<FontAwesomeIcon icon={faArrowUpRightFromSquare} />}
-                color="primary"
-                variant="light"
-                onPress={() => {
-                  navigate(`/${selected?.type}s/${item?.id}`)
-                }}
-                href={`/${selected?.type}/${item?.id}`}
-              >
-                Jump to Element
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  endContent={
+                    <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                  }
+                  color="primary"
+                  variant="light"
+                  onPress={() => {
+                    navigate(`/${selected?.type}s/${selected?.item.id}`)
+                  }}
+                  href={`/${selected?.type}/${selected?.item.id}`}
+                >
+                  Jump to Element
+                </Button>
+
+                <Button
+                  color="primary"
+                  variant="light"
+                  isIconOnly
+                  onPress={() => setSelected(null)}
+                >
+                  <FontAwesomeIcon icon={faClose} size="lg" />
+                </Button>
+              </div>
             </div>
 
             <div>
-              {selected?.type === 'vendor' && <Vendor hideBreadcrumbs={true} />}
+              {selected?.type === 'vendor' && (
+                <Vendor
+                  vendorId={selected.item.id?.toString() || ''}
+                  hideBreadcrumbs={true}
+                />
+              )}
               {selected?.type === 'product' && (
-                <Product hideBreadcrumbs={true} />
+                <Product
+                  productId={selected.item.id?.toString() || ''}
+                  hideBreadcrumbs={true}
+                />
               )}
               {selected?.type === 'version' && (
                 <Version hideBreadcrumbs={true} />

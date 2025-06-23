@@ -18,13 +18,20 @@ import { useVendorQuery } from './Vendor'
 import { DeleteVersion } from './Version'
 
 export function useProductQuery(productId: string) {
-  const request = client.useQuery('get', '/api/v1/products/{id}', {
-    params: {
-      path: {
-        id: productId || '',
+  const request = client.useQuery(
+    'get',
+    '/api/v1/products/{id}',
+    {
+      params: {
+        path: {
+          id: productId || '',
+        },
       },
     },
-  })
+    {
+      enabled: !!productId,
+    },
+  )
 
   useRefetchQuery(request)
   return request
@@ -69,13 +76,20 @@ export function DeleteProduct({
 }
 
 export function useVersionListQuery(productId?: string) {
-  const request = client.useQuery('get', '/api/v1/products/{id}/versions', {
-    params: {
-      path: {
-        id: productId || '',
+  const request = client.useQuery(
+    'get',
+    '/api/v1/products/{id}/versions',
+    {
+      params: {
+        path: {
+          id: productId || '',
+        },
       },
     },
-  })
+    {
+      enabled: !!productId,
+    },
+  )
   useRefetchQuery(request)
   return request
 }
@@ -130,14 +144,27 @@ export function VersionItem({ version }: { version: any }) {
   )
 }
 
+/**
+ *
+ * @param productId - The ID of the product to display. If not provided, it will be taken from the URL.
+ * @param hideBreadcrumbs - Whether to hide the breadcrumbs navigation. Defaults to false.
+ * @returns
+ */
 export default function Product({
+  productId,
   hideBreadcrumbs = false,
 }: {
+  productId?: string
   hideBreadcrumbs?: boolean
 }) {
-  const { productId } = useParams()
+  let productIdParam = productId
 
-  const { data: product } = useProductQuery(productId || '')
+  if (!productIdParam) {
+    const { productId: paramProductId } = useParams()
+    productIdParam = paramProductId
+  }
+
+  const { data: product } = useProductQuery(productIdParam || '')
   const { data: vendor } = useVendorQuery(product?.vendor_id || '')
   const { data: versions } = useVersionListQuery(product?.id)
 
@@ -163,7 +190,7 @@ export default function Product({
         addButton={
           <AddVersionButton
             product={product}
-            returnTo={`products/${product.id}`}
+            returnTo={`/products/${product.id}`}
           />
         }
       >
