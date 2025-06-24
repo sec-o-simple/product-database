@@ -120,9 +120,9 @@ function IndentificationItem({
   const [editFields, setEditFields] = useState(data.fields)
 
   return (
-    <div className="flex w-full flex-col gap-2 justify-between bg-gray-50 px-4 py-2 rounded-lg border-1 border-default-200 hover:bg-gray-100 hover:transition-background">
+    <div className="flex w-full flex-col justify-between gap-2 rounded-lg border-1 border-default-200 bg-gray-50 px-4 py-2 hover:bg-gray-100 hover:transition-background">
       <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-2 grow">
+        <div className="flex grow flex-col gap-2">
           {data.fields.map((field) => {
             if (!edit)
               return (
@@ -134,7 +134,7 @@ function IndentificationItem({
             return (
               <div
                 key={field.id}
-                className="flex flex-col gap-2 py-1 items-end"
+                className="flex flex-col items-end gap-2 py-1"
               >
                 <Input
                   type="text"
@@ -162,7 +162,7 @@ function IndentificationItem({
                         key={index}
                         title={subItems.fields[0].label}
                       >
-                        <div className="flex flex-col gap-2 mb-2">
+                        <div className="mb-2 flex flex-col gap-2">
                           {subItems.fields.map((subField) => (
                             <Input
                               key={subField.id}
@@ -242,14 +242,14 @@ export function IdentificationGroup({
 
   return (
     <div
-      className={`flex flex-col bg-white border-1 border-gray-200 p-4 gap-2 rounded-md group ${
+      className={`group flex flex-col gap-2 rounded-md border-1 border-slate-200 bg-white p-4 ${
         onClick ? 'cursor-pointer hover:bg-gray-50' : ''
       }`}
       onClick={onClick}
     >
       <div className="mb-2">
         <div className="flex items-center justify-between">
-          <p className="font-semibold text-lg">{label}</p>
+          <p className="text-lg font-semibold">{label}</p>
 
           {deleteable && (
             <Tooltip content="Delete Entry" placement="bottom">
@@ -275,7 +275,7 @@ export function IdentificationGroup({
           closeDelay={0}
           className="max-w-[400px]"
         >
-          <p className="text-zinc-500 line-clamp-2">{description}</p>
+          <p className="line-clamp-2 text-zinc-500">{description}</p>
         </Tooltip>
       </div>
 
@@ -405,8 +405,8 @@ export default function IdentificationOverview({
         </Breadcrumbs>
       )}
 
-      <div className="flex w-full items-center justify-between border-1 border-gray-200 bg-white p-4 rounded-md">
-        <p className="font-semibold text-xl text-primary">
+      <div className="flex w-full items-center justify-between rounded-md border-1 border-slate-200 bg-white p-4">
+        <p className="text-xl font-semibold text-primary">
           Identification Helper
         </p>
 
@@ -436,12 +436,10 @@ export default function IdentificationOverview({
               add={
                 <Button
                   variant="bordered"
-                  className="border-dashed text-gray border-gray"
+                  className="border-dashed border-gray text-gray"
                   startContent={<FontAwesomeIcon icon={faAdd} />}
                   onPress={() => {
-                    navigate(
-                      `/identification-helpers/${existingType.id}`,
-                    )
+                    navigate(`/identification-helpers/${existingType.id}`)
                   }}
                 >
                   Add {helper.label}

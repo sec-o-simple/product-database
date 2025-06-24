@@ -2,15 +2,10 @@ import client from '@/client'
 import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
-import {
-  CreateVendorButton,
-} from '@/components/layout/vendor/CreateEditVendor'
+import { CreateVendorButton } from '@/components/layout/vendor/CreateEditVendor'
 import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
-import {
-  faEdit,
-  faSearch,
-} from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Chip, Input } from '@heroui/react'
 import { DashboardTabs } from './Products'
@@ -45,7 +40,7 @@ export function VendorItem({
       title={vendor.name}
       description={vendor.description}
       actions={
-        <div className="flex flex-row gap">
+        <div className="flex flex-row gap-1">
           <IconButton
             icon={faEdit}
             onPress={() =>
@@ -96,9 +91,9 @@ export default function Vendors() {
         }
       />
 
-      <div className="w-full flex gap-2 flex-col">
-        <div className="flex w-full items-center justify-between mb-2 gap-2">
-          <div className="flex flex-grow flex-row gap-2">
+      <div className="flex w-full flex-col gap-2">
+        <div className="mb-2 flex w-full items-center justify-between gap-2">
+          <div className="flex grow flex-row gap-2">
             {/* <FilterButton title="Name" icon={faSortAlphaAsc} disabled /> */}
             {/* <FilterButton title="Products" icon={faSortAmountAsc} disabled /> */}
           </div>

@@ -200,7 +200,7 @@ export default function TreeView() {
       <DashboardTabs selectedKey="tree" />
 
       <div className="flex w-full gap-4">
-        <div className="flex flex-col gap-2 min-w-1/5">
+        <div className="flex min-w-40 flex-col gap-2">
           <div className="flex w-full items-center justify-between gap-2">
             <Button
               variant="flat"
@@ -254,7 +254,7 @@ export default function TreeView() {
             </Tooltip>
           </div>
 
-          <div className="bg-white rounded-lg border-1 border-gray-200 p-2">
+          <div className="rounded-lg border-1 border-slate-200 bg-white p-2">
             <MuiTreeView
               checkboxSelection
               apiRef={apiRef}
@@ -319,9 +319,9 @@ export default function TreeView() {
         </div>
 
         {selected && (
-          <div className="w-4/5 bg-white rounded-lg border-1 border-gray-200 p-6 space-y-4">
-            <div className="flex w-full justify-between items-center gap-2">
-              <p className="font-semibold text-xl">
+          <div className="w-4/5 space-y-4 rounded-lg border-1 border-slate-200 bg-white p-6">
+            <div className="flex w-full items-center justify-between gap-2">
+              <p className="text-xl font-semibold">
                 {TypeLabels[selected?.type] || 'Unknown Type'}
                 {': '}
                 {selected?.item.name}

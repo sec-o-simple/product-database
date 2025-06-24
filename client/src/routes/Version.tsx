@@ -105,7 +105,7 @@ export default function Version({
   )
 
   return (
-    <div className="flex grow flex-col w-full gap-4 p-2">
+    <div className="flex w-full grow flex-col gap-4 p-2">
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
@@ -125,11 +125,12 @@ export default function Version({
           <ListGroup title={relationship.category} key={relationship.category}>
             {relationship.products.map((product) => (
               <ListItem
+                key={`${relationship.category}-${product.product.id}`}
                 classNames={{
                   base: 'border-default-200 border-b-0 rounded-none',
                 }}
                 title={
-                  <div className="flex gap-2 items-center">
+                  <div className="flex items-center gap-2">
                     {/* {version.id === 1 && <LatestChip />} */}
                     <p>{product.product.full_name}</p>
                   </div>

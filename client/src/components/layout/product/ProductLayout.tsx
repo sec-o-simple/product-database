@@ -98,16 +98,18 @@ export default function ProductLayout() {
         </div>
       </TopBar>
 
-      <div className="flex flex-row flex-grow overflow-scroll">
+      <div className="flex grow flex-row overflow-scroll">
         <Sidebar
           attributes={[
-            <Attribute label="Name" value={product.name} />,
+            <Attribute label="Name" value={product.name} key="name" />,
             <Attribute
+              key="description"
               label="Description"
               value={product.description || '-/-'}
             />,
-            <Attribute label="Type" value={product.type || '-/-'} />,
+            <Attribute label="Type" value={product.type || '-/-'} key="type" />,
             <Attribute
+              key="idHelpers"
               label="Vendor"
               value={vendor?.name || '-/-'}
               href={`/vendors/${product.vendor_id}`}

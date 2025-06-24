@@ -22,9 +22,9 @@ export function ListGroup({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex w-full flex-col bg-white rounded-lg">
-      <div className="flex items-center justify-between p-4 border-1 border-b-0 rounded-t-lg border-default-200">
-        <p className="font-bold text-lg">{title}</p>
+    <div className="flex w-full flex-col rounded-lg bg-white">
+      <div className="flex items-center justify-between rounded-t-lg border-1 border-b-0 border-default-200 p-4">
+        <p className="text-lg font-bold">{title}</p>
       </div>
       {children}
     </div>
@@ -51,7 +51,7 @@ export default function ListItem({
       )}
     >
       <div className="flex items-center justify-between">
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           <div
             className={cn(
               'text-lg font-semibold group-hover:underline',

@@ -85,10 +85,10 @@ export default function Vendor({
   vendorId?: string
   hideBreadcrumbs?: boolean
 }) {
+  const { vendorId: paramVendorId } = useParams()
   let vendorIdParam = vendorId
 
   if (!vendorIdParam) {
-    const { vendorId: paramVendorId } = useParams()
     vendorIdParam = paramVendorId
   }
 
@@ -109,7 +109,7 @@ export default function Vendor({
         addButton={<AddProductButton vendorId={vendor?.id || ''} />}
       >
         {products?.map((product) => (
-            <ProductItem key={product.id} product={product} />
+          <ProductItem key={product.id} product={product} />
         ))}
       </DataGrid>
     </PageContent>

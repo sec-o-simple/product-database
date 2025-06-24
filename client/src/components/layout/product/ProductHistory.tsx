@@ -12,7 +12,7 @@ export default function ProductHistory() {
   const { data: vendor } = useVendorQuery(product?.vendor_id || '')
 
   return (
-    <div className="flex grow flex-col w-full gap-4 p-2">
+    <div className="flex w-full grow flex-col gap-4 p-2">
       <Breadcrumbs>
         <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
         <BreadcrumbItem href={`/vendors/${vendor?.id}`}>

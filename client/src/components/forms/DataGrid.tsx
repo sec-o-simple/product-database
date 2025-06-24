@@ -1,18 +1,21 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  FontAwesomeIcon,
+  FontAwesomeIconProps,
+} from '@fortawesome/react-fontawesome'
 import { Button, ButtonProps } from '@heroui/button'
 import React from 'react'
 import { EmptyState } from '../table/EmptyState'
 
 export function Titlebar({ title }: { title: string }) {
   return (
-    <div className="flex w-full items-center justify-between border-1 border-gray-200 bg-white p-4 rounded-md">
-      <p className="font-semibold text-xl text-primary">{title}</p>
+    <div className="flex w-full items-center justify-between rounded-md border-1 border-gray bg-white p-4">
+      <p className="text-xl font-semibold text-primary">{title}</p>
     </div>
   )
 }
 
 type FilterButtonProps = {
-  icon: any
+  icon: FontAwesomeIconProps['icon']
   title: string
 } & ButtonProps
 
@@ -40,14 +43,16 @@ export default function DataGrid({
   return (
     <div className="flex w-full flex-col items-center gap-4">
       {title && (
-        <div className="flex w-full items-center justify-between border-1 border-gray-200 bg-white p-4 rounded-lg">
-          <p className="font-semibold text-xl text-primary">{title}</p>
+        <div className="flex w-full items-center justify-between rounded-lg border-1 border-gray bg-white p-4">
+          <p className="text-xl font-semibold text-primary">{title}</p>
         </div>
       )}
 
-      {React.Children.count(children) === 0 ? <EmptyState add={addButton} /> : null}
+      {React.Children.count(children) === 0 ? (
+        <EmptyState add={addButton} />
+      ) : null}
 
-      <div className="flex flex-col w-full gap-2">{children}</div>
+      <div className="flex w-full flex-col gap-2">{children}</div>
 
       {/* <Pagination /> */}
     </div>

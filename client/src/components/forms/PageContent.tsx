@@ -3,9 +3,9 @@ export default function PageContent({
 }: {
   children: React.ReactNode
 }) {
-  return <div className="flex flex-col p-2 gap-4">{children}</div>
+  return <div className="flex flex-col gap-4 p-2">{children}</div>
 }
 
 export function PageOutlet({ children }: { children: React.ReactNode }) {
-  return <div className="p-4 flex-grow overflow-scroll">{children}</div>
+  return <div className="grow overflow-scroll p-4">{children}</div>
 }

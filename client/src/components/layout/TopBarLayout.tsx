@@ -1,8 +1,4 @@
-import {
-  faArrowLeft,
-  faDatabase,
-  faHistory,
-} from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faDatabase } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { Tooltip } from '@heroui/react'
@@ -20,13 +16,12 @@ interface TopBarProps {
 export function TopBar({
   title,
   children,
-  historyLink,
   navigateBack = true,
 }: Readonly<TopBarProps>) {
   const navigate = useNavigate()
 
   return (
-    <div className="flex w-full items-center justify-between gap-8 border-b px-6 py-4 bg-white">
+    <div className="flex w-full items-center justify-between gap-8 border-b bg-white px-6 py-4">
       <span className="flex items-center gap-2 text-2xl font-bold">
         <Tooltip content="Go to Home" placement="bottom" showArrow>
           <Button

@@ -31,7 +31,6 @@ export type ProductProps = {
 }
 
 export function useProductMutation({
-  vendorId,
   product,
   onClose,
 }: {
@@ -64,9 +63,12 @@ export function useProductMutation({
     if (isCreateForm) {
       createMutation.mutate({ body })
     } else {
-      updateMutation.mutate({ body, params: { path: { id: product.id || '' } } })
+      updateMutation.mutate({
+        body,
+        params: { path: { id: product.id || '' } },
+      })
     }
-  }, [product, vendorId])
+  }, [product, isCreateForm, createMutation, updateMutation])
 
   const mutation = isCreateForm ? createMutation : updateMutation
 
@@ -81,7 +83,10 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() => {
-        navigateToModal(`/vendors/${vendorId}/products/create`, `/vendors/${vendorId}`)
+        navigateToModal(
+          `/vendors/${vendorId}/products/create`,
+          `/vendors/${vendorId}`,
+        )
       }}
     >
       Add Product

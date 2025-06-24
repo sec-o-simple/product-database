@@ -33,7 +33,7 @@ export default function VersionHistory() {
   // })
 
   return (
-    <div className="flex grow flex-col w-full gap-4 p-2">
+    <div className="flex w-full grow flex-col gap-4 p-2">
       {/* <Breadcrumbs>
         <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
         <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>

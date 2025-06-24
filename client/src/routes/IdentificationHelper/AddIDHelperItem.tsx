@@ -2,24 +2,14 @@ import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button, ButtonProps } from '@heroui/button'
 import {
-  Checkbox,
-  DatePicker,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownSection,
-  DropdownTrigger,
   Input,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Select,
-  SelectItem,
   useDisclosure,
 } from '@heroui/react'
-import { HelperTypeProps, idHelperTypes } from '../Version'
 
 export function AddIdHelperItem(props?: ButtonProps) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()

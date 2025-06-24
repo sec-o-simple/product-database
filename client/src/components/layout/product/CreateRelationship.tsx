@@ -41,7 +41,7 @@ function ProductBox({
 }) {
   return (
     (products.length !== 0 || versions.length !== 0) && (
-      <div className="border border-gray items-center bg-white rounded-lg p-2 px-4 flex flex-col">
+      <div className="flex flex-col items-center rounded-lg border border-gray bg-white p-2 px-4">
         <div className="flex flex-col gap-1">
           {products.map((product) => (
             <p key={product}>{product}</p>
@@ -55,19 +55,15 @@ function ProductBox({
 }
 
 export function AddRelationshipButton() {
-  const {
-    navigateToModal,
-    params: { versionId },
-  } = useRouter()
-
   return (
     <Button
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
-      onPress={() =>
-        addToast({
-          title: 'Not implemented yet',
-        })
+      onPress={
+        () =>
+          addToast({
+            title: 'Not implemented yet',
+          })
         // navigateToModal(
         //   `/product-versions/${versionId}/relationships/create`,
         // )
@@ -95,7 +91,7 @@ export default function CreateRelationship() {
 
   const { data: products } = useProductListQuery()
 
-  let versions: { id: string, name: string }[] = []
+  let versions: { id: string; name: string }[] = []
   // if (products && products.length > 0) {
   //   for (const product of products) {
   //     const { data: productVersions } = useVersionListQuery(product.id) as {
@@ -281,7 +277,7 @@ export default function CreateRelationship() {
               }}
             /> */}
 
-          <div className="flex flex-row gap-2 bg-gray-100 items-center rounded-md p-4 justify-around">
+          <div className="flex flex-row items-center justify-around gap-2 rounded-md bg-gray-100 p-4">
             {/* <ProductBox
               products={selected.sourceProducts.map(
                 (product) =>

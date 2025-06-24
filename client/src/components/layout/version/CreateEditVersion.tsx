@@ -72,9 +72,12 @@ export function useVersionMutation({
     if (isCreateForm) {
       createMutation.mutate({ body })
     } else {
-      updateMutation.mutate({ body, params: { path: { id: version.id || '' } } })
+      updateMutation.mutate({
+        body,
+        params: { path: { id: version.id || '' } },
+      })
     }
-  }, [productId, version])
+  }, [productId, version, createMutation, isCreateForm, updateMutation])
 
   const mutation = isCreateForm ? createMutation : updateMutation
 
@@ -92,10 +95,7 @@ export function AddVersionButton({
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() => {
-        navigateToModal(
-          `/products/${productId}/versions/create`,
-          returnTo,
-        )
+        navigateToModal(`/products/${productId}/versions/create`, returnTo)
       }}
     >
       Add Version
@@ -105,14 +105,14 @@ export function AddVersionButton({
 
 function VersionSkeleton() {
   return (
-    <div className="flex flex- gap-2 w-full animate-pulse">
+    <div className="flex w-full animate-pulse gap-2">
       <div className="flex-1">
-        <div className="h-5 w-24 bg-gray-200 rounded mb-1" />
-        <div className="h-10 bg-gray-200 rounded" />
+        <div className="mb-1 h-5 w-24 rounded bg-gray-200" />
+        <div className="h-10 rounded bg-gray-200" />
       </div>
       <div className="flex-1">
-        <div className="h-5 w-24 bg-gray-200 rounded mb-1" />
-        <div className="h-10 bg-gray-200 rounded" />
+        <div className="mb-1 h-5 w-24 rounded bg-gray-200" />
+        <div className="h-10 rounded bg-gray-200" />
       </div>
     </div>
   )
@@ -205,7 +205,9 @@ export default function CreateEditVersion() {
                   label="Release Date"
                   variant="bordered"
                   value={version.releaseDate}
-                  onChange={(date) => setVersion({ ...version, releaseDate: date })}
+                  onChange={(date) =>
+                    setVersion({ ...version, releaseDate: date })
+                  }
                   labelPlacement="outside"
                   classNames={{
                     inputWrapper: 'border-1 shadow-none',

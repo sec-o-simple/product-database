@@ -19,7 +19,7 @@ export default function History({
 }>) {
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="flex flex-row justify-between align-middle items-center">
+      <div className="flex flex-row items-center justify-between align-middle">
         <div className="flex flex-row items-center gap-4">
           <p className="text-2xl font-bold">History</p>
 

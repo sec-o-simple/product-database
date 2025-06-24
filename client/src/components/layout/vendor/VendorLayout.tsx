@@ -68,7 +68,7 @@ export default function VendorLayout() {
         <AddProductButton vendorId={vendor.id?.toString()} />
       </TopBar>
 
-      <div className="flex flex-row flex-grow overflow-scroll">
+      <div className="flex grow flex-row overflow-scroll">
         <Sidebar
           actions={
             <div className="flex flex-row gap-2">
@@ -90,8 +90,9 @@ export default function VendorLayout() {
             </div>
           }
           attributes={[
-            <Attribute label="Name" value={vendor.name} />,
+            <Attribute label="Name" value={vendor.name} key="name" />,
             <Attribute
+              key="idHelpers"
               label="Description"
               value={vendor.description || '-/-'}
             />,

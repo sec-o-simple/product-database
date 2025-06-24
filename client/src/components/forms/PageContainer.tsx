@@ -3,5 +3,5 @@ export default function PageContainer({
 }: {
   children: React.ReactNode
 }) {
-  return <div className="flex flex-col bg-[#F9FAFB] h-screen">{children}</div>
+  return <div className="flex h-screen flex-col bg-[#F9FAFB]">{children}</div>
 }

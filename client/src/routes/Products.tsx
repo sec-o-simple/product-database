@@ -40,8 +40,8 @@ export function DashboardTabs({
   endContent?: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col w-full items-center justify-between">
-      <div className="flex w-full items-center justify-between mb-2">
+    <div className="flex w-full flex-col items-center justify-between">
+      <div className="mb-2 flex w-full items-center justify-between">
         <Tabs
           selectedKey={selectedKey}
           className="w-full"
@@ -60,7 +60,26 @@ export function DashboardTabs({
   )
 }
 
-export function ProductItem({ product }: { product: any }) {
+export function ProductItem({
+  product,
+}: {
+  product: {
+    id: string
+    name: string
+    description?: string
+    type?: string
+    latest_versions?: {
+      description?: string
+      full_name: string
+      id: string
+      is_latest: boolean
+      name: string
+      predecessor_id?: string | null
+      product_id?: string
+      released_at?: string | null
+    }[]
+  }
+}) {
   const { navigateToModal, navigate } = useRouter()
 
   const handleOnActionClick = (href: string) => {
@@ -72,7 +91,7 @@ export function ProductItem({ product }: { product: any }) {
       key={product.id}
       onClick={() => navigate(`/products/${product.id}`)}
       title={
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           {product.latest_versions && <LatestChip />}
           <p>{product.name}</p>
         </div>

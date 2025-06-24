@@ -40,7 +40,7 @@ export function DeleteProduct({
   product,
   isIconButton,
 }: {
-  product: { name: string, id: string, vendor_id?: string }
+  product: { name: string; id: string; vendor_id?: string }
   isIconButton?: boolean
 }) {
   const mutation = client.useMutation('delete', '/api/v1/products/{id}')
@@ -93,7 +93,17 @@ export function useVersionListQuery(productId?: string) {
   return request
 }
 
-export function VersionItem({ version }: { version: any }) {
+export function VersionItem({
+  version,
+}: {
+  version: {
+    id: string
+    name: string
+    description?: string
+    release_date?: string
+    is_latest?: boolean
+  }
+}) {
   const {
     params: { productId },
     navigate,
@@ -107,7 +117,7 @@ export function VersionItem({ version }: { version: any }) {
       key={version.id}
       onClick={() => navigate(`/product-versions/${version.id}`)}
       title={
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center gap-2">
           {version.is_latest && <LatestChip />}
 
           <p>{version.name}</p>
@@ -119,9 +129,7 @@ export function VersionItem({ version }: { version: any }) {
           <IconButton
             icon={faEdit}
             onPress={() =>
-              handleOnActionClick(
-                `/product-versions/${version.id}/edit`,
-              )
+              handleOnActionClick(`/product-versions/${version.id}/edit`)
             }
           />
 
@@ -156,10 +164,10 @@ export default function Product({
   productId?: string
   hideBreadcrumbs?: boolean
 }) {
+  const { productId: paramProductId } = useParams()
   let productIdParam = productId
 
   if (!productIdParam) {
-    const { productId: paramProductId } = useParams()
     productIdParam = paramProductId
   }
 
@@ -194,8 +202,8 @@ export default function Product({
         }
       >
         {versions?.map((version) => (
-            <VersionItem key={version.id} version={version} />
-          ))}
+          <VersionItem key={version.id} version={version} />
+        ))}
       </DataGrid>
     </PageContent>
   )

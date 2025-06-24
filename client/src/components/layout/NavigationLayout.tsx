@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom'
 export default function NavigationLayout() {
   return (
     <div className="flex grow">
-      <div className="flex basis-80 flex-col gap-2 border-r border-neutral-border p-4">
+      <div className="flex basis-80 flex-col gap-2 border-r border-neutral-200 p-4">
         <Section
           number={1}
           title="Document Information"
