@@ -10,7 +10,7 @@
     "lint": "eslint -c .eslintrc.json ./src/**/**/*.{ts,tsx} --fix",
     "preview": "vite preview",
     "dev-all": "concurrently \"npm run dev\" \"npm run dev:api\"",
-    "generate:api": "openapi-typescript ../server/doc/openapi.json --output src/client/schema.d.ts"
+    "generate:api": "openapi-typescript ../docs/openapi.json --output src/client/schema.d.ts"
   },
   "dependencies": {
     "@emotion/styled": "^11.14.0",

@@ -26,6 +26,12 @@ func main() {
 	}
 
 	s := fuego.NewServer(
+		fuego.WithEngineOptions(
+			fuego.WithOpenAPIConfig(fuego.OpenAPIConfig{
+				JSONFilePath:     "../docs/openapi.json",
+				PrettyFormatJSON: true,
+			}),
+		),
 		fuego.WithGlobalMiddlewares(func(next http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				// if options then return ok
