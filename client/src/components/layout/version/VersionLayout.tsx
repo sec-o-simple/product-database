@@ -13,30 +13,36 @@ import { Outlet, useParams } from 'react-router-dom'
 import { AddRelationshipButton } from '../product/CreateRelationship'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
+import { useEffect } from 'react'
 
 export default function VersionLayout() {
   const { navigateToModal, navigate } = useRouter()
-  const { versionId, productId } = useParams()
+  const { versionId } = useParams()
 
-  const { data: product } = useProductQuery(productId || '')
-  const { data: version } = useVersionQuery(versionId || '')
+  const { data: version, isLoading: isVersionLoading } = useVersionQuery(versionId || '')
+  const { data: product, isLoading: isProductLoading } = useProductQuery(version?.product_id)
+
+  useEffect(() => {
+    if (isVersionLoading || isProductLoading) return
+    if (!version || !product) {
+      navigate(`/`, {
+        state: {
+          shouldRefetch: true,
+          message: 'Version not found.',
+          type: 'error',
+        },
+      })
+    }
+  }, [isVersionLoading, isProductLoading, product, version, navigate])
 
   if (!version || !product) {
-    navigate(`/products/${productId}`, {
-      state: {
-        shouldRefetch: true,
-        message: 'Version or Product not found.',
-        type: 'error',
-      },
-    })
-
     return <EmptyState />
   }
 
   return (
     <PageContainer>
       <TopBar
-        historyLink={`/products/${productId}/versions/${versionId}/history`}
+        historyLink={`/product-versions/${versionId}/history`}
         title={
           <div className="flex flex-row gap-2 items-center">
             <p>Product: {product?.name}</p>
@@ -61,7 +67,7 @@ export default function VersionLayout() {
             <Attribute
               label="Product"
               value={product?.name || '-/-'}
-              href={`/products/${productId}`}
+              href={`/products/${version.product_id}`}
             />,
             <Button
               variant="light"
@@ -69,7 +75,7 @@ export default function VersionLayout() {
               className="font-semibold text-md px-2 w-full justify-between"
               onPress={() =>
                 navigate(
-                  `/products/${productId}/versions/${versionId}/identification-helper`,
+                  `/product-versions/${version.id}/identification-helpers`,
                 )
               }
             >
@@ -87,8 +93,8 @@ export default function VersionLayout() {
                 fullWidth
                 onPress={() =>
                   navigateToModal(
-                    `/products/${productId}/versions/${versionId}/edit`,
-                    `/products/${productId}/versions/${versionId}`,
+                    `/product-versions/${versionId}/edit`,
+                    `/product-versions/${version.id}`,
                   )
                 }
               >

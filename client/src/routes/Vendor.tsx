@@ -13,7 +13,7 @@ import { useParams } from 'react-router-dom'
 import { ProductItem, useVendorProductListQuery } from './Products'
 import { VendorProps } from './Vendors'
 
-export function useVendorQuery(vendorId: string) {
+export function useVendorQuery(vendorId?: string) {
   const request = client.useQuery(
     'get',
     '/api/v1/vendors/{id}',
@@ -106,13 +106,11 @@ export default function Vendor({
 
       <DataGrid
         title={`Products (${products?.length})`}
-        addButton={<AddProductButton vendorId={vendor?.id.toString()} />}
+        addButton={<AddProductButton vendorId={vendor?.id || ''} />}
       >
-        {products &&
-          products.length > 0 &&
-          products.map((product) => (
+        {products?.map((product) => (
             <ProductItem key={product.id} product={product} />
-          ))}
+        ))}
       </DataGrid>
     </PageContent>
   )

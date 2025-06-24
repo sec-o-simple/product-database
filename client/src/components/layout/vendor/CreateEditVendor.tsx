@@ -20,11 +20,9 @@ import { useParams } from 'react-router-dom'
 export function useVendorMutation({
   vendor,
   onClose,
-  client,
 }: {
   vendor: VendorProps
   onClose: () => void
-  client: any
 }) {
   const onSuccess = useCallback(() => {
     onClose()
@@ -50,7 +48,7 @@ export function useVendorMutation({
     } else {
       updateMutation.mutate({
         body,
-        params: { path: { id: vendor.id } },
+        params: { path: { id: vendor.id || '' } },
       })
     }
   }, [isCreateForm, createMutation, updateMutation, vendor])
@@ -108,7 +106,6 @@ export default function CreateEditVendor() {
   const { mutateVendor, isPending, error } = useVendorMutation({
     vendor,
     onClose: onClose,
-    client,
   })
 
   if (!isCreateForm && isLoading) {

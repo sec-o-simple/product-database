@@ -110,7 +110,6 @@ function IndentificationItem({
   data,
   chips,
   onUpdate,
-  onDelete,
 }: {
   data: ItemProps
   chips?: React.ReactNode
@@ -441,7 +440,7 @@ export default function IdentificationOverview({
                   startContent={<FontAwesomeIcon icon={faAdd} />}
                   onPress={() => {
                     navigate(
-                      `/products/${productId}/versions/${versionId}/identification-helper/${existingType.id}`,
+                      `/identification-helpers/${existingType.id}`,
                     )
                   }}
                 >

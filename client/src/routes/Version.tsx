@@ -12,6 +12,7 @@ import { BreadcrumbItem } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 import { useProductQuery } from './Product'
 import { useVendorQuery } from './Vendor'
+import ListItem, { ListGroup } from '@/components/forms/ListItem'
 
 export function useVersionQuery(versionId?: string) {
   const request = client.useQuery(
@@ -86,11 +87,11 @@ export default function Version({
 }: {
   hideBreadcrumbs?: boolean
 }) {
-  const { productId, versionId } = useParams()
+  const { versionId } = useParams()
 
-  const { data: product } = useProductQuery(productId || '')
-  const { data: vendor } = useVendorQuery(product.vendor_id || '')
   const { data: version } = useVersionQuery(versionId)
+  const { data: product } = useProductQuery(version?.product_id)
+  const { data: vendor } = useVendorQuery(product?.vendor_id)
   const { data: relationships } = client.useQuery(
     'get',
     `/api/v1/product-versions/{id}/relationships`,
@@ -120,23 +121,24 @@ export default function Version({
 
       <div className="flex w-full flex-col items-center gap-4">
         <EmptyState add={<AddRelationshipButton />} />
-        {/* {version.source_relationships?.map((relationship) => (
-          <ListGroup title={relationship.category} key={`${relationship.category}-${relationship.id}`}>
-            <ListItem
-              classNames={{
-                base: 'border-default-200 border-b-0 rounded-none',
-              }}
-              title={
-                <div className="flex gap-2 items-center">
-                  {version.id === 1 && <LatestChip />}
-
-                  <p>{relationship.target_branch_name}</p>
-                </div>
-              }
-              description={'No description'}
-            />
+        {relationships?.map((relationship) => (
+          <ListGroup title={relationship.category} key={relationship.category}>
+            {relationship.products.map((product) => (
+              <ListItem
+                classNames={{
+                  base: 'border-default-200 border-b-0 rounded-none',
+                }}
+                title={
+                  <div className="flex gap-2 items-center">
+                    {/* {version.id === 1 && <LatestChip />} */}
+                    <p>{product.product.full_name}</p>
+                  </div>
+                }
+                description={'No description'}
+              />
+            ))}
           </ListGroup>
-        ))} */}
+        ))}
       </div>
     </div>
   )

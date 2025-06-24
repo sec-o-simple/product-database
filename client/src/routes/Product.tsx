@@ -6,7 +6,6 @@ import IconButton from '@/components/forms/IconButton'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import PageContent from '@/components/forms/PageContent'
-import { ProductProps } from '@/components/layout/product/CreateEditProduct'
 import { AddVersionButton } from '@/components/layout/version/CreateEditVersion'
 import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
@@ -17,7 +16,7 @@ import { useParams } from 'react-router-dom'
 import { useVendorQuery } from './Vendor'
 import { DeleteVersion } from './Version'
 
-export function useProductQuery(productId: string) {
+export function useProductQuery(productId?: string) {
   const request = client.useQuery(
     'get',
     '/api/v1/products/{id}',
@@ -41,7 +40,7 @@ export function DeleteProduct({
   product,
   isIconButton,
 }: {
-  product: ProductProps
+  product: { name: string, id: string, vendor_id?: string }
   isIconButton?: boolean
 }) {
   const mutation = client.useMutation('delete', '/api/v1/products/{id}')
@@ -106,7 +105,7 @@ export function VersionItem({ version }: { version: any }) {
   return (
     <ListItem
       key={version.id}
-      onClick={() => navigate(`/products/${productId}/versions/${version.id}`)}
+      onClick={() => navigate(`/product-versions/${version.id}`)}
       title={
         <div className="flex gap-2 items-center">
           {version.is_latest && <LatestChip />}
@@ -121,7 +120,7 @@ export function VersionItem({ version }: { version: any }) {
             icon={faEdit}
             onPress={() =>
               handleOnActionClick(
-                `/products/${productId}/versions/${version.id}/edit`,
+                `/product-versions/${version.id}/edit`,
               )
             }
           />
@@ -189,14 +188,12 @@ export default function Product({
         title={`Versions (${versions?.length})`}
         addButton={
           <AddVersionButton
-            product={product}
+            productId={product?.id || ''}
             returnTo={`/products/${product.id}`}
           />
         }
       >
-        {versions &&
-          versions.length > 0 &&
-          versions?.map((version) => (
+        {versions?.map((version) => (
             <VersionItem key={version.id} version={version} />
           ))}
       </DataGrid>

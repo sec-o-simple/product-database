@@ -56,7 +56,7 @@ export function TopBar({
       </span>
 
       <div className="flex items-center gap-2">
-        {historyLink && (
+        {/* {historyLink && (
           <Button
             variant="light"
             color="primary"
@@ -66,7 +66,7 @@ export function TopBar({
             <FontAwesomeIcon icon={faHistory} size="lg" />
             History
           </Button>
-        )}
+        )} */}
         {children}
       </div>
     </div>

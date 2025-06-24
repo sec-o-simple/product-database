@@ -8,7 +8,7 @@ import {
 import { DeleteProduct, useProductQuery } from '@/routes/Product'
 import { useVendorQuery } from '@/routes/Vendor'
 import useRouter from '@/utils/useRouter'
-import { faAdd, faFileExport } from '@fortawesome/free-solid-svg-icons'
+import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import {
@@ -82,17 +82,17 @@ export default function ProductLayout() {
         historyLink={`/products/${product.id}/history`}
       >
         <div className="flex flex-row gap-4">
-          <Button
+          {/* <Button
             color="primary"
             variant="light"
             disabled
             startContent={<FontAwesomeIcon icon={faFileExport} />}
           >
             Export
-          </Button>
+          </Button> */}
 
           <AddVersionButton
-            product={product}
+            productId={product.id}
             returnTo={`/products/${productId}`}
           />
         </div>

@@ -18,10 +18,9 @@ import { parseDate, type DateValue } from '@internationalized/date'
 import { I18nProvider } from '@react-aria/i18n'
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { ProductProps } from '../product/CreateEditProduct'
 
 interface CreateEditVersionProps {
-  product?: ProductProps
+  productId: string
   returnTo?: string
 }
 
@@ -35,12 +34,10 @@ export function useVersionMutation({
   productId,
   version,
   onClose,
-  client,
 }: {
   productId?: string
   version: VersionProps
   onClose: () => void
-  client: any
 }) {
   const onSuccess = useCallback(() => {
     onClose()
@@ -68,13 +65,14 @@ export function useVersionMutation({
     const body = {
       product_id: productId || '',
       version: version.name,
-      release_date: version.releaseDate?.toString() ?? undefined,
+      // format: 'YYYY-MM-DD',
+      release_date: version.releaseDate?.toString(),
     }
 
     if (isCreateForm) {
       createMutation.mutate({ body })
     } else {
-      updateMutation.mutate({ body, params: { path: { id: version.id } } })
+      updateMutation.mutate({ body, params: { path: { id: version.id || '' } } })
     }
   }, [productId, version])
 
@@ -84,7 +82,7 @@ export function useVersionMutation({
 }
 
 export function AddVersionButton({
-  product,
+  productId,
   returnTo,
 }: CreateEditVersionProps) {
   const { navigateToModal } = useRouter()
@@ -95,7 +93,7 @@ export function AddVersionButton({
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() => {
         navigateToModal(
-          `/vendors/${product?.vendor_id}/products/${product?.id}/versions/create`,
+          `/products/${productId}/versions/create`,
           returnTo,
         )
       }}
@@ -126,7 +124,7 @@ export default function CreateEditVersion() {
 
   const isCreateForm = !versionId
 
-  const { data: previousData, isLoading } = useVersionQuery(versionId || '')
+  const { data: previousData, isLoading } = useVersionQuery(versionId)
 
   const [version, setVersion] = useState<VersionProps>({
     name: '',
@@ -138,8 +136,8 @@ export default function CreateEditVersion() {
       setVersion({
         id: previousData.id,
         name: previousData.name,
-        releaseDate: previousData.release_date
-          ? parseDate(previousData.releaseDate.toString())
+        releaseDate: previousData.released_at
+          ? parseDate(previousData.released_at.toString())
           : null,
       })
     }
@@ -155,14 +153,13 @@ export default function CreateEditVersion() {
   }
 
   const { mutateVersion, isPending, error } = useVersionMutation({
-    productId,
+    productId: isCreateForm ? productId : previousData?.product_id,
     version: {
       id: previousData?.id || versionId,
       name: version.name,
       releaseDate: version.releaseDate,
     },
     onClose: onClose,
-    client,
   })
 
   if (!isCreateForm && isLoading) {
@@ -207,6 +204,8 @@ export default function CreateEditVersion() {
                 <DatePicker
                   label="Release Date"
                   variant="bordered"
+                  value={version.releaseDate}
+                  onChange={(date) => setVersion({ ...version, releaseDate: date })}
                   labelPlacement="outside"
                   classNames={{
                     inputWrapper: 'border-1 shadow-none',

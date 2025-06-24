@@ -1,8 +1,8 @@
 import client from '@/client'
-import DataGrid, { FilterButton } from '@/components/forms/DataGrid'
+import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
-import CreateEditVendor, {
+import {
   CreateVendorButton,
 } from '@/components/layout/vendor/CreateEditVendor'
 import useRefetchQuery from '@/utils/useRefetchQuery'
@@ -10,8 +10,6 @@ import useRouter from '@/utils/useRouter'
 import {
   faEdit,
   faSearch,
-  faSortAlphaAsc,
-  faSortAmountAsc,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Chip, Input } from '@heroui/react'
@@ -101,15 +99,15 @@ export default function Vendors() {
       <div className="w-full flex gap-2 flex-col">
         <div className="flex w-full items-center justify-between mb-2 gap-2">
           <div className="flex flex-grow flex-row gap-2">
-            <FilterButton title="Name" icon={faSortAlphaAsc} disabled />
-            <FilterButton title="Products" icon={faSortAmountAsc} disabled />
+            {/* <FilterButton title="Name" icon={faSortAlphaAsc} disabled /> */}
+            {/* <FilterButton title="Products" icon={faSortAmountAsc} disabled /> */}
           </div>
 
           <CreateVendorButton />
         </div>
 
-        <DataGrid addButton={<CreateEditVendor />}>
-          {vendors?.map((vendor) => (
+        <DataGrid addButton={<CreateVendorButton />}>
+          {(vendors || []).map((vendor) => (
             <VendorItem key={vendor.id} vendor={vendor} returnTo="/vendors" />
           ))}
         </DataGrid>

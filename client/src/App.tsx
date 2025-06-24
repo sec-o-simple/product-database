@@ -63,12 +63,12 @@ function App() {
           </Route>
 
           <Route element={<VersionLayout />}>
-            <Route path="products/:productId/versions">
+            <Route path="product-versions">
               <Route path=":versionId">
                 <Route index element={<Version />} />
                 <Route path="history" element={<VersionHistory />} />
 
-                <Route path="identification-helper">
+                <Route path="identification-helpers">
                   <Route index element={<IdentificationOverview />} />
                   <Route path=":helperId" element={<Helper />} />
                 </Route>
@@ -88,21 +88,21 @@ function App() {
             element={<CreateEditProduct />}
           />
           <Route
-            path="/products/:productId/edit"
+            path="products/:productId/edit"
             element={<CreateEditProduct />}
           />
 
           <Route
-            path="vendors/:vendorId/products/:productId/versions/create"
+            path="products/:productId/versions/create"
             element={<CreateEditVersion />}
           />
           <Route
-            path="products/:productId/versions/:versionId/edit"
+            path="product-versions/:versionId/edit"
             element={<CreateEditVersion />}
           />
 
           <Route
-            path="products/:productId/versions/:versionId/relationships/create"
+            path="product-versions/:versionId/relationships/create"
             element={<CreateRelationship />}
           />
         </Routes>

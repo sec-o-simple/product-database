@@ -45,7 +45,7 @@ export default function DataGrid({
         </div>
       )}
 
-      {!children && <EmptyState add={addButton} />}
+      {React.Children.count(children) === 0 ? <EmptyState add={addButton} /> : null}
 
       <div className="flex flex-col w-full gap-2">{children}</div>
 

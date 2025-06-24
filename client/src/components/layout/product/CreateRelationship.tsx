@@ -1,6 +1,5 @@
 import client from '@/client'
 import Select from '@/components/forms/Select'
-import { useVersionListQuery } from '@/routes/Product'
 import { useProductListQuery } from '@/routes/Products'
 import useRouter from '@/utils/useRouter'
 import { faAdd, faArrowRight } from '@fortawesome/free-solid-svg-icons'
@@ -12,10 +11,9 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@heroui/modal'
-import { Button } from '@heroui/react'
+import { addToast, Button } from '@heroui/react'
 import { SelectItem } from '@heroui/select'
 import React, { useState } from 'react'
-import { VersionProps } from '../version/CreateEditVersion'
 
 interface RelationShipProps {
   sourceProducts: string[]
@@ -59,8 +57,7 @@ function ProductBox({
 export function AddRelationshipButton() {
   const {
     navigateToModal,
-    location,
-    params: { productId, versionId },
+    params: { versionId },
   } = useRouter()
 
   return (
@@ -68,9 +65,12 @@ export function AddRelationshipButton() {
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() =>
-        navigateToModal(
-          `/products/${productId}/versions/${versionId}/relationships/create`,
-        )
+        addToast({
+          title: 'Not implemented yet',
+        })
+        // navigateToModal(
+        //   `/product-versions/${versionId}/relationships/create`,
+        // )
       }
     >
       Add Relationship
@@ -95,18 +95,18 @@ export default function CreateRelationship() {
 
   const { data: products } = useProductListQuery()
 
-  let versions = []
-  if (products && products.length > 0) {
-    for (const product of products) {
-      const { data: productVersions } = useVersionListQuery(product.id) as {
-        data: VersionProps[]
-      }
+  let versions: { id: string, name: string }[] = []
+  // if (products && products.length > 0) {
+  //   for (const product of products) {
+  //     const { data: productVersions } = useVersionListQuery(product.id) as {
+  //       data: VersionProps[]
+  //     }
 
-      if (versions) {
-        versions.push(...(productVersions || []))
-      }
-    }
-  }
+  //     if (versions) {
+  //       versions.push(...(productVersions || []))
+  //     }
+  //   }
+  // }
 
   const handleSelect = (key: React.ChangeEvent<HTMLSelectElement>) => {
     const value = key.target.value.split(',').filter((v) => v !== 'all')
@@ -282,7 +282,7 @@ export default function CreateRelationship() {
             /> */}
 
           <div className="flex flex-row gap-2 bg-gray-100 items-center rounded-md p-4 justify-around">
-            <ProductBox
+            {/* <ProductBox
               products={selected.sourceProducts.map(
                 (product) =>
                   products?.find((p) => p.id === product)?.name as string,
@@ -291,7 +291,7 @@ export default function CreateRelationship() {
                 (version) =>
                   versions.find((v) => v.id === version)?.name as string,
               )}
-            />
+            /> */}
 
             <div className="flex flex-col items-center space-y-2">
               <FontAwesomeIcon

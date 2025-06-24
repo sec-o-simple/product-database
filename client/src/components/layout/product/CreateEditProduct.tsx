@@ -25,7 +25,7 @@ interface CreateEditProductProps {
 export type ProductProps = {
   id?: string
   name: string
-  description: string
+  description: string | undefined
   type: string
   vendor_id: string
 }
@@ -34,12 +34,10 @@ export function useProductMutation({
   vendorId,
   product,
   onClose,
-  client,
 }: {
   vendorId: string
   product: ProductProps
   onClose: () => void
-  client: any
 }) {
   const isCreateForm = !product.id
 
@@ -62,12 +60,11 @@ export function useProductMutation({
       type: product.type,
       vendor_id: product.vendor_id,
     }
-    console.log('Mutating product:', body)
 
     if (isCreateForm) {
       createMutation.mutate({ body })
     } else {
-      updateMutation.mutate({ body, params: { path: { id: product.id } } })
+      updateMutation.mutate({ body, params: { path: { id: product.id || '' } } })
     }
   }, [product, vendorId])
 
@@ -84,7 +81,7 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
       onPress={() => {
-        navigateToModal(`/vendors/${vendorId}/products/create`)
+        navigateToModal(`/vendors/${vendorId}/products/create`, `/vendors/${vendorId}`)
       }}
     >
       Add Product
@@ -112,14 +109,12 @@ export default function CreateEditProduct() {
       setProduct({
         id: previousData.id,
         name: previousData.name,
-        description: previousData.description,
+        description: previousData.description || '',
         type: previousData.type,
-        vendor_id: previousData.vendor_id,
+        vendor_id: previousData.vendor_id || '',
       })
     }
   }, [previousData])
-
-  console.log('Product state:', product)
 
   const onClose = () => {
     setProduct({
@@ -141,7 +136,6 @@ export default function CreateEditProduct() {
     vendorId: vendorId || '',
     product,
     onClose: onClose,
-    client,
   })
 
   if (!isCreateForm && isLoading) {
