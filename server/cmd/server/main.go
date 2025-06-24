@@ -26,6 +26,7 @@ func main() {
 	}
 
 	s := fuego.NewServer(
+		fuego.WithAddr("0.0.0.0:9999"),
 		fuego.WithEngineOptions(
 			fuego.WithOpenAPIConfig(fuego.OpenAPIConfig{
 				JSONFilePath:     "../docs/openapi.json",
