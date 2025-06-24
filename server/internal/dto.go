@@ -43,6 +43,17 @@ type ProductDTO struct {
 	LatestVersions []ProductVersionDTO `json:"latest_versions" validate:"dive"`
 }
 
+func NodeToProductDTO(node Node) ProductDTO {
+	return ProductDTO{
+		ID:          node.ID,
+		VendorID:    node.ParentID,
+		Name:        node.Name,
+		FullName:    node.Name, // Full name logic can be adjusted based on parent node
+		Description: node.Description,
+		Type:        string(node.ProductType),
+	}
+}
+
 // Product Versions
 type CreateProductVersionDTO struct {
 	Version       string  `json:"version" example:"Version Name" validate:"required"`
@@ -66,9 +77,12 @@ type ProductVersionDTO struct {
 	Description   string  `json:"description" example:"Version Description"`
 	IsLatest      bool    `json:"is_latest" example:"true" validate:"required"`
 	PredecessorID *string `json:"predecessor_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
+	ReleasedAt    *string `json:"released_at,omitempty" example:"2023-10-01" validate:"omitempty,datetime=2006-01-02"`
 }
 
 func NodeToProductVersionDTO(node Node) ProductVersionDTO {
+	formattedDate := node.ReleasedAt.Time.Format("2006-01-02")
+
 	return ProductVersionDTO{
 		ID:            node.ID,
 		ProductID:     node.ParentID,
@@ -77,6 +91,7 @@ func NodeToProductVersionDTO(node Node) ProductVersionDTO {
 		Description:   node.Description,
 		IsLatest:      false,
 		PredecessorID: nil,
+		ReleasedAt:    &formattedDate,
 	}
 }
 

@@ -44,7 +44,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Identification helper operations
+         * Create identification helper
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateIdentificationHelper`
@@ -55,7 +55,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing identification helpers
+         *     Creates a new identification helper for a product version
          */
         post: operations["POST_/api/v1/identification-helper"];
         delete?: never;
@@ -72,7 +72,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Identification helper operations
+         * Get identification helper by ID
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetIdentificationHelper`
@@ -83,11 +83,11 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing identification helpers
+         *     Returns details for a specific identification helper
          */
         get: operations["GET_/api/v1/identification-helper/:id"];
         /**
-         * Identification helper operations
+         * Update identification helper
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateIdentificationHelper`
@@ -98,12 +98,12 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing identification helpers
+         *     Updates an existing identification helper's information
          */
         put: operations["PUT_/api/v1/identification-helper/:id"];
         post?: never;
         /**
-         * Identification helper operations
+         * Delete identification helper
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteIdentificationHelper`
@@ -114,7 +114,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing identification helpers
+         *     Removes an identification helper from the system
          */
         delete: operations["DELETE_/api/v1/identification-helper/:id"];
         options?: never;
@@ -132,7 +132,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Product version operations
+         * Create product version
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateProductVersion`
@@ -143,7 +143,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing product versions
+         *     Creates a new version for a specific product
          */
         post: operations["POST_/api/v1/product-versions"];
         delete?: never;
@@ -160,7 +160,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product version operations
+         * Get product version by ID
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetProductVersion`
@@ -171,11 +171,11 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing product versions
+         *     Returns details for a specific product version
          */
         get: operations["GET_/api/v1/product-versions/:id"];
         /**
-         * Product version operations
+         * Update product version
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateProductVersion`
@@ -186,12 +186,12 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing product versions
+         *     Updates an existing product version's information
          */
         put: operations["PUT_/api/v1/product-versions/:id"];
         post?: never;
         /**
-         * Product version operations
+         * Delete product version
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteProductVersion`
@@ -202,7 +202,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing product versions
+         *     Removes a product version and its associated data
          */
         delete: operations["DELETE_/api/v1/product-versions/:id"];
         options?: never;
@@ -218,7 +218,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product version operations
+         * List identification helpers
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListIdentificationHelpersByProductVersion`
@@ -229,7 +229,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing product versions
+         *     Returns all identification helpers for a product version
          */
         get: operations["GET_/api/v1/product-versions/:id/identification-helpers"];
         put?: never;
@@ -248,7 +248,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product version operations
+         * List version relationships
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListRelationshipsByProductVersion`
@@ -259,7 +259,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing product versions
+         *     Returns all relationships associated with a product version
          */
         get: operations["GET_/api/v1/product-versions/:id/relationships"];
         put?: never;
@@ -278,7 +278,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product operations
+         * List all products
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListProducts`
@@ -289,12 +289,12 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing products
+         *     Returns a list of all products in the system
          */
         get: operations["GET_/api/v1/products"];
         put?: never;
         /**
-         * Product operations
+         * Create product
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateProduct`
@@ -305,7 +305,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing products
+         *     Creates a new product under a vendor
          */
         post: operations["POST_/api/v1/products"];
         delete?: never;
@@ -322,7 +322,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product operations
+         * Get product by ID
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetProduct`
@@ -333,11 +333,11 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing products
+         *     Returns details for a specific product
          */
         get: operations["GET_/api/v1/products/:id"];
         /**
-         * Product operations
+         * Update product
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateProduct`
@@ -348,12 +348,12 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing products
+         *     Updates an existing product's information
          */
         put: operations["PUT_/api/v1/products/:id"];
         post?: never;
         /**
-         * Product operations
+         * Delete product
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteProduct`
@@ -364,7 +364,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing products
+         *     Removes a product and its associated versions from the system
          */
         delete: operations["DELETE_/api/v1/products/:id"];
         options?: never;
@@ -380,7 +380,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product operations
+         * List product versions
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListProductVersions`
@@ -391,7 +391,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing products
+         *     Returns all versions associated with a specific product
          */
         get: operations["GET_/api/v1/products/:id/versions"];
         put?: never;
@@ -412,7 +412,7 @@ export interface paths {
         get?: never;
         put?: never;
         /**
-         * Relationship operations
+         * Create relationship
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateRelationship`
@@ -423,7 +423,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing relationships
+         *     Creates a new relationship between two product versions
          */
         post: operations["POST_/api/v1/relationships"];
         delete?: never;
@@ -440,7 +440,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Relationship operations
+         * Get relationship by ID
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetRelationship`
@@ -451,11 +451,11 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing relationships
+         *     Returns details for a specific relationship
          */
         get: operations["GET_/api/v1/relationships/:id"];
         /**
-         * Relationship operations
+         * Update relationship
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateRelationship`
@@ -466,12 +466,12 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing relationships
+         *     Updates an existing relationship between product versions
          */
         put: operations["PUT_/api/v1/relationships/:id"];
         post?: never;
         /**
-         * Relationship operations
+         * Delete relationship
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteRelationship`
@@ -482,7 +482,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing relationships
+         *     Removes a relationship between product versions
          */
         delete: operations["DELETE_/api/v1/relationships/:id"];
         options?: never;
@@ -498,7 +498,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Vendor operations
+         * List all vendors
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListVendors`
@@ -509,12 +509,12 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing vendors
+         *     Returns a list of all vendors in the system
          */
         get: operations["GET_/api/v1/vendors"];
         put?: never;
         /**
-         * Vendor operations
+         * Create vendor
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).CreateVendor`
@@ -525,7 +525,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing vendors
+         *     Creates a new vendor
          */
         post: operations["POST_/api/v1/vendors"];
         delete?: never;
@@ -542,7 +542,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Vendor operations
+         * Get vendor by ID
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).GetVendor`
@@ -553,11 +553,11 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing vendors
+         *     Returns details for a specific vendor
          */
         get: operations["GET_/api/v1/vendors/:id"];
         /**
-         * Vendor operations
+         * Update vendor
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).UpdateVendor`
@@ -568,12 +568,12 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing vendors
+         *     Updates an existing vendor's information
          */
         put: operations["PUT_/api/v1/vendors/:id"];
         post?: never;
         /**
-         * Vendor operations
+         * Delete vendor
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).DeleteVendor`
@@ -584,7 +584,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing vendors
+         *     Removes a vendor from the system
          */
         delete: operations["DELETE_/api/v1/vendors/:id"];
         options?: never;
@@ -600,7 +600,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Vendor operations
+         * List vendor products
          * @description #### Controller:
          *
          *     `product-database-api/internal.(*Handler).ListVendorProducts`
@@ -611,7 +611,7 @@ export interface paths {
          *
          *     ---
          *
-         *     Operations for managing vendors
+         *     Returns all products associated with a vendor
          */
         get: operations["GET_/api/v1/vendors/:id/products"];
         put?: never;
@@ -623,7 +623,7 @@ export interface paths {
         trace?: never;
     };
 }
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @description CreateIdentificationHelperDTO schema */
@@ -659,7 +659,7 @@ export interface components {
              * @description string schema
              * @example 2023-10-01
              */
-            release_date?: string;
+            release_date?: string | null;
             /** @example Version Name */
             version: string;
         };
@@ -682,207 +682,125 @@ export interface components {
         /** @description HTTPError schema */
         HTTPError: {
             /** @description Human readable error message */
-            reason?: string
-          }[]
-        | null
-      instance?: string | null
-      /**
-       * @description HTTP status code
-       * @example 403
-       */
-      status?: number | null
-      /** @description Short title of the error */
-      title?: string | null
-      /** @description URL of the error type. Can be used to lookup the error in a documentation */
-      type?: string | null
-    }
-    /** @description IdentificationHelperDTO schema */
-    IdentificationHelperDTO: {
-      /** @example hashes */
-      category: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      id: string
-      /** @example {"hash":"abc123"} */
-      metadata: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      product_version_id: string
-    }
-    /** @description IdentificationHelperListItemDTO schema */
-    IdentificationHelperListItemDTO: {
-      /** @example hashes */
-      category: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      id: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      product_version_id: string
-    }
-    /** @description ProductDTO schema */
-    ProductDTO: {
-      /** @example Product Description */
-      description?: string
-      /** @example Vendor Name - Product Name */
-      full_name: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      id: string
-      latest_versions?: {
-        /** @example Version Description */
-        description?: string
-        /** @example Product Name - Version Name */
-        full_name: string
-        /** @example 123e4567-e89b-12d3-a456-426614174000 */
-        id: string
-        /** @example true */
-        is_latest: boolean
-        /** @example Version Name */
-        name: string
-        /**
-         * @description string schema
-         * @example 123e4567-e89b-12d3-a456-426614174000
-         */
-        predecessor_id?: string | null
-        /**
-         * @description string schema
-         * @example 123e4567-e89b-12d3-a456-426614174000
-         */
-        product_id?: string
-      }[]
-      /** @example Product Name */
-      name: string
-      /** @example software */
-      type: string
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      vendor_id?: string
-    }
-    /** @description ProductVersionDTO schema */
-    ProductVersionDTO: {
-      /** @example Version Description */
-      description?: string
-      /** @example Product Name - Version Name */
-      full_name: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      id: string
-      /** @example true */
-      is_latest: boolean
-      release_date?: string | null
-      /** @example Version Name */
-      name: string
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      predecessor_id?: string | null
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      product_id?: string
-    }
-    /** @description RelationshipDTO schema */
-    RelationshipDTO: {
-      /** @example default_component_of */
-      category: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      id: string
-      source: {
-        /** @example Version Description */
-        description?: string
-        /** @example Product Name - Version Name */
-        full_name: string
-        /** @example 123e4567-e89b-12d3-a456-426614174000 */
-        id: string
-        /** @example true */
-        is_latest: boolean
-        /** @example Version Name */
-        name: string
-        /**
-         * @description string schema
-         * @example 123e4567-e89b-12d3-a456-426614174000
-         */
-        predecessor_id?: string | null
-        /**
-         * @description string schema
-         * @example 123e4567-e89b-12d3-a456-426614174000
-         */
-        product_id?: string
-      }
-      target: {
-        /** @example Version Description */
-        description?: string
-        /** @example Product Name - Version Name */
-        full_name: string
-        /** @example 123e4567-e89b-12d3-a456-426614174000 */
-        id: string
-        /** @example true */
-        is_latest: boolean
-        /** @example Version Name */
-        name: string
-        /**
-         * @description string schema
-         * @example 123e4567-e89b-12d3-a456-426614174000
-         */
-        predecessor_id?: string | null
-        /**
-         * @description string schema
-         * @example 123e4567-e89b-12d3-a456-426614174000
-         */
-        product_id?: string
-      }[]
-    }
-    /** @description RelationshipGroupDTO schema */
-    RelationshipGroupDTO: {
-      /** @example default_component_of */
-      category: string
-      products: {
-        product: {
-          /** @example Product Description */
-          description?: string
-          /** @example Vendor Name - Product Name */
-          full_name: string
-          /** @example 123e4567-e89b-12d3-a456-426614174000 */
-          id: string
-          latest_versions?: {
-            /** @example Version Description */
-            description?: string
-            /** @example Product Name - Version Name */
-            full_name: string
+            detail?: string | null;
+            errors?: {
+                /** @description Additional information about the error */
+                more?: {
+                    [key: string]: unknown;
+                } | null;
+                /** @description For example, name of the parameter that caused the error */
+                name?: string;
+                /** @description Human readable error message */
+                reason?: string;
+            }[] | null;
+            instance?: string | null;
+            /**
+             * @description HTTP status code
+             * @example 403
+             */
+            status?: number | null;
+            /** @description Short title of the error */
+            title?: string | null;
+            /** @description URL of the error type. Can be used to lookup the error in a documentation */
+            type?: string | null;
+        };
+        /** @description IdentificationHelperDTO schema */
+        IdentificationHelperDTO: {
+            /** @example hashes */
+            category: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
-            id: string
-            /** @example true */
-            is_latest: boolean
-            /** @example Version Name */
-            name: string
+            id: string;
+            /** @example {"hash":"abc123"} */
+            metadata: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_version_id: string;
+        };
+        /** @description IdentificationHelperListItemDTO schema */
+        IdentificationHelperListItemDTO: {
+            /** @example hashes */
+            category: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            id: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_version_id: string;
+        };
+        /** @description ProductDTO schema */
+        ProductDTO: {
+            /** @example Product Description */
+            description?: string;
+            /** @example Vendor Name - Product Name */
+            full_name: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            id: string;
+            latest_versions?: {
+                /** @example Version Description */
+                description?: string;
+                /** @example Product Name - Version Name */
+                full_name: string;
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                id: string;
+                /** @example true */
+                is_latest: boolean;
+                /** @example Version Name */
+                name: string;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                predecessor_id?: string | null;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                product_id?: string;
+                /**
+                 * @description string schema
+                 * @example 2023-10-01
+                 */
+                released_at?: string | null;
+            }[];
+            /** @example Product Name */
+            name: string;
+            /** @example software */
+            type: string;
             /**
              * @description string schema
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
-            predecessor_id?: string | null
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            product_id?: string
-          }[]
-          /** @example Product Name */
-          name: string
-          /** @example software */
-          type: string
-          /**
-           * @description string schema
-           * @example 123e4567-e89b-12d3-a456-426614174000
-           */
-          vendor_id?: string
-        }
-        version_relationships: {
-          /** @example 123e4567-e89b-12d3-a456-426614174000 */
-          id: string
-          version: {
+            vendor_id?: string;
+        };
+        /** @description ProductVersionDTO schema */
+        ProductVersionDTO: {
             /** @example Version Description */
-            description?: string
+            description?: string;
             /** @example Product Name - Version Name */
-            full_name: string
+            full_name: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            id: string;
+            /** @example true */
+            is_latest: boolean;
+            /** @example Version Name */
+            name: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            predecessor_id?: string | null;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            product_id?: string;
+            /**
+             * @description string schema
+             * @example 2023-10-01
+             */
+            released_at?: string | null;
+        };
+        /** @description RelationshipDTO schema */
+        RelationshipDTO: {
+            /** @example default_component_of */
+            category: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
             id: string;
             source: {
@@ -906,6 +824,11 @@ export interface components {
                  * @example 123e4567-e89b-12d3-a456-426614174000
                  */
                 product_id?: string;
+                /**
+                 * @description string schema
+                 * @example 2023-10-01
+                 */
+                released_at?: string | null;
             };
             target: {
                 /** @example Version Description */
@@ -928,6 +851,11 @@ export interface components {
                  * @example 123e4567-e89b-12d3-a456-426614174000
                  */
                 product_id?: string;
+                /**
+                 * @description string schema
+                 * @example 2023-10-01
+                 */
+                released_at?: string | null;
             };
         };
         /** @description RelationshipGroupDTO schema */
@@ -963,6 +891,11 @@ export interface components {
                          * @example 123e4567-e89b-12d3-a456-426614174000
                          */
                         product_id?: string;
+                        /**
+                         * @description string schema
+                         * @example 2023-10-01
+                         */
+                        released_at?: string | null;
                     }[];
                     /** @example Product Name */
                     name: string;
@@ -998,6 +931,11 @@ export interface components {
                          * @example 123e4567-e89b-12d3-a456-426614174000
                          */
                         product_id?: string;
+                        /**
+                         * @description string schema
+                         * @example 2023-10-01
+                         */
+                        released_at?: string | null;
                     };
                 }[];
             }[];
@@ -1035,7 +973,10 @@ export interface components {
              * @description string schema
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
-            predecessor_id?: string | null
+            vendor_id?: string;
+        };
+        /** @description UpdateProductVersionDTO schema */
+        UpdateProductVersionDTO: {
             /**
              * @description string schema
              * @example 123e4567-e89b-12d3-a456-426614174000
@@ -1110,1417 +1051,1417 @@ export interface components {
     headers: never;
     pathItems: never;
 }
-export type $defs = Record<string, never>
+export type $defs = Record<string, never>;
 export interface operations {
-  'GET_/api/v1/health': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['string']
-          'application/xml': components['schemas']['string']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'POST_/api/v1/identification-helper': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path?: never
-      cookie?: never
-    }
-    /** @description Request body for internal.CreateIdentificationHelperDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['CreateIdentificationHelperDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['IdentificationHelperDTO']
-          'application/xml': components['schemas']['IdentificationHelperDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/identification-helper/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['IdentificationHelperDTO']
-          'application/xml': components['schemas']['IdentificationHelperDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'PUT_/api/v1/identification-helper/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    /** @description Request body for internal.UpdateIdentificationHelperDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['UpdateIdentificationHelperDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['IdentificationHelperDTO']
-          'application/xml': components['schemas']['IdentificationHelperDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'DELETE_/api/v1/identification-helper/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['unknown-interface']
-          'application/xml': components['schemas']['unknown-interface']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'POST_/api/v1/product-versions': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path?: never
-      cookie?: never
-    }
-    /** @description Request body for internal.CreateProductVersionDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['CreateProductVersionDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductVersionDTO']
-          'application/xml': components['schemas']['ProductVersionDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/product-versions/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductVersionDTO']
-          'application/xml': components['schemas']['ProductVersionDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'PUT_/api/v1/product-versions/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    /** @description Request body for internal.UpdateProductVersionDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['UpdateProductVersionDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductVersionDTO']
-          'application/xml': components['schemas']['ProductVersionDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'DELETE_/api/v1/product-versions/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['unknown-interface']
-          'application/xml': components['schemas']['unknown-interface']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/product-versions/:id/identification-helpers': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['IdentificationHelperListItemDTO'][]
-          'application/xml': components['schemas']['IdentificationHelperListItemDTO'][]
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/product-versions/:id/relationships': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['RelationshipGroupDTO'][]
-          'application/xml': components['schemas']['RelationshipGroupDTO'][]
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/products': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductDTO'][]
-          'application/xml': components['schemas']['ProductDTO'][]
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'POST_/api/v1/products': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path?: never
-      cookie?: never
-    }
-    /** @description Request body for internal.CreateProductDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['CreateProductDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductDTO']
-          'application/xml': components['schemas']['ProductDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/products/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductDTO']
-          'application/xml': components['schemas']['ProductDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'PUT_/api/v1/products/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    /** @description Request body for internal.UpdateProductDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['UpdateProductDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductDTO']
-          'application/xml': components['schemas']['ProductDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'DELETE_/api/v1/products/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['unknown-interface']
-          'application/xml': components['schemas']['unknown-interface']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/products/:id/versions': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductVersionDTO'][]
-          'application/xml': components['schemas']['ProductVersionDTO'][]
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'POST_/api/v1/relationships': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path?: never
-      cookie?: never
-    }
-    /** @description Request body for internal.CreateRelationshipDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['CreateRelationshipDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['RelationshipDTO']
-          'application/xml': components['schemas']['RelationshipDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/relationships/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['RelationshipDTO']
-          'application/xml': components['schemas']['RelationshipDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'PUT_/api/v1/relationships/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    /** @description Request body for internal.UpdateRelationshipDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['UpdateRelationshipDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['RelationshipDTO']
-          'application/xml': components['schemas']['RelationshipDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'DELETE_/api/v1/relationships/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['unknown-interface']
-          'application/xml': components['schemas']['unknown-interface']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/vendors': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['VendorDTO'][]
-          'application/xml': components['schemas']['VendorDTO'][]
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'POST_/api/v1/vendors': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path?: never
-      cookie?: never
-    }
-    /** @description Request body for internal.CreateVendorDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['CreateVendorDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['VendorDTO']
-          'application/xml': components['schemas']['VendorDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/vendors/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['VendorDTO']
-          'application/xml': components['schemas']['VendorDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'PUT_/api/v1/vendors/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    /** @description Request body for internal.UpdateVendorDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['UpdateVendorDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['VendorDTO']
-          'application/xml': components['schemas']['VendorDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'DELETE_/api/v1/vendors/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['unknown-interface']
-          'application/xml': components['schemas']['unknown-interface']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'GET_/api/v1/vendors/:id/products': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['ProductDTO'][]
-          'application/xml': components['schemas']['ProductDTO'][]
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
+    "GET_/api/v1/health": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["string"];
+                    "application/xml": components["schemas"]["string"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/identification-helper": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.CreateIdentificationHelperDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["CreateIdentificationHelperDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentificationHelperDTO"];
+                    "application/xml": components["schemas"]["IdentificationHelperDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/identification-helper/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentificationHelperDTO"];
+                    "application/xml": components["schemas"]["IdentificationHelperDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/identification-helper/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateIdentificationHelperDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateIdentificationHelperDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentificationHelperDTO"];
+                    "application/xml": components["schemas"]["IdentificationHelperDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/identification-helper/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/product-versions": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.CreateProductVersionDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["CreateProductVersionDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductVersionDTO"];
+                    "application/xml": components["schemas"]["ProductVersionDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/product-versions/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductVersionDTO"];
+                    "application/xml": components["schemas"]["ProductVersionDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/product-versions/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateProductVersionDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateProductVersionDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductVersionDTO"];
+                    "application/xml": components["schemas"]["ProductVersionDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/product-versions/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/product-versions/:id/identification-helpers": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IdentificationHelperListItemDTO"][];
+                    "application/xml": components["schemas"]["IdentificationHelperListItemDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/product-versions/:id/relationships": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelationshipGroupDTO"][];
+                    "application/xml": components["schemas"]["RelationshipGroupDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/products": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDTO"][];
+                    "application/xml": components["schemas"]["ProductDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/products": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.CreateProductDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["CreateProductDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDTO"];
+                    "application/xml": components["schemas"]["ProductDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/products/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDTO"];
+                    "application/xml": components["schemas"]["ProductDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/products/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateProductDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateProductDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDTO"];
+                    "application/xml": components["schemas"]["ProductDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/products/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/products/:id/versions": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductVersionDTO"][];
+                    "application/xml": components["schemas"]["ProductVersionDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/relationships": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.CreateRelationshipDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["CreateRelationshipDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelationshipDTO"];
+                    "application/xml": components["schemas"]["RelationshipDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/relationships/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelationshipDTO"];
+                    "application/xml": components["schemas"]["RelationshipDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/relationships/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateRelationshipDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateRelationshipDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RelationshipDTO"];
+                    "application/xml": components["schemas"]["RelationshipDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/relationships/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/vendors": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorDTO"][];
+                    "application/xml": components["schemas"]["VendorDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/vendors": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.CreateVendorDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["CreateVendorDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorDTO"];
+                    "application/xml": components["schemas"]["VendorDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/vendors/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorDTO"];
+                    "application/xml": components["schemas"]["VendorDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/vendors/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateVendorDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateVendorDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorDTO"];
+                    "application/xml": components["schemas"]["VendorDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/vendors/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/vendors/:id/products": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDTO"][];
+                    "application/xml": components["schemas"]["ProductDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
 }
