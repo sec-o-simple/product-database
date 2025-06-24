@@ -6,6 +6,7 @@
 product-database/
 ├── server/     # Go server API (GORM, Fuego)
 ├── client/     # Vite + React frontend
+├── docs/        # Documentation (OpenAPI, Database)
 ```
 
 ---

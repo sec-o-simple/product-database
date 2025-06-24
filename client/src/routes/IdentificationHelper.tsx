@@ -4,19 +4,12 @@ import {
   AddIdHelper,
   idHelperTypes,
 } from '@/components/layout/product/ProductLayout'
-import { faAdd, faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { EmptyState } from '@/components/table/EmptyState'
+import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
-import {
-  BreadcrumbItem,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Tooltip,
-} from '@heroui/react'
+import { BreadcrumbItem, Tooltip } from '@heroui/react'
 import React, { useState } from 'react'
-import { EmptyState } from './Vendor'
-import { EditPopover } from './Vendors'
 
 interface IDTypeProps {
   id: number
@@ -39,7 +32,6 @@ function IndentificationItem({
   data,
   chips,
   onUpdate,
-  onDelete,
 }: {
   data: ItemProps
   chips?: React.ReactNode
@@ -50,14 +42,14 @@ function IndentificationItem({
   const [editFields, setEditFields] = useState(data.fields)
 
   return (
-    <div className="flex w-full flex-col gap-2 justify-between bg-gray-50 px-4 py-2 rounded-lg border-1 border-default-200 hover:bg-gray-100 hover:transition-background">
+    <div className="flex w-full flex-col justify-between gap-2 rounded-lg border-1 border-default-200 bg-gray-50 px-4 py-2 hover:bg-gray-100 hover:transition-background">
       <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-2 grow">
+        <div className="flex grow flex-col gap-2">
           {data.fields.map((field) =>
             edit ? (
               <div
                 key={field.id}
-                className="flex flex-col gap-2 py-1 items-end"
+                className="flex flex-col items-end gap-2 py-1"
               >
                 <Input
                   type="text"
@@ -104,24 +96,6 @@ function IndentificationItem({
             </div>
           )}
         </div>
-
-        {!edit && (
-          <Popover placement="bottom-end">
-            <PopoverTrigger>
-              <Button
-                isIconOnly
-                variant="light"
-                className="rounded-full text-neutral-foreground"
-              >
-                <FontAwesomeIcon icon={faEllipsisV} />
-              </Button>
-            </PopoverTrigger>
-
-            <PopoverContent className="p-0 rounded-medium">
-              <EditPopover onDelete={onDelete} onEdit={() => setEdit(true)} />
-            </PopoverContent>
-          </Popover>
-        )}
       </div>
 
       {chips}
@@ -147,10 +121,10 @@ export function IdentificationGroup({
   const [showMore, setShowMore] = useState(items.length > 3)
 
   return (
-    <div className="flex flex-col bg-white border-1 border-gray-200 p-4 gap-2 rounded-md group">
+    <div className="group flex flex-col gap-2 rounded-md border-1 border-slate-200 bg-white p-4">
       <div className="mb-2">
         <div className="flex items-center justify-between">
-          <p className="font-semibold text-lg">{label}</p>
+          <p className="text-lg font-semibold">{label}</p>
 
           {deleteable && (
             <Tooltip content="Delete Entry" placement="bottom">
@@ -176,7 +150,7 @@ export function IdentificationGroup({
           closeDelay={0}
           className="max-w-[400px]"
         >
-          <p className="text-zinc-500 line-clamp-2">{description}</p>
+          <p className="line-clamp-2 text-zinc-500">{description}</p>
         </Tooltip>
       </div>
 
@@ -272,7 +246,7 @@ export default function IdentificationHelper({
   }
 
   return (
-    <div className="flex h-full w-full flex-col gap-4 p-2">
+    <div className="flex size-full flex-col gap-4 p-2">
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
@@ -282,8 +256,8 @@ export default function IdentificationHelper({
         </Breadcrumbs>
       )}
 
-      <div className="flex w-full items-center justify-between border-1 border-gray-200 bg-white p-4 rounded-md">
-        <p className="font-semibold text-xl text-primary">
+      <div className="flex w-full items-center justify-between rounded-md border-1 border-slate-200 bg-white p-4">
+        <p className="text-xl font-semibold text-primary">
           Identification Helper
         </p>
 
@@ -313,7 +287,7 @@ export default function IdentificationHelper({
               add={
                 <Button
                   variant="bordered"
-                  className="border-dashed text-gray border-gray"
+                  className="border-dashed border-gray text-gray"
                   startContent={<FontAwesomeIcon icon={faAdd} />}
                   onPress={() => {
                     // setHelper((prev) =>

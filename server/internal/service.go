@@ -2,6 +2,8 @@ package internal
 
 import (
 	"context"
+	"database/sql"
+	"time"
 
 	"github.com/go-fuego/fuego"
 	"github.com/google/uuid"
@@ -70,12 +72,7 @@ func (s *Service) GetVendorByID(ctx context.Context, id string) (VendorDTO, erro
 
 	products := make([]ProductDTO, len(vendor.Children))
 	for i, product := range vendor.Children {
-		products[i] = ProductDTO{
-			ID:          product.ID,
-			VendorID:    product.ParentID,
-			Name:        product.Name,
-			Description: product.Description,
-		}
+		products[i] = NodeToProductDTO(product)
 	}
 
 	return VendorDTO{
@@ -151,6 +148,7 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 		Description: product.Description,
 		Category:    ProductName,
 		ParentID:    &vendorNode.ID,
+		ProductType: ProductType(product.Type),
 	}
 
 	createdNode, err := s.repo.CreateNode(ctx, node)
@@ -183,6 +181,9 @@ func (s *Service) UpdateProduct(ctx context.Context, id string, update UpdatePro
 	}
 	if update.Description != nil {
 		product.Description = *update.Description
+	}
+	if update.Type != nil {
+		product.ProductType = ProductType(*update.Type)
 	}
 
 	if err := s.repo.UpdateNode(ctx, product); err != nil {
@@ -226,12 +227,7 @@ func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
 
 	products := make([]ProductDTO, len(nodes))
 	for i, node := range nodes {
-		products[i] = ProductDTO{
-			ID:          node.ID,
-			VendorID:    node.ParentID,
-			Name:        node.Name,
-			Description: node.Description,
-		}
+		products[i] = NodeToProductDTO(node)
 	}
 
 	return products, nil
@@ -264,12 +260,7 @@ func (s *Service) GetProductByID(ctx context.Context, id string) (ProductDTO, er
 		}
 	}
 
-	return ProductDTO{
-		ID:          product.ID,
-		VendorID:    product.ParentID,
-		Name:        product.Name,
-		Description: product.Description,
-	}, nil
+	return NodeToProductDTO(product), nil
 }
 
 // Product Versions
@@ -283,11 +274,28 @@ func (s *Service) CreateProductVersion(ctx context.Context, version CreateProduc
 		}
 	}
 
+	// Parse the release date string into time.Time
+	var releasedAt sql.NullTime
+	if version.ReleaseDate != nil {
+		parsedTime, err := time.Parse("2006-01-02", *version.ReleaseDate)
+		if err != nil {
+			return ProductVersionDTO{}, fuego.BadRequestError{
+				Title: "Invalid release date format",
+				Err:   err,
+			}
+		}
+		releasedAt = sql.NullTime{
+			Time:  parsedTime,
+			Valid: true,
+		}
+	}
+
 	node := Node{
-		ID:       uuid.New().String(),
-		Name:     version.Version,
-		Category: ProductVersion,
-		ParentID: &productNode.ID,
+		ID:         uuid.New().String(),
+		Name:       version.Version,
+		Category:   ProductVersion,
+		ParentID:   &productNode.ID,
+		ReleasedAt: releasedAt,
 	}
 
 	createdNode, err := s.repo.CreateNode(ctx, node)
@@ -337,6 +345,19 @@ func (s *Service) UpdateProductVersion(ctx context.Context, id string, update Up
 			}
 		}
 		version.ParentID = &product.ID
+	}
+
+	if update.ReleaseDate != nil {
+		parsedTime, err := time.Parse("2006-01-02", *update.ReleaseDate)
+		if err != nil {
+			return ProductVersionDTO{}, fuego.BadRequestError{
+				Title: "Invalid release date format",
+			}
+		}
+		version.ReleasedAt = sql.NullTime{
+			Time:  parsedTime,
+			Valid: true,
+		}
 	}
 
 	if err := s.repo.UpdateNode(ctx, version); err != nil {
@@ -413,15 +434,45 @@ func (s *Service) GetProductVersionByID(ctx context.Context, id string) (Product
 		}
 	}
 
-	return ProductVersionDTO{
-		ID:          version.ID,
-		ProductID:   version.ParentID,
-		Name:        version.Name,
-		Description: version.Description,
-	}, nil
+	return NodeToProductVersionDTO(version), nil
 }
 
 // Relationships
+
+func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionID string) ([]RelationshipGroupDTO, error) {
+	version, err := s.repo.GetNodeByID(ctx, versionID, WithRelationships(), WithChildren())
+
+	if err != nil || version.Category != ProductVersion {
+		return nil, fuego.BadRequestError{
+			Title: "Invalid product version ID",
+		}
+	}
+
+	groups := make(map[string][]RelationshipGroupItemDTO)
+
+	for _, rel := range version.SourceRelationships {
+		item := RelationshipGroupItemDTO{
+			Product: NodeToProductDTO(*rel.TargetNode),
+			VersionRelationships: []ProductionVersionRelationshipDTO{
+				{
+					RelationshipID: rel.ID,
+					Version:        NodeToProductVersionDTO(*rel.TargetNode),
+				},
+			},
+		}
+		groups[string(rel.Category)] = append(groups[string(rel.Category)], item)
+	}
+
+	var result []RelationshipGroupDTO
+	for category, items := range groups {
+		result = append(result, RelationshipGroupDTO{
+			Category: category,
+			Products: items,
+		})
+	}
+
+	return result, nil
+}
 
 func (s *Service) CreateRelationship(ctx context.Context, create CreateRelationshipDTO) (RelationshipDTO, error) {
 	// Validate source node exists and is a product version

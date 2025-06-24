@@ -10,3 +10,4 @@ go.work.sum
 *.db
 tmp
 .env
+coverage.txt

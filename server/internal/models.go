@@ -39,13 +39,13 @@ type Node struct {
 	Description string `gorm:"type:text"`
 
 	ParentID *string
-	Parent   *Node
+	Parent   *Node  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 	Children []Node `gorm:"foreignKey:ParentID"`
 
 	SourceRelationships []Relationship `gorm:"foreignKey:SourceNodeID"`
 	TargetRelationships []Relationship `gorm:"foreignKey:TargetNodeID"`
 
-	ProductType *ProductType `gorm:"type:product_type"`
+	ProductType ProductType `gorm:"type:product_type"`
 	ReleasedAt  sql.NullTime
 
 	SuccessorID *string

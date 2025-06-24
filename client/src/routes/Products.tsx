@@ -1,11 +1,36 @@
 import client from '@/client'
+import DataGrid from '@/components/forms/DataGrid'
+import IconButton from '@/components/forms/IconButton'
 import { Input } from '@/components/forms/Input'
+import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import useRefetchQuery from '@/utils/useRefetchQuery'
+import useRouter from '@/utils/useRouter'
+import { faEdit, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Divider } from '@heroui/react'
+import { Chip, Divider } from '@heroui/react'
 import { Tab, Tabs } from '@heroui/tabs'
-import { useNavigate } from 'react-router-dom'
+import { DeleteProduct } from './Product'
+
+export function useProductListQuery() {
+  const request = client.useQuery('get', '/api/v1/products')
+
+  useRefetchQuery(request)
+  return request
+}
+
+export function useVendorProductListQuery(vendorId: string) {
+  const request = client.useQuery('get', '/api/v1/vendors/{id}/products', {
+    params: {
+      path: {
+        id: vendorId || '',
+      },
+    },
+  })
+
+  useRefetchQuery(request)
+  return request
+}
 
 export function DashboardTabs({
   selectedKey,
@@ -15,8 +40,8 @@ export function DashboardTabs({
   endContent?: React.ReactNode
 }) {
   return (
-    <div className="flex flex-col w-full items-center justify-between">
-      <div className="flex w-full items-center justify-between mb-2">
+    <div className="flex w-full flex-col items-center justify-between">
+      <div className="mb-2 flex w-full items-center justify-between">
         <Tabs
           selectedKey={selectedKey}
           className="w-full"
@@ -35,13 +60,66 @@ export function DashboardTabs({
   )
 }
 
-export default function Products() {
-  const navigate = useNavigate()
+export function ProductItem({
+  product,
+}: {
+  product: {
+    id: string
+    name: string
+    description?: string
+    type?: string
+    latest_versions?: {
+      description?: string
+      full_name: string
+      id: string
+      is_latest: boolean
+      name: string
+      predecessor_id?: string | null
+      product_id?: string
+      released_at?: string | null
+    }[]
+  }
+}) {
+  const { navigateToModal, navigate } = useRouter()
 
-  const { data: products } = client.useQuery(
-    'get',
-    '/api/v1/products',
+  const handleOnActionClick = (href: string) => {
+    navigateToModal(href)
+  }
+
+  return (
+    <ListItem
+      key={product.id}
+      onClick={() => navigate(`/products/${product.id}`)}
+      title={
+        <div className="flex items-center gap-2">
+          {product.latest_versions && <LatestChip />}
+          <p>{product.name}</p>
+        </div>
+      }
+      actions={
+        <div className="flex flex-row gap-1">
+          <IconButton
+            icon={faEdit}
+            onPress={() => handleOnActionClick(`/products/${product.id}/edit`)}
+          />
+
+          <DeleteProduct product={product} isIconButton />
+        </div>
+      }
+      chips={
+        product.type && (
+          <Chip radius="md" size="sm">
+            {product.type}
+          </Chip>
+        )
+      }
+      description={product.description}
+    />
   )
+}
+
+export default function Products() {
+  const { data: products } = client.useQuery('get', '/api/v1/products')
 
   return (
     <div className="flex grow flex-col items-center gap-4">
@@ -57,6 +135,7 @@ export default function Products() {
                 'h-full font-normal text-default-500 bg-white rounded-lg',
             }}
             placeholder="Type to search..."
+            disabled
             size="sm"
             startContent={<FontAwesomeIcon icon={faSearch} />}
             type="search"
@@ -65,20 +144,11 @@ export default function Products() {
         }
       />
 
-      {products?.map((product) => (
-        <ListItem
-          key={product.id}
-          onClick={() => navigate(`/products/${product.id}`)}
-          title={
-            <div className="flex gap-2 items-center">
-              {/* {product.id === 1 && <LatestChip />} */}
-
-              <p>{product.name}</p>
-            </div>
-          }
-          description={product.description || 'No description'}
-        />
-      ))}
+      <DataGrid>
+        {products?.map((product) => (
+          <ProductItem key={product.id} product={product} />
+        ))}
+      </DataGrid>
 
       {/* <Pagination /> */}
     </div>

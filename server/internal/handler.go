@@ -1,6 +1,8 @@
 package internal
 
-import "github.com/go-fuego/fuego"
+import (
+	"github.com/go-fuego/fuego"
+)
 
 type Handler struct {
 	svc *Service
@@ -176,9 +178,17 @@ func (h *Handler) GetProductVersion(c fuego.ContextNoBody) (ProductVersionDTO, e
 }
 
 func (h *Handler) ListRelationshipsByProductVersion(c fuego.ContextNoBody) ([]RelationshipGroupDTO, error) {
-	return nil, fuego.InternalServerError{
-		Title: "Not implemented",
+	productVersionID := c.PathParam("id")
+	relationships, err := h.svc.GetRelationshipsByProductVersion(c.Request().Context(), productVersionID)
+
+	if err != nil {
+		return nil, fuego.InternalServerError{
+			Title: "Failed to fetch relationships for product version",
+			Err:   err,
+		}
 	}
+
+	return relationships, nil
 }
 
 func (h *Handler) ListIdentificationHelpersByProductVersion(c fuego.ContextNoBody) ([]IdentificationHelperListItemDTO, error) {

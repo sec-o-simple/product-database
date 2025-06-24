@@ -30,4 +30,4 @@ clean:
 
 tools:      ## Install air & golangci-lint if missing
 	@command -v air >/dev/null 2>&1 || { echo "installing air…"; \
-		$(GO) install github.com/cosmtrek/air@latest ; }
+		$(GO) install github.com/air-verse/air@latest ; }

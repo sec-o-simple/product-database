@@ -14,17 +14,3 @@ export function getItemChildIds(item: TreeViewBaseItemWithParents): string[] {
 
   return ids
 }
-
-export function getItemParentIds(
-  item: TreeViewBaseItemWithParents,
-  api: any,
-): string[] {
-  const ids: string[] = []
-  item.parents?.forEach((parentId) => {
-    ids.push(parentId)
-    const parent = api.getItem(parentId)
-    ids.push(...getItemParentIds(parent, api))
-  })
-
-  return ids
-}

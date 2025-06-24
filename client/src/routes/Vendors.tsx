@@ -1,69 +1,72 @@
-import DataGrid, { FilterButton } from '@/components/forms/DataGrid'
-import ListItem from '@/components/forms/ListItem'
-import AddVendor from '@/components/layout/vendor/AddVendor'
-import {
-  faEdit,
-  faSearch,
-  faSortAlphaAsc,
-  faSortAmountAsc,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Chip, cn, Input, Listbox, ListboxItem } from '@heroui/react'
-import { useNavigate } from 'react-router-dom'
-import { DashboardTabs } from './Products'
 import client from '@/client'
+import DataGrid from '@/components/forms/DataGrid'
+import IconButton from '@/components/forms/IconButton'
+import ListItem from '@/components/forms/ListItem'
+import { CreateVendorButton } from '@/components/layout/vendor/CreateEditVendor'
+import useRefetchQuery from '@/utils/useRefetchQuery'
+import useRouter from '@/utils/useRouter'
+import { faEdit, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Chip, Input } from '@heroui/react'
+import { DashboardTabs } from './Products'
+import { DeleteVendor } from './Vendor'
 
-export function EditPopover({
-  onEdit,
-  onDelete,
+export type VendorProps = {
+  id?: string
+  name: string
+  description: string
+  product_count?: number
+}
+
+export function useVendorListQuery() {
+  const request = client.useQuery('get', '/api/v1/vendors')
+  useRefetchQuery(request)
+  return request
+}
+
+export function VendorItem({
+  vendor,
+  returnTo,
 }: {
-  onEdit?: () => void
-  onDelete?: () => void
+  vendor: VendorProps
+  returnTo?: string
 }) {
-  const iconClasses = 'text-default-500 pointer-events-none flex-shrink-0'
+  const { navigate, navigateToModal } = useRouter()
 
   return (
-    <Listbox
-      aria-label="Listbox menu with icons"
-      className="p-0 gap-0 bg-content1 max-w-[300px] overflow-visible shadow-small rounded-medium"
-      itemClasses={{
-        base: 'px-3 first:rounded-t-medium last:rounded-b-medium rounded-none gap-3 h-8 data-[hover=true]:bg-default-100/80',
-      }}
-      variant="flat"
-    >
-      <ListboxItem
-        key="new"
-        onClick={onEdit}
-        startContent={<FontAwesomeIcon className={iconClasses} icon={faEdit} />}
-      >
-        Edit
-      </ListboxItem>
-      <ListboxItem
-        key="delete"
-        color="danger"
-        className="text-danger"
-        onClick={onDelete}
-        startContent={
-          <FontAwesomeIcon
-            className={cn(iconClasses, 'text-danger')}
-            icon={faTrash}
+    <ListItem
+      key={vendor.id}
+      onClick={() => navigate(`/vendors/${vendor.id}`)}
+      title={vendor.name}
+      description={vendor.description}
+      actions={
+        <div className="flex flex-row gap-1">
+          <IconButton
+            icon={faEdit}
+            onPress={() =>
+              navigateToModal(
+                `/vendors/${vendor.id}/edit`,
+                returnTo || '/vendors',
+              )
+            }
           />
-        }
-      >
-        Delete
-      </ListboxItem>
-    </Listbox>
+
+          <DeleteVendor vendor={vendor} isIconButton />
+        </div>
+      }
+      chips={
+        vendor.product_count !== 0 && (
+          <Chip variant="flat" color="primary" className="rounded-md">
+            {vendor.product_count} Products
+          </Chip>
+        )
+      }
+    />
   )
 }
 
 export default function Vendors() {
-  const navigate = useNavigate()
-
-  const { data: vendors, refetch } = client.useQuery(
-    "get",
-    "/api/v1/vendors",
-  )
+  const { data: vendors } = useVendorListQuery()
 
   return (
     <div className="flex grow flex-col items-center gap-4">
@@ -79,6 +82,7 @@ export default function Vendors() {
                 'h-full font-normal text-default-500 bg-white rounded-lg',
             }}
             placeholder="Type to search..."
+            disabled
             size="sm"
             startContent={<FontAwesomeIcon icon={faSearch} />}
             type="search"
@@ -87,31 +91,19 @@ export default function Vendors() {
         }
       />
 
-      <div className="w-full flex gap-2 flex-col">
-        <div className="flex w-full items-center justify-between mb-2 gap-2">
-          <div className="flex flex-grow flex-row gap-2">
-            <FilterButton title="Products" icon={faSortAmountAsc} />
-            <FilterButton title="Name" icon={faSortAlphaAsc} />
+      <div className="flex w-full flex-col gap-2">
+        <div className="mb-2 flex w-full items-center justify-between gap-2">
+          <div className="flex grow flex-row gap-2">
+            {/* <FilterButton title="Name" icon={faSortAlphaAsc} disabled /> */}
+            {/* <FilterButton title="Products" icon={faSortAmountAsc} disabled /> */}
           </div>
-          <AddVendor onCreate={() => refetch()} />
+
+          <CreateVendorButton />
         </div>
 
-        <DataGrid addButton={<AddVendor />}>
-          {vendors?.map((vendor) => (
-            <ListItem
-              key={vendor.id}
-              onClick={() => navigate(`/vendors/${vendor.id}`)}
-              title={vendor.name}
-              description={vendor.description || 'No description'}
-              menu={<EditPopover />}
-              chips={
-                vendor.product_count !== 0 && (
-                  <Chip variant="flat" color="primary" className="rounded-md">
-                    Products: {vendor.product_count}
-                  </Chip>
-                )
-              }
-            />
+        <DataGrid addButton={<CreateVendorButton />}>
+          {(vendors || []).map((vendor) => (
+            <VendorItem key={vendor.id} vendor={vendor} returnTo="/vendors" />
           ))}
         </DataGrid>
       </div>

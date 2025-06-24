@@ -7,6 +7,7 @@ export default function Breadcrumbs({
 }>) {
   return (
     <MuiBreadcrumbs
+      maxItems={10}
       radius="lg"
       variant="solid"
       classNames={{

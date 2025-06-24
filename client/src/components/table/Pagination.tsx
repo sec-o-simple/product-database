@@ -19,7 +19,7 @@ export default function Pagination({
         classNames?.base,
       )}
     >
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <p>Show</p>
         <Select
           variant="bordered"
@@ -39,7 +39,7 @@ export default function Pagination({
         </Select>
       </div>
 
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <p>Showing 1 - 10 of 100 results</p>
         <HPagination
           isCompact

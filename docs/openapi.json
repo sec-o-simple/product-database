@@ -1,0 +1,3009 @@
+{
+	"components": {
+		"schemas": {
+			"CreateIdentificationHelperDTO": {
+				"description": "CreateIdentificationHelperDTO schema",
+				"properties": {
+					"category": {
+						"example": "hashes",
+						"type": "string"
+					},
+					"metadata": {
+						"example": "{\"hash\":\"abc123\"}",
+						"type": "string"
+					},
+					"product_version_id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"required": [
+					"product_version_id",
+					"category",
+					"metadata"
+				],
+				"type": "object"
+			},
+			"CreateProductDTO": {
+				"description": "CreateProductDTO schema",
+				"properties": {
+					"description": {
+						"example": "Product Description",
+						"type": "string"
+					},
+					"name": {
+						"example": "Product Name",
+						"type": "string"
+					},
+					"type": {
+						"example": "software",
+						"type": "string"
+					},
+					"vendor_id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"vendor_id",
+					"type"
+				],
+				"type": "object"
+			},
+			"CreateProductVersionDTO": {
+				"description": "CreateProductVersionDTO schema",
+				"properties": {
+					"predecessor_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
+						"type": "string"
+					},
+					"product_id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"release_date": {
+						"description": "string schema",
+						"example": "2023-10-01",
+						"nullable": true,
+						"type": "string"
+					},
+					"version": {
+						"example": "Version Name",
+						"type": "string"
+					}
+				},
+				"required": [
+					"version",
+					"product_id"
+				],
+				"type": "object"
+			},
+			"CreateRelationshipDTO": {
+				"description": "CreateRelationshipDTO schema",
+				"properties": {
+					"category": {
+						"example": "default_component_of",
+						"type": "string"
+					},
+					"source_node_id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"target_node_id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"required": [
+					"category",
+					"source_node_id",
+					"target_node_id"
+				],
+				"type": "object"
+			},
+			"CreateVendorDTO": {
+				"description": "CreateVendorDTO schema",
+				"properties": {
+					"description": {
+						"example": "Vendor Description",
+						"type": "string"
+					},
+					"name": {
+						"example": "Vendor Name",
+						"type": "string"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object"
+			},
+			"HTTPError": {
+				"description": "HTTPError schema",
+				"properties": {
+					"detail": {
+						"description": "Human readable error message",
+						"nullable": true,
+						"type": "string"
+					},
+					"errors": {
+						"items": {
+							"properties": {
+								"more": {
+									"additionalProperties": {},
+									"description": "Additional information about the error",
+									"nullable": true,
+									"type": "object"
+								},
+								"name": {
+									"description": "For example, name of the parameter that caused the error",
+									"type": "string"
+								},
+								"reason": {
+									"description": "Human readable error message",
+									"type": "string"
+								}
+							},
+							"type": "object"
+						},
+						"nullable": true,
+						"type": "array"
+					},
+					"instance": {
+						"nullable": true,
+						"type": "string"
+					},
+					"status": {
+						"description": "HTTP status code",
+						"example": 403,
+						"nullable": true,
+						"type": "integer"
+					},
+					"title": {
+						"description": "Short title of the error",
+						"nullable": true,
+						"type": "string"
+					},
+					"type": {
+						"description": "URL of the error type. Can be used to lookup the error in a documentation",
+						"nullable": true,
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"IdentificationHelperDTO": {
+				"description": "IdentificationHelperDTO schema",
+				"properties": {
+					"category": {
+						"example": "hashes",
+						"type": "string"
+					},
+					"id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"metadata": {
+						"example": "{\"hash\":\"abc123\"}",
+						"type": "string"
+					},
+					"product_version_id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"category",
+					"product_version_id",
+					"metadata"
+				],
+				"type": "object"
+			},
+			"IdentificationHelperListItemDTO": {
+				"description": "IdentificationHelperListItemDTO schema",
+				"properties": {
+					"category": {
+						"example": "hashes",
+						"type": "string"
+					},
+					"id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"product_version_id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"category",
+					"product_version_id"
+				],
+				"type": "object"
+			},
+			"ProductDTO": {
+				"description": "ProductDTO schema",
+				"properties": {
+					"description": {
+						"example": "Product Description",
+						"type": "string"
+					},
+					"full_name": {
+						"example": "Vendor Name - Product Name",
+						"type": "string"
+					},
+					"id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"latest_versions": {
+						"items": {
+							"properties": {
+								"description": {
+									"example": "Version Description",
+									"type": "string"
+								},
+								"full_name": {
+									"example": "Product Name - Version Name",
+									"type": "string"
+								},
+								"id": {
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"type": "string"
+								},
+								"is_latest": {
+									"example": true,
+									"type": "boolean"
+								},
+								"name": {
+									"example": "Version Name",
+									"type": "string"
+								},
+								"predecessor_id": {
+									"description": "string schema",
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"nullable": true,
+									"type": "string"
+								},
+								"product_id": {
+									"description": "string schema",
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"type": "string"
+								},
+								"released_at": {
+									"description": "string schema",
+									"example": "2023-10-01",
+									"nullable": true,
+									"type": "string"
+								}
+							},
+							"required": [
+								"id",
+								"name",
+								"full_name",
+								"is_latest"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					},
+					"name": {
+						"example": "Product Name",
+						"type": "string"
+					},
+					"type": {
+						"example": "software",
+						"type": "string"
+					},
+					"vendor_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"full_name",
+					"type"
+				],
+				"type": "object"
+			},
+			"ProductVersionDTO": {
+				"description": "ProductVersionDTO schema",
+				"properties": {
+					"description": {
+						"example": "Version Description",
+						"type": "string"
+					},
+					"full_name": {
+						"example": "Product Name - Version Name",
+						"type": "string"
+					},
+					"id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"is_latest": {
+						"example": true,
+						"type": "boolean"
+					},
+					"name": {
+						"example": "Version Name",
+						"type": "string"
+					},
+					"predecessor_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
+						"type": "string"
+					},
+					"product_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"released_at": {
+						"description": "string schema",
+						"example": "2023-10-01",
+						"nullable": true,
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"full_name",
+					"is_latest"
+				],
+				"type": "object"
+			},
+			"RelationshipDTO": {
+				"description": "RelationshipDTO schema",
+				"properties": {
+					"category": {
+						"example": "default_component_of",
+						"type": "string"
+					},
+					"id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"source": {
+						"properties": {
+							"description": {
+								"example": "Version Description",
+								"type": "string"
+							},
+							"full_name": {
+								"example": "Product Name - Version Name",
+								"type": "string"
+							},
+							"id": {
+								"example": "123e4567-e89b-12d3-a456-426614174000",
+								"type": "string"
+							},
+							"is_latest": {
+								"example": true,
+								"type": "boolean"
+							},
+							"name": {
+								"example": "Version Name",
+								"type": "string"
+							},
+							"predecessor_id": {
+								"description": "string schema",
+								"example": "123e4567-e89b-12d3-a456-426614174000",
+								"nullable": true,
+								"type": "string"
+							},
+							"product_id": {
+								"description": "string schema",
+								"example": "123e4567-e89b-12d3-a456-426614174000",
+								"type": "string"
+							},
+							"released_at": {
+								"description": "string schema",
+								"example": "2023-10-01",
+								"nullable": true,
+								"type": "string"
+							}
+						},
+						"required": [
+							"id",
+							"name",
+							"full_name",
+							"is_latest"
+						],
+						"type": "object"
+					},
+					"target": {
+						"properties": {
+							"description": {
+								"example": "Version Description",
+								"type": "string"
+							},
+							"full_name": {
+								"example": "Product Name - Version Name",
+								"type": "string"
+							},
+							"id": {
+								"example": "123e4567-e89b-12d3-a456-426614174000",
+								"type": "string"
+							},
+							"is_latest": {
+								"example": true,
+								"type": "boolean"
+							},
+							"name": {
+								"example": "Version Name",
+								"type": "string"
+							},
+							"predecessor_id": {
+								"description": "string schema",
+								"example": "123e4567-e89b-12d3-a456-426614174000",
+								"nullable": true,
+								"type": "string"
+							},
+							"product_id": {
+								"description": "string schema",
+								"example": "123e4567-e89b-12d3-a456-426614174000",
+								"type": "string"
+							},
+							"released_at": {
+								"description": "string schema",
+								"example": "2023-10-01",
+								"nullable": true,
+								"type": "string"
+							}
+						},
+						"required": [
+							"id",
+							"name",
+							"full_name",
+							"is_latest"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"id",
+					"category",
+					"source",
+					"target"
+				],
+				"type": "object"
+			},
+			"RelationshipGroupDTO": {
+				"description": "RelationshipGroupDTO schema",
+				"properties": {
+					"category": {
+						"example": "default_component_of",
+						"type": "string"
+					},
+					"products": {
+						"items": {
+							"properties": {
+								"product": {
+									"properties": {
+										"description": {
+											"example": "Product Description",
+											"type": "string"
+										},
+										"full_name": {
+											"example": "Vendor Name - Product Name",
+											"type": "string"
+										},
+										"id": {
+											"example": "123e4567-e89b-12d3-a456-426614174000",
+											"type": "string"
+										},
+										"latest_versions": {
+											"items": {
+												"properties": {
+													"description": {
+														"example": "Version Description",
+														"type": "string"
+													},
+													"full_name": {
+														"example": "Product Name - Version Name",
+														"type": "string"
+													},
+													"id": {
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"type": "string"
+													},
+													"is_latest": {
+														"example": true,
+														"type": "boolean"
+													},
+													"name": {
+														"example": "Version Name",
+														"type": "string"
+													},
+													"predecessor_id": {
+														"description": "string schema",
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"nullable": true,
+														"type": "string"
+													},
+													"product_id": {
+														"description": "string schema",
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"type": "string"
+													},
+													"released_at": {
+														"description": "string schema",
+														"example": "2023-10-01",
+														"nullable": true,
+														"type": "string"
+													}
+												},
+												"required": [
+													"id",
+													"name",
+													"full_name",
+													"is_latest"
+												],
+												"type": "object"
+											},
+											"type": "array"
+										},
+										"name": {
+											"example": "Product Name",
+											"type": "string"
+										},
+										"type": {
+											"example": "software",
+											"type": "string"
+										},
+										"vendor_id": {
+											"description": "string schema",
+											"example": "123e4567-e89b-12d3-a456-426614174000",
+											"type": "string"
+										}
+									},
+									"required": [
+										"id",
+										"name",
+										"full_name",
+										"type"
+									],
+									"type": "object"
+								},
+								"version_relationships": {
+									"items": {
+										"properties": {
+											"id": {
+												"example": "123e4567-e89b-12d3-a456-426614174000",
+												"type": "string"
+											},
+											"version": {
+												"properties": {
+													"description": {
+														"example": "Version Description",
+														"type": "string"
+													},
+													"full_name": {
+														"example": "Product Name - Version Name",
+														"type": "string"
+													},
+													"id": {
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"type": "string"
+													},
+													"is_latest": {
+														"example": true,
+														"type": "boolean"
+													},
+													"name": {
+														"example": "Version Name",
+														"type": "string"
+													},
+													"predecessor_id": {
+														"description": "string schema",
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"nullable": true,
+														"type": "string"
+													},
+													"product_id": {
+														"description": "string schema",
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"type": "string"
+													},
+													"released_at": {
+														"description": "string schema",
+														"example": "2023-10-01",
+														"nullable": true,
+														"type": "string"
+													}
+												},
+												"required": [
+													"id",
+													"name",
+													"full_name",
+													"is_latest"
+												],
+												"type": "object"
+											}
+										},
+										"required": [
+											"id",
+											"version"
+										],
+										"type": "object"
+									},
+									"type": "array"
+								}
+							},
+							"required": [
+								"product",
+								"version_relationships"
+							],
+							"type": "object"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"category",
+					"products"
+				],
+				"type": "object"
+			},
+			"UpdateIdentificationHelperDTO": {
+				"description": "UpdateIdentificationHelperDTO schema",
+				"properties": {
+					"category": {
+						"example": "hashes",
+						"type": "string"
+					},
+					"metadata": {
+						"description": "string schema",
+						"example": "{\"key\":\"value\"}",
+						"type": "string"
+					},
+					"product_version_id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"UpdateProductDTO": {
+				"description": "UpdateProductDTO schema",
+				"properties": {
+					"description": {
+						"description": "string schema",
+						"example": "Product Description",
+						"type": "string"
+					},
+					"name": {
+						"description": "string schema",
+						"example": "Product Name",
+						"type": "string"
+					},
+					"type": {
+						"description": "string schema",
+						"example": "software",
+						"type": "string"
+					},
+					"vendor_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"UpdateProductVersionDTO": {
+				"description": "UpdateProductVersionDTO schema",
+				"properties": {
+					"predecessor_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
+						"type": "string"
+					},
+					"product_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"release_date": {
+						"description": "string schema",
+						"example": "2023-10-01",
+						"type": "string"
+					},
+					"version": {
+						"description": "string schema",
+						"example": "Version Name",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"UpdateRelationshipDTO": {
+				"description": "UpdateRelationshipDTO schema",
+				"properties": {
+					"category": {
+						"description": "string schema",
+						"example": "default_component_of",
+						"type": "string"
+					},
+					"source_node_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"target_node_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"UpdateVendorDTO": {
+				"description": "UpdateVendorDTO schema",
+				"properties": {
+					"description": {
+						"description": "string schema",
+						"example": "Vendor Description",
+						"type": "string"
+					},
+					"name": {
+						"description": "string schema",
+						"example": "Vendor Name",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"VendorDTO": {
+				"description": "VendorDTO schema",
+				"properties": {
+					"description": {
+						"example": "Vendor Description",
+						"type": "string"
+					},
+					"id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"name": {
+						"example": "Vendor Name",
+						"type": "string"
+					},
+					"product_count": {
+						"example": 10,
+						"type": "integer"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"description",
+					"product_count"
+				],
+				"type": "object"
+			},
+			"string": {
+				"description": "string schema",
+				"type": "string"
+			},
+			"unknown-interface": {
+				"description": "unknown-interface schema"
+			}
+		}
+	},
+	"info": {
+		"description": "\nThis is the autogenerated OpenAPI documentation for your [Fuego](https://github.com/go-fuego/fuego) API.\n\nBelow is a Fuego Cheatsheet to help you get started. Don't hesitate to check the [Fuego documentation](https://go-fuego.dev) for more details.\n\nHappy coding! 🔥\n\n## Usage\n\n### Route registration\n\n```go\nfunc main() {\n\t// Create a new server\n\ts := fuego.NewServer()\n\n\t// Register some routes\n\tfuego.Post(s, \"/hello\", myController)\n\tfuego.Get(s, \"/myPath\", otherController)\n\tfuego.Put(s, \"/hello\", thirdController)\n\n\tadminRoutes := fuego.Group(s, \"/admin\")\n\tfuego.Use(adminRoutes, myMiddleware) // This middleware (for authentication, etc...) will be available for routes starting by /admin/*, \n\tfuego.Get(adminRoutes, \"/hello\", groupController) // This route will be available at /admin/hello\n\n\t// Start the server\n\ts.Start()\n}\n```\n\n### Basic controller\n\n```go\ntype MyBody struct {\n\tName string `json:\"name\" validate:\"required,max=30\"`\n}\n\ntype MyResponse struct {\n\tAnswer string `json:\"answer\"`\n}\n\nfunc hello(ctx fuego.ContextWithBody[MyBody]) (*MyResponse, error) {\n\tbody, err := ctx.Body()\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\treturn \u0026MyResponse{Answer: \"Hello \" + body.Name}, nil\n}\n```\n\n### Add openAPI information to the route\n\n```go\nimport (\n\t\"github.com/go-fuego/fuego\"\n\t\"github.com/go-fuego/fuego/option\"\n\t\"github.com/go-fuego/fuego/param\"\n)\n\nfunc main() {\n\ts := fuego.NewServer()\n\n\t// Custom OpenAPI options\n\tfuego.Post(s, \"/\", myController\n\t\toption.Description(\"This route does something...\"),\n\t\toption.Summary(\"This is my summary\"),\n\t\toption.Tags(\"MyTag\"), // A tag is set by default according to the return type (can be deactivated)\n\t\toption.Deprecated(), // Marks the route as deprecated in the OpenAPI spec\n\n\t\toption.Query(\"name\", \"Declares a query parameter with default value\", param.Default(\"Carmack\")),\n\t\toption.Header(\"Authorization\", \"Bearer token\", param.Required()),\n\t\toptionPagination,\n\t\toptionCustomBehavior,\n\t)\n\n\ts.Run()\n}\n\nvar optionPagination = option.Group(\n\toption.QueryInt(\"page\", \"Page number\", param.Default(1), param.Example(\"1st page\", 1), param.Example(\"42nd page\", 42)),\n\toption.QueryInt(\"perPage\", \"Number of items per page\"),\n)\n\nvar optionCustomBehavior = func(r *fuego.BaseRoute) {\n\tr.XXX = \"YYY\"\n}\n```\n\nThen, in the controller\n\n```go\ntype MyResponse struct {\n\tAnswer string `json:\"answer\"`\n}\n\nfunc getAllPets(ctx fuego.ContextNoBody) (*MyResponse, error) {\n\tname := ctx.QueryParam(\"name\")\n\tperPage, _ := ctx.QueryParamIntErr(\"per_page\")\n\n\treturn \u0026MyResponse{Answer: \"Hello \" + name}, nil\n}\n```\n",
+		"title": "OpenAPI",
+		"version": "0.0.1"
+	},
+	"openapi": "3.1.0",
+	"paths": {
+		"/api/v1/health": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.RegisterRoutes.func1`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"operationId": "GET_/api/v1/health",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/string"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/string"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "func1",
+				"tags": [
+					"api/v1"
+				]
+			}
+		},
+		"/api/v1/identification-helper": {
+			"post": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).CreateIdentificationHelper`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nCreates a new identification helper for a product version",
+				"operationId": "POST_/api/v1/identification-helper",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateIdentificationHelperDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.CreateIdentificationHelperDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IdentificationHelperDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/IdentificationHelperDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Create identification helper",
+				"tags": [
+					"api/v1",
+					"identification-helper",
+					"identification-helpers"
+				]
+			}
+		},
+		"/api/v1/identification-helper/{id}": {
+			"delete": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteIdentificationHelper`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves an identification helper from the system",
+				"operationId": "DELETE_/api/v1/identification-helper/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Delete identification helper",
+				"tags": [
+					"api/v1",
+					"identification-helper",
+					"identification-helpers"
+				]
+			},
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).GetIdentificationHelper`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns details for a specific identification helper",
+				"operationId": "GET_/api/v1/identification-helper/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IdentificationHelperDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/IdentificationHelperDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Get identification helper by ID",
+				"tags": [
+					"api/v1",
+					"identification-helper",
+					"identification-helpers"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).UpdateIdentificationHelper`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nUpdates an existing identification helper's information",
+				"operationId": "PUT_/api/v1/identification-helper/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateIdentificationHelperDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.UpdateIdentificationHelperDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IdentificationHelperDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/IdentificationHelperDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Update identification helper",
+				"tags": [
+					"api/v1",
+					"identification-helper",
+					"identification-helpers"
+				]
+			}
+		},
+		"/api/v1/product-versions": {
+			"post": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).CreateProductVersion`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nCreates a new version for a specific product",
+				"operationId": "POST_/api/v1/product-versions",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateProductVersionDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.CreateProductVersionDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductVersionDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductVersionDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Create product version",
+				"tags": [
+					"api/v1",
+					"product-versions"
+				]
+			}
+		},
+		"/api/v1/product-versions/{id}": {
+			"delete": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteProductVersion`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a product version and its associated data",
+				"operationId": "DELETE_/api/v1/product-versions/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Delete product version",
+				"tags": [
+					"api/v1",
+					"product-versions"
+				]
+			},
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).GetProductVersion`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns details for a specific product version",
+				"operationId": "GET_/api/v1/product-versions/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductVersionDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductVersionDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Get product version by ID",
+				"tags": [
+					"api/v1",
+					"product-versions"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).UpdateProductVersion`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nUpdates an existing product version's information",
+				"operationId": "PUT_/api/v1/product-versions/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateProductVersionDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.UpdateProductVersionDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductVersionDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductVersionDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Update product version",
+				"tags": [
+					"api/v1",
+					"product-versions"
+				]
+			}
+		},
+		"/api/v1/product-versions/{id}/identification-helpers": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ListIdentificationHelpersByProductVersion`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns all identification helpers for a product version",
+				"operationId": "GET_/api/v1/product-versions/:id/identification-helpers",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IdentificationHelperListItemDTO"
+									},
+									"type": "array"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IdentificationHelperListItemDTO"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "List identification helpers",
+				"tags": [
+					"api/v1",
+					"product-versions"
+				]
+			}
+		},
+		"/api/v1/product-versions/{id}/relationships": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ListRelationshipsByProductVersion`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns all relationships associated with a product version",
+				"operationId": "GET_/api/v1/product-versions/:id/relationships",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/RelationshipGroupDTO"
+									},
+									"type": "array"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/RelationshipGroupDTO"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "List version relationships",
+				"tags": [
+					"api/v1",
+					"product-versions"
+				]
+			}
+		},
+		"/api/v1/products": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ListProducts`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns a list of all products in the system",
+				"operationId": "GET_/api/v1/products",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductDTO"
+									},
+									"type": "array"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductDTO"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "List all products",
+				"tags": [
+					"api/v1",
+					"products"
+				]
+			},
+			"post": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).CreateProduct`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nCreates a new product under a vendor",
+				"operationId": "POST_/api/v1/products",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateProductDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.CreateProductDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Create product",
+				"tags": [
+					"api/v1",
+					"products"
+				]
+			}
+		},
+		"/api/v1/products/{id}": {
+			"delete": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteProduct`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a product and its associated versions from the system",
+				"operationId": "DELETE_/api/v1/products/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Delete product",
+				"tags": [
+					"api/v1",
+					"products"
+				]
+			},
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).GetProduct`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns details for a specific product",
+				"operationId": "GET_/api/v1/products/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Get product by ID",
+				"tags": [
+					"api/v1",
+					"products"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).UpdateProduct`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nUpdates an existing product's information",
+				"operationId": "PUT_/api/v1/products/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateProductDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.UpdateProductDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Update product",
+				"tags": [
+					"api/v1",
+					"products"
+				]
+			}
+		},
+		"/api/v1/products/{id}/versions": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ListProductVersions`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns all versions associated with a specific product",
+				"operationId": "GET_/api/v1/products/:id/versions",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductVersionDTO"
+									},
+									"type": "array"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductVersionDTO"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "List product versions",
+				"tags": [
+					"api/v1",
+					"products"
+				]
+			}
+		},
+		"/api/v1/relationships": {
+			"post": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).CreateRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nCreates a new relationship between two product versions",
+				"operationId": "POST_/api/v1/relationships",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateRelationshipDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.CreateRelationshipDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RelationshipDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/RelationshipDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Create relationship",
+				"tags": [
+					"api/v1",
+					"relationships"
+				]
+			}
+		},
+		"/api/v1/relationships/{id}": {
+			"delete": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a relationship between product versions",
+				"operationId": "DELETE_/api/v1/relationships/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Delete relationship",
+				"tags": [
+					"api/v1",
+					"relationships"
+				]
+			},
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).GetRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns details for a specific relationship",
+				"operationId": "GET_/api/v1/relationships/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RelationshipDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/RelationshipDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Get relationship by ID",
+				"tags": [
+					"api/v1",
+					"relationships"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).UpdateRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nUpdates an existing relationship between product versions",
+				"operationId": "PUT_/api/v1/relationships/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateRelationshipDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.UpdateRelationshipDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/RelationshipDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/RelationshipDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Update relationship",
+				"tags": [
+					"api/v1",
+					"relationships"
+				]
+			}
+		},
+		"/api/v1/vendors": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ListVendors`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns a list of all vendors in the system",
+				"operationId": "GET_/api/v1/vendors",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/VendorDTO"
+									},
+									"type": "array"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/VendorDTO"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "List all vendors",
+				"tags": [
+					"api/v1",
+					"vendors"
+				]
+			},
+			"post": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).CreateVendor`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nCreates a new vendor",
+				"operationId": "POST_/api/v1/vendors",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateVendorDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.CreateVendorDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VendorDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/VendorDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Create vendor",
+				"tags": [
+					"api/v1",
+					"vendors"
+				]
+			}
+		},
+		"/api/v1/vendors/{id}": {
+			"delete": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteVendor`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a vendor from the system",
+				"operationId": "DELETE_/api/v1/vendors/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Delete vendor",
+				"tags": [
+					"api/v1",
+					"vendors"
+				]
+			},
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).GetVendor`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns details for a specific vendor",
+				"operationId": "GET_/api/v1/vendors/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VendorDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/VendorDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Get vendor by ID",
+				"tags": [
+					"api/v1",
+					"vendors"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).UpdateVendor`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nUpdates an existing vendor's information",
+				"operationId": "PUT_/api/v1/vendors/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateVendorDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.UpdateVendorDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/VendorDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/VendorDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Update vendor",
+				"tags": [
+					"api/v1",
+					"vendors"
+				]
+			}
+		},
+		"/api/v1/vendors/{id}/products": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ListVendorProducts`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns all products associated with a vendor",
+				"operationId": "GET_/api/v1/vendors/:id/products",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductDTO"
+									},
+									"type": "array"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductDTO"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "List vendor products",
+				"tags": [
+					"api/v1",
+					"vendors"
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"description": "local server",
+			"url": "http://localhost:9999"
+		}
+	],
+	"tags": [
+		{
+			"name": "api/v1"
+		},
+		{
+			"name": "identification-helper"
+		},
+		{
+			"name": "identification-helpers"
+		},
+		{
+			"name": "product-versions"
+		},
+		{
+			"name": "products"
+		},
+		{
+			"name": "relationships"
+		},
+		{
+			"name": "vendors"
+		}
+	]
+}

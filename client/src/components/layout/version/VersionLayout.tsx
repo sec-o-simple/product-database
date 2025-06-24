@@ -1,64 +1,120 @@
-import IconButton from '@/components/forms/IconButton'
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import PageContainer from '@/components/forms/PageContainer'
+import { PageOutlet } from '@/components/forms/PageContent'
+import Sidebar from '@/components/forms/Sidebar'
+import { EmptyState } from '@/components/table/EmptyState'
+import { useProductQuery } from '@/routes/Product'
+import { DeleteVersion, useVersionQuery } from '@/routes/Version'
+import useRouter from '@/utils/useRouter'
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Button } from '@heroui/button'
 import { Chip } from '@heroui/chip'
-import { Outlet, useNavigate, useParams } from 'react-router-dom'
-import AddRelationship from '../product/AddRelationship'
+import { Outlet, useParams } from 'react-router-dom'
+import { AddRelationshipButton } from '../product/CreateRelationship'
+import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
-import client from '@/client'
+import { useEffect } from 'react'
 
 export default function VersionLayout() {
-  const navigate = useNavigate()
+  const { navigateToModal, navigate } = useRouter()
   const { versionId } = useParams()
 
-  const { data: version } = client.useQuery(
-    'get',
-    `/api/v1/product-versions/{id}`,
-    {
-      params: {
-        path: {
-          id: versionId || '',
-        }
-      }
-    }
+  const { data: version, isLoading: isVersionLoading } = useVersionQuery(
+    versionId || '',
+  )
+  const { data: product, isLoading: isProductLoading } = useProductQuery(
+    version?.product_id,
   )
 
-  if (!version) {
-    return null
+  useEffect(() => {
+    if (isVersionLoading || isProductLoading) return
+    if (!version || !product) {
+      navigate(`/`, {
+        state: {
+          shouldRefetch: true,
+          message: 'Version not found.',
+          type: 'error',
+        },
+      })
+    }
+  }, [isVersionLoading, isProductLoading, product, version, navigate])
+
+  if (!version || !product) {
+    return <EmptyState />
   }
 
   return (
-    <div className="flex h-screen flex-col bg-[#F9FAFB]">
-      <div className="flex w-full items-center justify-between gap-8 border-b px-6 py-4 bg-white">
-        <span className="flex items-center gap-2 text-2xl font-bold">
-          <IconButton
-            icon={faArrowLeft}
-            color="primary"
-            variant="light"
-            isIconOnly={true}
-            onPress={() => navigate(-1)}
-          />
-          <p>Product {version.full_name || ''} - Relationships</p>
+    <PageContainer>
+      <TopBar
+        historyLink={`/product-versions/${versionId}/history`}
+        title={
+          <div className="flex flex-row items-center gap-2">
+            <p>Product: {product?.name}</p>
 
-          <Chip variant="flat" className="rounded-md ml-2">
-            Version: {version.name}
-          </Chip>
-        </span>
+            <Chip variant="flat" className="ml-2 rounded-md">
+              Version: {version.name}
+            </Chip>
+          </div>
+        }
+      >
+        <AddRelationshipButton />
+      </TopBar>
 
-        <div className="flex flex-row gap-4">
-          <AddRelationship />
-        </div>
-      </div>
+      <div className="flex h-full grow flex-row">
+        <Sidebar
+          attributes={[
+            <Attribute label="Version" value={version.name} key="name" />,
+            <Attribute
+              label="Description"
+              value={version.description || '-/-'}
+              key="description"
+            />,
+            <Attribute
+              label="Product"
+              value={product?.name || '-/-'}
+              href={`/products/${version.product_id}`}
+              key="product"
+            />,
+            <Button
+              variant="light"
+              color="primary"
+              className="w-full justify-between px-2 text-base font-semibold"
+              onPress={() =>
+                navigate(
+                  `/product-versions/${version.id}/identification-helpers`,
+                )
+              }
+              key="identificationHelpers"
+            >
+              Identification Helpers
+              <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+            </Button>,
+          ]}
+          actions={
+            <div className="flex flex-row gap-2">
+              <DeleteVersion version={version} />
 
-      <div className="flex flex-row h-full">
-        <div className="flex w-1/3 max-w-64 flex-col gap-4 border-r bg-white p-4">
-          <Attribute label="Version" value={version.name} />
-          <Attribute label="Description" value="Version Description" />
-          <Attribute label="Relationships" value={`0`} />
-        </div>
-        <div className="p-4 w-full">
+              <Button
+                variant="solid"
+                color="primary"
+                fullWidth
+                onPress={() =>
+                  navigateToModal(
+                    `/product-versions/${versionId}/edit`,
+                    `/product-versions/${version.id}`,
+                  )
+                }
+              >
+                Edit Version
+              </Button>
+            </div>
+          }
+        />
+
+        <PageOutlet>
           <Outlet />
-        </div>
+        </PageOutlet>
       </div>
-    </div>
+    </PageContainer>
   )
 }

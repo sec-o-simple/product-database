@@ -1,86 +1,117 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import DataGrid from '@/components/forms/DataGrid'
-import ListItem from '@/components/forms/ListItem'
-import AddProduct from '@/components/layout/vendor/AddProduct'
-import { faFolderOpen } from '@fortawesome/free-solid-svg-icons'
+import PageContent from '@/components/forms/PageContent'
+import { AddProductButton } from '@/components/layout/product/CreateEditProduct'
+import useRefetchQuery from '@/utils/useRefetchQuery'
+import useRouter from '@/utils/useRouter'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem } from '@heroui/react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { ProductItem, useVendorProductListQuery } from './Products'
+import { VendorProps } from './Vendors'
 
-export function EmptyState({ add }: { add: React.ReactNode }) {
+export function useVendorQuery(vendorId?: string) {
+  const request = client.useQuery(
+    'get',
+    '/api/v1/vendors/{id}',
+    {
+      params: {
+        path: {
+          id: vendorId || '',
+        },
+      },
+    },
+    {
+      enabled: !!vendorId,
+    },
+  )
+
+  useRefetchQuery(request)
+
+  return request
+}
+
+export function DeleteVendor({
+  vendor,
+  isIconButton,
+}: {
+  vendor: VendorProps
+  isIconButton?: boolean
+}) {
+  const mutation = client.useMutation('delete', '/api/v1/vendors/{id}')
+  const { navigate } = useRouter()
+
   return (
-    <div className="text-center py-16 px-6">
-      <div className="mx-auto w-24 h-24 text-4xl rounded-full bg-gray-100 flex items-center justify-center">
-        <FontAwesomeIcon icon={faFolderOpen} className="text-zinc-400" />
-      </div>
-      <h3 className="mt-2 font-semibold text-gray-900">No Data Available</h3>
-      <p className="mt-1 text-sm text-gray-500">
-        There are no items to display at this moment.
-      </p>
-      <div className="mt-6">{add}</div>
-    </div>
+    <ConfirmButton
+      isIconOnly={isIconButton}
+      variant={isIconButton ? 'light' : 'solid'}
+      radius={isIconButton ? 'full' : 'md'}
+      color="danger"
+      confirmTitle="Delete Vendor"
+      confirmText={`Are you sure you want to delete the vendor "${vendor.name}"? This action cannot be undone.`}
+      onConfirm={() => {
+        mutation.mutate({
+          params: { path: { id: vendor.id?.toString() ?? '' } },
+        })
+
+        navigate('/vendors', {
+          state: {
+            shouldRefetch: true,
+            message: `Vendor "${vendor.name}" has been deleted successfully.`,
+            type: 'success',
+          },
+        })
+      }}
+    >
+      <FontAwesomeIcon icon={faTrash} />
+      {!isIconButton && 'Delete'}
+    </ConfirmButton>
   )
 }
 
+/**
+ *
+ * @param vendorId - The ID of the vendor to display. If not provided, it will be taken from the URL parameters.
+ * @param hideBreadcrumbs - If true, the breadcrumbs will not be displayed.
+ * @returns
+ */
 export default function Vendor({
+  vendorId,
   hideBreadcrumbs = false,
 }: {
+  vendorId?: string
   hideBreadcrumbs?: boolean
 }) {
-  const { vendorId } = useParams()
-  const navigate = useNavigate()
+  const { vendorId: paramVendorId } = useParams()
+  let vendorIdParam = vendorId
 
-  const { data: vendor } = client.useQuery(
-    'get',
-    `/api/v1/vendors/{id}`,
-    {
-      params: {
-        path: {
-          id: vendorId || '',
-        }
-      }
-    }
-  )
-
-  const { data: products } = client.useQuery(
-    'get',
-    '/api/v1/vendors/{id}/products',
-    {
-      params: {
-        path: {
-          id: vendorId || '',
-        }
-      }
-    }
-  )
-
-  if (!vendor) {
-    return null
+  if (!vendorIdParam) {
+    vendorIdParam = paramVendorId
   }
 
+  const { data: vendor } = useVendorQuery(vendorIdParam || '')
+  const { data: products } = useVendorProductListQuery(vendorIdParam || '')
+
   return (
-    <div className="flex grow flex-col w-full gap-4 p-2">
+    <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
           <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-          <BreadcrumbItem>Products</BreadcrumbItem>
+          <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
       <DataGrid
-        title={`Products (${products?.length ?? 0})`}
-        addButton={<AddProduct vendorId={vendor.id} />}
+        title={`Products (${products?.length})`}
+        addButton={<AddProductButton vendorId={vendor?.id || ''} />}
       >
-        {!products || products.length === 0 ? null : products.map((product) => (
-          <ListItem
-            key={product.id}
-            onClick={() => navigate(`/products/${product.id}`)}
-            title={product.name ?? 'Product Name'}
-            description={product.description ?? 'Vendor Description'}
-          />
+        {products?.map((product) => (
+          <ProductItem key={product.id} product={product} />
         ))}
       </DataGrid>
-    </div>
+    </PageContent>
   )
 }
