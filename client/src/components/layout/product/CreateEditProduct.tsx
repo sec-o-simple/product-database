@@ -2,10 +2,12 @@ import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { useProductQuery } from '@/routes/Product'
+import { useErrorLocalization } from '@/utils/useErrorLocalization'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  Alert,
   Button,
   Modal,
   ModalBody,
@@ -143,6 +145,8 @@ export default function CreateEditProduct() {
     onClose: onClose,
   })
 
+  const errorHelper = useErrorLocalization(error)
+
   if (!isCreateForm && isLoading) {
     return (
       <Modal isOpen>
@@ -166,11 +170,11 @@ export default function CreateEditProduct() {
           {isCreateForm ? 'Add New Product' : 'Edit Product'}
         </ModalHeader>
         <ModalBody className="gap-4">
-          {error && (
-            <div className="text-red-500">
-              {error.title || 'An error occurred while creating the product.'}
-            </div>
-          )}
+          {error ? (
+            <Alert color="danger" className="mb-4">
+              Please check the form for errors.
+            </Alert>
+          ) : null}
 
           <Select
             label="Type"
@@ -192,6 +196,8 @@ export default function CreateEditProduct() {
             onChange={(e) => setProduct({ ...product, name: e.target.value })}
             autoFocus
             type="text"
+            isInvalid={errorHelper.isFieldInvalid('Name')}
+            errorMessage={errorHelper.getFieldErrorMessage('Name')}
           />
 
           <Textarea

@@ -2,10 +2,12 @@ import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import { useVendorQuery } from '@/routes/Vendor'
 import { VendorProps } from '@/routes/Vendors'
+import { useErrorLocalization } from '@/utils/useErrorLocalization'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  Alert,
   Button,
   Modal,
   ModalBody,
@@ -108,6 +110,8 @@ export default function CreateEditVendor() {
     onClose: onClose,
   })
 
+  const errorHelper = useErrorLocalization(error)
+
   if (!isCreateForm && isLoading) {
     return (
       <Modal isOpen>
@@ -132,9 +136,9 @@ export default function CreateEditVendor() {
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
-            <div className="text-red-500">
-              Error: {error?.title || 'Failed to create vendor'}
-            </div>
+            <Alert color="danger" className="mb-4">
+              Please check the form for errors.
+            </Alert>
           ) : null}
 
           <Input
@@ -145,6 +149,8 @@ export default function CreateEditVendor() {
             onChange={(e) => setVendor({ ...vendor, name: e.target.value })}
             autoFocus
             type="text"
+            isInvalid={errorHelper.isFieldInvalid('Name')}
+            errorMessage={errorHelper.getFieldErrorMessage('Name')}
           />
 
           <Textarea
@@ -156,6 +162,8 @@ export default function CreateEditVendor() {
             onChange={(e) =>
               setVendor({ ...vendor, description: e.target.value })
             }
+            isInvalid={errorHelper.isFieldInvalid('Description')}
+            errorMessage={errorHelper.getFieldErrorMessage('Description')}
             type="text"
           />
         </ModalBody>

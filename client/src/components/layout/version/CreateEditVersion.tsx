@@ -1,11 +1,13 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
 import { useVersionQuery } from '@/routes/Version'
+import { useErrorLocalization } from '@/utils/useErrorLocalization'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import {
+  Alert,
   DatePicker,
   Modal,
   ModalBody,
@@ -162,6 +164,8 @@ export default function CreateEditVersion() {
     onClose: onClose,
   })
 
+  const errorHelper = useErrorLocalization(error)
+
   if (!isCreateForm && isLoading) {
     return (
       <Modal isOpen>
@@ -179,11 +183,11 @@ export default function CreateEditVersion() {
           {versionId ? 'Edit Version' : 'Create Version'}
         </ModalHeader>
         <ModalBody className="gap-4">
-          {error && (
-            <div className="text-red-500">
-              {error.title || 'An error occurred while creating the product.'}
-            </div>
-          )}
+          {error ? (
+            <Alert color="danger" className="mb-4">
+              Please check the form for errors.
+            </Alert>
+          ) : null}
 
           {isLoading ? (
             <VersionSkeleton />
@@ -198,6 +202,8 @@ export default function CreateEditVersion() {
                   setVersion({ ...version, name: e.target.value })
                 }
                 type="text"
+                isInvalid={errorHelper.isFieldInvalid('Version')}
+                errorMessage={errorHelper.getFieldErrorMessage('Version')}
               />
 
               <I18nProvider locale="de-DE">
