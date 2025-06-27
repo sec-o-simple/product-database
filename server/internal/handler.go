@@ -18,7 +18,7 @@ func (h *Handler) ListVendors(c fuego.ContextNoBody) ([]VendorDTO, error) {
 	vendors, err := h.svc.ListVendors(c.Request().Context())
 
 	if err != nil {
-		return nil, fuego.InternalServerError{Title: "Failed to fetch vendors", Err: err}
+		return nil, err
 	}
 
 	return vendors, nil
@@ -29,9 +29,7 @@ func (h *Handler) GetVendor(c fuego.ContextNoBody) (VendorDTO, error) {
 	vendor, err := h.svc.GetVendorByID(c.Request().Context(), vendorID)
 
 	if err != nil {
-		return VendorDTO{}, fuego.NotFoundError{
-			Title: "Vendor not found",
-		}
+		return VendorDTO{}, err
 	}
 
 	return vendor, nil
@@ -42,7 +40,7 @@ func (h *Handler) ListVendorProducts(c fuego.ContextNoBody) ([]ProductDTO, error
 	products, err := h.svc.ListVendorProducts(c.Request().Context(), vendorID)
 
 	if err != nil {
-		return nil, fuego.InternalServerError{Title: "Failed to fetch vendor products", Err: err}
+		return nil, err
 	}
 
 	return products, nil
@@ -53,13 +51,13 @@ func (h *Handler) UpdateVendor(c fuego.ContextWithBody[UpdateVendorDTO]) (Vendor
 	body, err := c.Body()
 
 	if err != nil {
-		return VendorDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return VendorDTO{}, err
 	}
 
 	vendor, err := h.svc.UpdateVendor(c.Request().Context(), vendorID, body)
 
 	if err != nil {
-		return VendorDTO{}, fuego.InternalServerError{Title: "Failed to update vendor", Err: err}
+		return VendorDTO{}, err
 	}
 
 	return vendor, nil
@@ -75,13 +73,13 @@ func (h *Handler) CreateVendor(c fuego.ContextWithBody[CreateVendorDTO]) (Vendor
 	body, err := c.Body()
 
 	if err != nil {
-		return VendorDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return VendorDTO{}, err
 	}
 
 	vendor, err := h.svc.CreateVendor(c.Request().Context(), body)
 
 	if err != nil {
-		return VendorDTO{}, fuego.InternalServerError{Title: "Failed to create vendor", Err: err}
+		return VendorDTO{}, err
 	}
 
 	return vendor, nil
@@ -104,9 +102,7 @@ func (h *Handler) GetProduct(c fuego.ContextNoBody) (ProductDTO, error) {
 	product, err := h.svc.GetProductByID(c.Request().Context(), productID)
 
 	if err != nil {
-		return ProductDTO{}, fuego.NotFoundError{
-			Title: "Product not found",
-		}
+		return ProductDTO{}, err
 	}
 
 	return product, nil
@@ -117,7 +113,7 @@ func (h *Handler) ListProductVersions(c fuego.ContextNoBody) ([]ProductVersionDT
 	versions, err := h.svc.ListProductVersions(c.Request().Context(), productID)
 
 	if err != nil {
-		return nil, fuego.InternalServerError{Title: "Failed to fetch product versions", Err: err}
+		return nil, err
 	}
 
 	return versions, nil
@@ -128,13 +124,13 @@ func (h *Handler) UpdateProduct(c fuego.ContextWithBody[UpdateProductDTO]) (Prod
 	body, err := c.Body()
 
 	if err != nil {
-		return ProductDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return ProductDTO{}, err
 	}
 
 	product, err := h.svc.UpdateProduct(c.Request().Context(), productID, body)
 
 	if err != nil {
-		return ProductDTO{}, fuego.InternalServerError{Title: "Failed to update product", Err: err}
+		return ProductDTO{}, err
 	}
 
 	return product, nil
@@ -150,7 +146,7 @@ func (h *Handler) CreateProduct(c fuego.ContextWithBody[CreateProductDTO]) (Prod
 	body, err := c.Body()
 
 	if err != nil {
-		return ProductDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return ProductDTO{}, err
 	}
 
 	product, err := h.svc.CreateProduct(c.Request().Context(), body)
@@ -169,9 +165,7 @@ func (h *Handler) GetProductVersion(c fuego.ContextNoBody) (ProductVersionDTO, e
 	version, err := h.svc.GetProductVersionByID(c.Request().Context(), versionID)
 
 	if err != nil {
-		return ProductVersionDTO{}, fuego.NotFoundError{
-			Title: "Product version not found",
-		}
+		return ProductVersionDTO{}, err
 	}
 
 	return version, nil
@@ -182,10 +176,7 @@ func (h *Handler) ListRelationshipsByProductVersion(c fuego.ContextNoBody) ([]Re
 	relationships, err := h.svc.GetRelationshipsByProductVersion(c.Request().Context(), productVersionID)
 
 	if err != nil {
-		return nil, fuego.InternalServerError{
-			Title: "Failed to fetch relationships for product version",
-			Err:   err,
-		}
+		return nil, err
 	}
 
 	return relationships, nil
@@ -202,13 +193,13 @@ func (h *Handler) UpdateProductVersion(c fuego.ContextWithBody[UpdateProductVers
 	body, err := c.Body()
 
 	if err != nil {
-		return ProductVersionDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return ProductVersionDTO{}, err
 	}
 
 	version, err := h.svc.UpdateProductVersion(c.Request().Context(), versionID, body)
 
 	if err != nil {
-		return ProductVersionDTO{}, fuego.InternalServerError{Title: "Failed to update product version", Err: err}
+		return ProductVersionDTO{}, err
 	}
 
 	return version, nil
@@ -218,7 +209,7 @@ func (h *Handler) DeleteProductVersion(c fuego.ContextNoBody) (any, error) {
 	err := h.svc.DeleteProductVersion(c.Request().Context(), c.PathParam("id"))
 
 	if err != nil {
-		return nil, fuego.InternalServerError{Title: "Failed to delete product version", Err: err}
+		return nil, err
 	}
 
 	return nil, nil
@@ -228,13 +219,13 @@ func (h *Handler) CreateProductVersion(c fuego.ContextWithBody[CreateProductVers
 	body, err := c.Body()
 
 	if err != nil {
-		return ProductVersionDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return ProductVersionDTO{}, err
 	}
 
 	version, err := h.svc.CreateProductVersion(c.Request().Context(), body)
 
 	if err != nil {
-		return ProductVersionDTO{}, fuego.InternalServerError{Title: "Failed to create product version", Err: err}
+		return ProductVersionDTO{}, err
 	}
 
 	return version, nil
@@ -247,9 +238,7 @@ func (h *Handler) GetRelationship(c fuego.ContextNoBody) (RelationshipDTO, error
 	relationship, err := h.svc.GetRelationshipByID(c.Request().Context(), relationshipID)
 
 	if err != nil {
-		return RelationshipDTO{}, fuego.NotFoundError{
-			Title: "Relationship not found",
-		}
+		return RelationshipDTO{}, err
 	}
 
 	return relationship, nil
@@ -260,13 +249,13 @@ func (h *Handler) UpdateRelationship(c fuego.ContextWithBody[UpdateRelationshipD
 	body, err := c.Body()
 
 	if err != nil {
-		return RelationshipDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return RelationshipDTO{}, err
 	}
 
 	relationship, err := h.svc.UpdateRelationship(c.Request().Context(), relationshipID, body)
 
 	if err != nil {
-		return RelationshipDTO{}, fuego.InternalServerError{Title: "Failed to update relationship", Err: err}
+		return RelationshipDTO{}, err
 	}
 
 	return relationship, nil
@@ -276,7 +265,7 @@ func (h *Handler) DeleteRelationship(c fuego.ContextNoBody) (any, error) {
 	err := h.svc.DeleteRelationship(c.Request().Context(), c.PathParam("id"))
 
 	if err != nil {
-		return nil, fuego.InternalServerError{Title: "Failed to delete relationship", Err: err}
+		return nil, err
 	}
 
 	return nil, nil
@@ -286,13 +275,13 @@ func (h *Handler) CreateRelationship(c fuego.ContextWithBody[CreateRelationshipD
 	body, err := c.Body()
 
 	if err != nil {
-		return RelationshipDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return RelationshipDTO{}, err
 	}
 
 	relationship, err := h.svc.CreateRelationship(c.Request().Context(), body)
 
 	if err != nil {
-		return RelationshipDTO{}, fuego.InternalServerError{Title: "Failed to create relationship", Err: err}
+		return RelationshipDTO{}, err
 	}
 
 	return relationship, nil
@@ -305,9 +294,7 @@ func (h *Handler) GetIdentificationHelper(c fuego.ContextNoBody) (Identification
 	helper, err := h.svc.GetIdentificationHelperByID(c.Request().Context(), helperID)
 
 	if err != nil {
-		return IdentificationHelperDTO{}, fuego.NotFoundError{
-			Title: "Identification helper not found",
-		}
+		return IdentificationHelperDTO{}, err
 	}
 
 	return helper, nil
@@ -318,13 +305,13 @@ func (h *Handler) UpdateIdentificationHelper(c fuego.ContextWithBody[UpdateIdent
 	body, err := c.Body()
 
 	if err != nil {
-		return IdentificationHelperDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return IdentificationHelperDTO{}, err
 	}
 
 	helper, err := h.svc.UpdateIdentificationHelper(c.Request().Context(), helperID, body)
 
 	if err != nil {
-		return IdentificationHelperDTO{}, fuego.InternalServerError{Title: "Failed to update identification helper", Err: err}
+		return IdentificationHelperDTO{}, err
 	}
 
 	return helper, nil
@@ -334,7 +321,7 @@ func (h *Handler) DeleteIdentificationHelper(c fuego.ContextNoBody) (any, error)
 	err := h.svc.DeleteIdentificationHelper(c.Request().Context(), c.PathParam("id"))
 
 	if err != nil {
-		return nil, fuego.InternalServerError{Title: "Failed to delete identification helper", Err: err}
+		return nil, err
 	}
 
 	return nil, nil
@@ -343,11 +330,11 @@ func (h *Handler) DeleteIdentificationHelper(c fuego.ContextNoBody) (any, error)
 func (h *Handler) CreateIdentificationHelper(c fuego.ContextWithBody[CreateIdentificationHelperDTO]) (IdentificationHelperDTO, error) {
 	body, err := c.Body()
 	if err != nil {
-		return IdentificationHelperDTO{}, fuego.BadRequestError{Title: "Invalid request body", Err: err}
+		return IdentificationHelperDTO{}, err
 	}
 	helper, err := h.svc.CreateIdentificationHelper(c.Request().Context(), body)
 	if err != nil {
-		return IdentificationHelperDTO{}, fuego.InternalServerError{Title: "Failed to create identification helper", Err: err}
+		return IdentificationHelperDTO{}, err
 	}
 	return helper, nil
 }
