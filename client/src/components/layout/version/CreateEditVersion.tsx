@@ -1,11 +1,13 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
 import { useVersionQuery } from '@/routes/Version'
+import { useErrorLocalization } from '@/utils/useErrorLocalization'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import {
+  Alert,
   DatePicker,
   Modal,
   ModalBody,
@@ -17,6 +19,7 @@ import {
 import { parseDate, type DateValue } from '@internationalized/date'
 import { I18nProvider } from '@react-aria/i18n'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 interface CreateEditVersionProps {
@@ -121,6 +124,7 @@ function VersionSkeleton() {
 export default function CreateEditVersion() {
   const { navigate, location } = useRouter()
   const { productId, versionId } = useParams()
+  const { t } = useTranslation()
 
   const isCreateForm = !versionId
 
@@ -162,6 +166,8 @@ export default function CreateEditVersion() {
     onClose: onClose,
   })
 
+  const errorHelper = useErrorLocalization(error)
+
   if (!isCreateForm && isLoading) {
     return (
       <Modal isOpen>
@@ -176,14 +182,14 @@ export default function CreateEditVersion() {
     <Modal isOpen onOpenChange={onClose} size="xl" isDismissable={false}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {versionId ? 'Edit Version' : 'Create Version'}
+          {versionId ? t('Edit Version') : t('Create Version')}
         </ModalHeader>
         <ModalBody className="gap-4">
-          {error && (
-            <div className="text-red-500">
-              {error.title || 'An error occurred while creating the product.'}
-            </div>
-          )}
+          {error ? (
+            <Alert color="danger" className="mb-4">
+              {t('Please check the form for errors.')}
+            </Alert>
+          ) : null}
 
           {isLoading ? (
             <VersionSkeleton />
@@ -198,6 +204,8 @@ export default function CreateEditVersion() {
                   setVersion({ ...version, name: e.target.value })
                 }
                 type="text"
+                isInvalid={errorHelper.isFieldInvalid('Version')}
+                errorMessage={errorHelper.getFieldErrorMessage('Version')}
               />
 
               <I18nProvider locale="de-DE">
@@ -223,7 +231,7 @@ export default function CreateEditVersion() {
             Cancel
           </Button>
           <Button color="primary" onPress={mutateVersion} isLoading={isPending}>
-            {versionId ? 'Save' : 'Create'}
+            {versionId ? t('Save') : t('Create')}
           </Button>
         </ModalFooter>
       </ModalContent>

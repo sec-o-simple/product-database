@@ -2,10 +2,12 @@ import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { useProductQuery } from '@/routes/Product'
+import { useErrorLocalization } from '@/utils/useErrorLocalization'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  Alert,
   Button,
   Modal,
   ModalBody,
@@ -15,7 +17,9 @@ import {
   SelectItem,
   Spinner,
 } from '@heroui/react'
+import { t } from 'i18next'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 interface CreateEditProductProps {
@@ -77,6 +81,7 @@ export function useProductMutation({
 
 export function AddProductButton({ vendorId }: CreateEditProductProps) {
   const { navigateToModal } = useRouter()
+  const { t } = useTranslation()
 
   return (
     <Button
@@ -89,7 +94,7 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
         )
       }}
     >
-      Add Product
+      {t('Add Product')}
     </Button>
   )
 }
@@ -143,6 +148,8 @@ export default function CreateEditProduct() {
     onClose: onClose,
   })
 
+  const errorHelper = useErrorLocalization(error)
+
   if (!isCreateForm && isLoading) {
     return (
       <Modal isOpen>
@@ -163,14 +170,14 @@ export default function CreateEditProduct() {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {isCreateForm ? 'Add New Product' : 'Edit Product'}
+          {isCreateForm ? t('Add New Product') : t('Edit Product')}
         </ModalHeader>
         <ModalBody className="gap-4">
-          {error && (
-            <div className="text-red-500">
-              {error.title || 'An error occurred while creating the product.'}
-            </div>
-          )}
+          {error ? (
+            <Alert color="danger" className="mb-4">
+              {t('Please check the form for errors.')}
+            </Alert>
+          ) : null}
 
           <Select
             label="Type"
@@ -192,6 +199,8 @@ export default function CreateEditProduct() {
             onChange={(e) => setProduct({ ...product, name: e.target.value })}
             autoFocus
             type="text"
+            isInvalid={errorHelper.isFieldInvalid('Name')}
+            errorMessage={errorHelper.getFieldErrorMessage('Name')}
           />
 
           <Textarea
@@ -211,7 +220,7 @@ export default function CreateEditProduct() {
             Cancel
           </Button>
           <Button color="primary" onPress={mutateProduct} isLoading={isPending}>
-            {isCreateForm ? 'Create' : 'Save'}
+            {isCreateForm ? t('Create') : t('Save')}
           </Button>
         </ModalFooter>
       </ModalContent>

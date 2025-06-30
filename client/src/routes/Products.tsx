@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Chip, Divider } from '@heroui/react'
 import { Tab, Tabs } from '@heroui/tabs'
 import { DeleteProduct } from './Product'
+import { useTranslation } from 'react-i18next'
 
 export function useProductListQuery() {
   const request = client.useQuery('get', '/api/v1/products')
@@ -39,6 +40,8 @@ export function DashboardTabs({
   selectedKey: string
   endContent?: React.ReactNode
 }) {
+  const { t } = useTranslation()
+
   return (
     <div className="flex w-full flex-col items-center justify-between">
       <div className="mb-2 flex w-full items-center justify-between">
@@ -48,9 +51,9 @@ export function DashboardTabs({
           color="primary"
           variant="light"
         >
-          <Tab key="vendors" title="Vendors" href="/vendors" />
-          <Tab key="products" title="Products" href="/products" />
-          <Tab key="tree" title="Tree-View" href="/tree" />
+          <Tab key="vendors" title={t("Vendors")} href="/vendors" />
+          <Tab key="products" title={t("Products")} href="/products" />
+          <Tab key="tree" title={t("Tree-View")} href="/tree" />
         </Tabs>
 
         {endContent}

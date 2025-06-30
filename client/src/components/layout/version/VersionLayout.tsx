@@ -14,10 +14,12 @@ import { AddRelationshipButton } from '../product/CreateRelationship'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export default function VersionLayout() {
   const { navigateToModal, navigate } = useRouter()
   const { versionId } = useParams()
+  const { t } = useTranslation()
 
   const { data: version, isLoading: isVersionLoading } = useVersionQuery(
     versionId || '',
@@ -49,10 +51,12 @@ export default function VersionLayout() {
         historyLink={`/product-versions/${versionId}/history`}
         title={
           <div className="flex flex-row items-center gap-2">
-            <p>Product: {product?.name}</p>
+            <p>
+              {t('Product')}: {product?.name}
+            </p>
 
             <Chip variant="flat" className="ml-2 rounded-md">
-              Version: {version.name}
+              {t('Version')}: {version.name}
             </Chip>
           </div>
         }
@@ -105,7 +109,7 @@ export default function VersionLayout() {
                   )
                 }
               >
-                Edit Version
+                {t('Edit')}
               </Button>
             </div>
           }

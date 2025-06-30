@@ -3,10 +3,12 @@ package internal
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/go-fuego/fuego"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Service struct {
@@ -28,6 +30,7 @@ func (s *Service) CreateVendor(ctx context.Context, vendor CreateVendorDTO) (Ven
 	}
 
 	createdNode, err := s.repo.CreateNode(ctx, node)
+
 	if err != nil {
 		return VendorDTO{}, fuego.InternalServerError{
 			Title: "Failed to create vendor",
@@ -64,10 +67,24 @@ func (s *Service) ListVendors(ctx context.Context) ([]VendorDTO, error) {
 
 func (s *Service) GetVendorByID(ctx context.Context, id string) (VendorDTO, error) {
 	vendor, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || vendor.Category != Vendor {
-		return VendorDTO{}, fuego.BadRequestError{
-			Title: "Invalid vendor ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Vendor not found",
+		Err:   nil,
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return VendorDTO{}, notFoundError
+		} else {
+			return VendorDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch vendor",
+				Err:   err,
+			}
 		}
+	}
+
+	if vendor.Category != Vendor {
+		return VendorDTO{}, notFoundError
 	}
 
 	products := make([]ProductDTO, len(vendor.Children))
@@ -84,10 +101,24 @@ func (s *Service) GetVendorByID(ctx context.Context, id string) (VendorDTO, erro
 
 func (s *Service) UpdateVendor(ctx context.Context, id string, update UpdateVendorDTO) (VendorDTO, error) {
 	vendor, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || vendor.Category != Vendor {
-		return VendorDTO{}, fuego.BadRequestError{
-			Title: "Invalid vendor ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Vendor not found",
+		Err:   nil,
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return VendorDTO{}, notFoundError
+		} else {
+			return VendorDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch vendor",
+				Err:   err,
+			}
 		}
+	}
+
+	if vendor.Category != Vendor {
+		return VendorDTO{}, notFoundError
 	}
 
 	// Update only non-null fields
@@ -115,10 +146,24 @@ func (s *Service) UpdateVendor(ctx context.Context, id string, update UpdateVend
 
 func (s *Service) DeleteVendor(ctx context.Context, id string) error {
 	vendor, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || vendor.Category != Vendor {
-		return fuego.BadRequestError{
-			Title: "Invalid vendor ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Vendor not found",
+		Err:   nil,
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return notFoundError
+		} else {
+			return fuego.InternalServerError{
+				Title: "Failed to fetch vendor",
+				Err:   err,
+			}
 		}
+	}
+
+	if vendor.Category != Vendor {
+		return notFoundError
 	}
 
 	if err := s.repo.DeleteNode(ctx, vendor.ID); err != nil {
@@ -136,7 +181,20 @@ func (s *Service) DeleteVendor(ctx context.Context, id string) error {
 func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (ProductDTO, error) {
 	vendorNode, err := s.repo.GetNodeByID(ctx, product.VendorID)
 
-	if err != nil || vendorNode.Category != Vendor {
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductDTO{}, fuego.BadRequestError{
+				Title: "Invalid vendor node ID",
+			}
+		} else {
+			return ProductDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch vendor node",
+				Err:   err,
+			}
+		}
+	}
+
+	if vendorNode.Category != Vendor {
 		return ProductDTO{}, fuego.BadRequestError{
 			Title: "Invalid vendor node ID",
 		}
@@ -170,10 +228,24 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 
 func (s *Service) UpdateProduct(ctx context.Context, id string, update UpdateProductDTO) (ProductDTO, error) {
 	product, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || product.Category != ProductName {
-		return ProductDTO{}, fuego.BadRequestError{
-			Title: "Invalid product ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Product not found",
+		Err:   nil,
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductDTO{}, notFoundError
+		} else {
+			return ProductDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch product",
+				Err:   err,
+			}
 		}
+	}
+
+	if product.Category != ProductName {
+		return ProductDTO{}, notFoundError
 	}
 
 	if update.Name != nil {
@@ -203,10 +275,24 @@ func (s *Service) UpdateProduct(ctx context.Context, id string, update UpdatePro
 
 func (s *Service) DeleteProduct(ctx context.Context, id string) error {
 	product, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || product.Category != ProductName {
-		return fuego.BadRequestError{
-			Title: "Invalid product ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Product not found",
+		Err:   nil,
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return notFoundError
+		} else {
+			return fuego.InternalServerError{
+				Title: "Failed to fetch product",
+				Err:   err,
+			}
 		}
+	}
+
+	if product.Category != ProductName {
+		return notFoundError
 	}
 
 	if err := s.repo.DeleteNode(ctx, product.ID); err != nil {
@@ -235,11 +321,26 @@ func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
 
 func (s *Service) ListVendorProducts(ctx context.Context, vendorID string) ([]ProductDTO, error) {
 	vendor, err := s.repo.GetNodeByID(ctx, vendorID, WithChildren())
-	if err != nil || vendor.Category != Vendor {
-		return nil, fuego.BadRequestError{
-			Title: "Invalid vendor ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Vendor not found",
+		Err:   nil,
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, notFoundError
+		} else {
+			return nil, fuego.InternalServerError{
+				Title: "Failed to fetch vendor",
+				Err:   err,
+			}
 		}
 	}
+
+	if vendor.Category != Vendor {
+		return nil, notFoundError
+	}
+
 	products := make([]ProductDTO, len(vendor.Children))
 	for i, product := range vendor.Children {
 		products[i] = ProductDTO{
@@ -254,10 +355,24 @@ func (s *Service) ListVendorProducts(ctx context.Context, vendorID string) ([]Pr
 
 func (s *Service) GetProductByID(ctx context.Context, id string) (ProductDTO, error) {
 	product, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || product.Category != ProductName {
-		return ProductDTO{}, fuego.BadRequestError{
-			Title: "Invalid product ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Product not found",
+		Err:   nil,
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductDTO{}, notFoundError
+		} else {
+			return ProductDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch product",
+				Err:   err,
+			}
 		}
+	}
+
+	if product.Category != ProductName {
+		return ProductDTO{}, notFoundError
 	}
 
 	return NodeToProductDTO(product), nil
@@ -271,6 +386,13 @@ func (s *Service) CreateProductVersion(ctx context.Context, version CreateProduc
 	if err != nil || productNode.Category != ProductName {
 		return ProductVersionDTO{}, fuego.BadRequestError{
 			Title: "Invalid product node ID",
+			Err:   err,
+			Errors: []fuego.ErrorItem{
+				{
+					Name:   "CreateProductVersionDTO.ProductID",
+					Reason: "Product ID must be a valid product ID",
+				},
+			},
 		}
 	}
 
@@ -282,6 +404,12 @@ func (s *Service) CreateProductVersion(ctx context.Context, version CreateProduc
 			return ProductVersionDTO{}, fuego.BadRequestError{
 				Title: "Invalid release date format",
 				Err:   err,
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "CreateProductVersionDTO.ReleaseDate",
+						Reason: "Release date must be in YYYY-MM-DD format",
+					},
+				},
 			}
 		}
 		releasedAt = sql.NullTime{
@@ -317,10 +445,23 @@ func (s *Service) CreateProductVersion(ctx context.Context, version CreateProduc
 
 func (s *Service) UpdateProductVersion(ctx context.Context, id string, update UpdateProductVersionDTO) (ProductVersionDTO, error) {
 	version, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || version.Category != ProductVersion {
-		return ProductVersionDTO{}, fuego.BadRequestError{
-			Title: "Invalid product version ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Product version not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductVersionDTO{}, notFoundError
+		} else {
+			return ProductVersionDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch product version",
+				Err:   err,
+			}
 		}
+	}
+
+	if version.Category != ProductVersion {
+		return ProductVersionDTO{}, notFoundError
 	}
 
 	if update.Version != nil {
@@ -332,6 +473,13 @@ func (s *Service) UpdateProductVersion(ctx context.Context, id string, update Up
 		if err != nil || predecessor.Category != ProductVersion {
 			return ProductVersionDTO{}, fuego.BadRequestError{
 				Title: "Invalid predecessor ID",
+				Err:   err,
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "UpdateProductVersionDTO.PredecessorID",
+						Reason: "Predecessor ID must be a valid product version ID",
+					},
+				},
 			}
 		}
 		version.SuccessorID = &predecessor.ID
@@ -342,6 +490,13 @@ func (s *Service) UpdateProductVersion(ctx context.Context, id string, update Up
 		if err != nil || product.Category != ProductName {
 			return ProductVersionDTO{}, fuego.BadRequestError{
 				Title: "Invalid product ID",
+				Err:   err,
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "UpdateProductVersionDTO.ProductID",
+						Reason: "Product ID must be a valid product ID",
+					},
+				},
 			}
 		}
 		version.ParentID = &product.ID
@@ -352,6 +507,13 @@ func (s *Service) UpdateProductVersion(ctx context.Context, id string, update Up
 		if err != nil {
 			return ProductVersionDTO{}, fuego.BadRequestError{
 				Title: "Invalid release date format",
+				Err:   err,
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "UpdateProductVersionDTO.ReleaseDate",
+						Reason: "Release date must be in YYYY-MM-DD format",
+					},
+				},
 			}
 		}
 		version.ReleasedAt = sql.NullTime{
@@ -377,10 +539,23 @@ func (s *Service) UpdateProductVersion(ctx context.Context, id string, update Up
 
 func (s *Service) DeleteProductVersion(ctx context.Context, id string) error {
 	version, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || version.Category != ProductVersion {
-		return fuego.BadRequestError{
-			Title: "Invalid product version ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Product version not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return notFoundError
+		} else {
+			return fuego.InternalServerError{
+				Title: "Failed to fetch product version",
+				Err:   err,
+			}
 		}
+	}
+
+	if version.Category != ProductVersion {
+		return notFoundError
 	}
 
 	if err := s.repo.DeleteNode(ctx, version.ID); err != nil {
@@ -395,11 +570,24 @@ func (s *Service) DeleteProductVersion(ctx context.Context, id string) error {
 
 func (s *Service) ListProductVersions(ctx context.Context, productID string) ([]ProductVersionDTO, error) {
 	product, err := s.repo.GetNodeByID(ctx, productID, WithChildren())
+	notFoundError := fuego.NotFoundError{
+		Title: "Product not found",
+		Err:   nil,
+	}
 
-	if err != nil || product.Category != ProductName {
-		return nil, fuego.BadRequestError{
-			Title: "Invalid product ID",
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, notFoundError
+		} else {
+			return nil, fuego.InternalServerError{
+				Title: "Failed to fetch product",
+				Err:   err,
+			}
 		}
+	}
+
+	if product.Category != ProductName {
+		return nil, notFoundError
 	}
 
 	versions := make([]ProductVersionDTO, len(product.Children))
@@ -420,16 +608,29 @@ func (s *Service) ListProductVersions(ctx context.Context, productID string) ([]
 
 func (s *Service) GetProductVersionByID(ctx context.Context, id string) (ProductVersionDTO, error) {
 	version, err := s.repo.GetNodeByID(ctx, id)
-	if err != nil || version.Category != ProductVersion {
-		return ProductVersionDTO{}, fuego.BadRequestError{
-			Title: "Invalid product version ID",
+	notFoundError := fuego.NotFoundError{
+		Title: "Product version not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductVersionDTO{}, notFoundError
+		} else {
+			return ProductVersionDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch product version",
+				Err:   err,
+			}
 		}
+	}
+
+	if version.Category != ProductVersion {
+		return ProductVersionDTO{}, notFoundError
 	}
 
 	product, err := s.repo.GetNodeByID(ctx, *version.ParentID)
 
 	if err != nil || product.Category != ProductName {
-		return ProductVersionDTO{}, fuego.BadRequestError{
+		return ProductVersionDTO{}, fuego.InternalServerError{
 			Title: "Invalid product ID for version",
 		}
 	}
@@ -441,11 +642,23 @@ func (s *Service) GetProductVersionByID(ctx context.Context, id string) (Product
 
 func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionID string) ([]RelationshipGroupDTO, error) {
 	version, err := s.repo.GetNodeByID(ctx, versionID, WithRelationships(), WithChildren())
+	notFoundError := fuego.NotFoundError{
+		Title: "Product version not found",
+	}
 
-	if err != nil || version.Category != ProductVersion {
-		return nil, fuego.BadRequestError{
-			Title: "Invalid product version ID",
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, notFoundError
+		} else {
+			return nil, fuego.InternalServerError{
+				Title: "Failed to fetch product version",
+				Err:   err,
+			}
 		}
+	}
+
+	if version.Category != ProductVersion {
+		return nil, notFoundError
 	}
 
 	groups := make(map[string][]RelationshipGroupItemDTO)
@@ -480,6 +693,12 @@ func (s *Service) CreateRelationship(ctx context.Context, create CreateRelations
 	if err != nil || sourceNode.Category != ProductVersion {
 		return RelationshipDTO{}, fuego.BadRequestError{
 			Title: "Invalid source node ID - must be a product version",
+			Errors: []fuego.ErrorItem{
+				{
+					Name:   "CreateRelationshipDTO.SourceNodeID",
+					Reason: "Source node ID must be a valid product version ID",
+				},
+			},
 		}
 	}
 
@@ -488,6 +707,12 @@ func (s *Service) CreateRelationship(ctx context.Context, create CreateRelations
 	if err != nil || targetNode.Category != ProductVersion {
 		return RelationshipDTO{}, fuego.BadRequestError{
 			Title: "Invalid target node ID - must be a product version",
+			Errors: []fuego.ErrorItem{
+				{
+					Name:   "CreateRelationshipDTO.TargetNodeID",
+					Reason: "Target node ID must be a valid product version ID",
+				},
+			},
 		}
 	}
 
@@ -514,9 +739,16 @@ func (s *Service) CreateRelationship(ctx context.Context, create CreateRelations
 
 func (s *Service) GetRelationshipByID(ctx context.Context, id string) (RelationshipDTO, error) {
 	relationship, err := s.repo.GetRelationshipByID(ctx, id)
+
 	if err != nil {
-		return RelationshipDTO{}, fuego.BadRequestError{
-			Title: "Invalid relationship ID",
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return RelationshipDTO{}, fuego.NotFoundError{
+				Title: "Relationship not found",
+			}
+		}
+		return RelationshipDTO{}, fuego.InternalServerError{
+			Title: "Failed to fetch relationship",
+			Err:   err,
 		}
 	}
 
@@ -536,8 +768,14 @@ func (s *Service) UpdateRelationship(ctx context.Context, id string, update Upda
 	relationship, err := s.repo.GetRelationshipByID(ctx, id)
 
 	if err != nil {
-		return RelationshipDTO{}, fuego.BadRequestError{
-			Title: "Invalid relationship ID",
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return RelationshipDTO{}, fuego.NotFoundError{
+				Title: "Relationship not found",
+			}
+		}
+		return RelationshipDTO{}, fuego.InternalServerError{
+			Title: "Failed to fetch relationship",
+			Err:   err,
 		}
 	}
 
@@ -551,6 +789,12 @@ func (s *Service) UpdateRelationship(ctx context.Context, id string, update Upda
 		if err != nil || sourceNode.Category != ProductVersion {
 			return RelationshipDTO{}, fuego.BadRequestError{
 				Title: "Invalid source node ID",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "UpdateRelationshipDTO.SourceNodeID",
+						Reason: "Source node ID must be a valid product version ID",
+					},
+				},
 			}
 		}
 
@@ -564,6 +808,12 @@ func (s *Service) UpdateRelationship(ctx context.Context, id string, update Upda
 		if err != nil || targetNode.Category != ProductVersion {
 			return RelationshipDTO{}, fuego.BadRequestError{
 				Title: "Invalid target node ID",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "UpdateRelationshipDTO.TargetNodeID",
+						Reason: "Target node ID must be a valid product version ID",
+					},
+				},
 			}
 		}
 
@@ -583,9 +833,16 @@ func (s *Service) UpdateRelationship(ctx context.Context, id string, update Upda
 
 func (s *Service) DeleteRelationship(ctx context.Context, id string) error {
 	_, err := s.repo.GetRelationshipByID(ctx, id)
+
 	if err != nil {
-		return fuego.BadRequestError{
-			Title: "Invalid relationship ID",
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fuego.NotFoundError{
+				Title: "Relationship not found",
+			}
+		}
+		return fuego.InternalServerError{
+			Title: "Failed to fetch relationship",
+			Err:   err,
 		}
 	}
 
@@ -606,6 +863,12 @@ func (s *Service) CreateIdentificationHelper(ctx context.Context, create CreateI
 	if err != nil || node.Category != ProductVersion {
 		return IdentificationHelperDTO{}, fuego.BadRequestError{
 			Title: "Invalid product version ID",
+			Errors: []fuego.ErrorItem{
+				{
+					Name:   "CreateIdentificationHelperDTO.ProductVersionID",
+					Reason: "Product version ID must be a valid product version ID",
+				},
+			},
 		}
 	}
 
@@ -631,8 +894,14 @@ func (s *Service) CreateIdentificationHelper(ctx context.Context, create CreateI
 func (s *Service) GetIdentificationHelperByID(ctx context.Context, id string) (IdentificationHelperDTO, error) {
 	helper, err := s.repo.GetIdentificationHelperByID(ctx, id)
 	if err != nil {
-		return IdentificationHelperDTO{}, fuego.BadRequestError{
-			Title: "Invalid identification helper ID",
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return IdentificationHelperDTO{}, fuego.NotFoundError{
+				Title: "Identification helper not found",
+			}
+		}
+		return IdentificationHelperDTO{}, fuego.InternalServerError{
+			Title: "Failed to fetch identification helper",
+			Err:   err,
 		}
 	}
 
@@ -642,8 +911,14 @@ func (s *Service) GetIdentificationHelperByID(ctx context.Context, id string) (I
 func (s *Service) UpdateIdentificationHelper(ctx context.Context, id string, update UpdateIdentificationHelperDTO) (IdentificationHelperDTO, error) {
 	helper, err := s.repo.GetIdentificationHelperByID(ctx, id)
 	if err != nil {
-		return IdentificationHelperDTO{}, fuego.BadRequestError{
-			Title: "Invalid identification helper ID",
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return IdentificationHelperDTO{}, fuego.NotFoundError{
+				Title: "Identification helper not found",
+			}
+		}
+		return IdentificationHelperDTO{}, fuego.InternalServerError{
+			Title: "Failed to fetch identification helper",
+			Err:   err,
 		}
 	}
 
@@ -652,6 +927,12 @@ func (s *Service) UpdateIdentificationHelper(ctx context.Context, id string, upd
 		if err != nil || node.Category != ProductVersion {
 			return IdentificationHelperDTO{}, fuego.BadRequestError{
 				Title: "Invalid product version ID",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "UpdateIdentificationHelperDTO.ProductVersionID",
+						Reason: "Product version ID must be a valid product version ID",
+					},
+				},
 			}
 		}
 		helper.NodeID = update.ProductVersionID
@@ -679,7 +960,12 @@ func (s *Service) UpdateIdentificationHelper(ctx context.Context, id string, upd
 func (s *Service) DeleteIdentificationHelper(ctx context.Context, id string) error {
 	_, err := s.repo.GetIdentificationHelperByID(ctx, id)
 	if err != nil {
-		return fuego.BadRequestError{
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fuego.NotFoundError{
+				Title: "Identification helper not found",
+			}
+		}
+		return fuego.InternalServerError{
 			Title: "Invalid identification helper ID",
 		}
 	}

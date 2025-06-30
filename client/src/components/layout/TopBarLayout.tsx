@@ -5,6 +5,8 @@ import { Tooltip } from '@heroui/react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import IconButton from '../forms/IconButton'
 import { PageOutlet } from '../forms/PageContent'
+import { LanguageSwitcher } from '../LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
 
 interface TopBarProps {
   title?: string | React.ReactNode
@@ -19,11 +21,12 @@ export function TopBar({
   navigateBack = true,
 }: Readonly<TopBarProps>) {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <div className="flex w-full items-center justify-between gap-8 border-b bg-white px-6 py-4">
       <span className="flex items-center gap-2 text-2xl font-bold">
-        <Tooltip content="Go to Home" placement="bottom" showArrow>
+        <Tooltip content={t('Go to Home')} placement="bottom" showArrow>
           <Button
             isIconOnly
             variant="light"
@@ -69,9 +72,13 @@ export function TopBar({
 }
 
 export default function TopBarLayout() {
+  const { t } = useTranslation()
+
   return (
     <div className="flex flex-col bg-[#F9FAFB]">
-      <TopBar title="Product Database" navigateBack={false} />
+      <TopBar title={t('Product Database')} navigateBack={false}>
+        <LanguageSwitcher />
+      </TopBar>
 
       <PageOutlet>
         <Outlet />

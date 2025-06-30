@@ -15,6 +15,7 @@ import { BreadcrumbItem, Chip } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 import { useVendorQuery } from './Vendor'
 import { DeleteVersion } from './Version'
+import { useTranslation } from 'react-i18next'
 
 export function useProductQuery(productId?: string) {
   const request = client.useQuery(
@@ -45,6 +46,7 @@ export function DeleteProduct({
 }) {
   const mutation = client.useMutation('delete', '/api/v1/products/{id}')
   const { navigate } = useRouter()
+  const { t } = useTranslation()
 
   return (
     <ConfirmButton
@@ -69,7 +71,7 @@ export function DeleteProduct({
       }}
     >
       <FontAwesomeIcon icon={faTrash} />
-      {!isIconButton && 'Delete'}
+      {!isIconButton && t('Delete')}
     </ConfirmButton>
   )
 }
@@ -111,6 +113,7 @@ export function VersionItem({
   } = useRouter()
 
   const handleOnActionClick = (href: string) => navigateToModal(href)
+  const { t } = useTranslation()
 
   return (
     <ListItem
@@ -123,7 +126,7 @@ export function VersionItem({
           <p>{version.name}</p>
         </div>
       }
-      description={version.description || 'No description'}
+      description={version.description || t('No description')}
       actions={
         <div className="flex flex-row gap-1">
           <IconButton
@@ -166,6 +169,7 @@ export default function Product({
 }) {
   const { productId: paramProductId } = useParams()
   let productIdParam = productId
+  const { t } = useTranslation()
 
   if (!productIdParam) {
     productIdParam = paramProductId
@@ -183,17 +187,17 @@ export default function Product({
     <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
-          <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors">{t('Vendors')}</BreadcrumbItem>
           <BreadcrumbItem href={`/vendors/${vendor?.id}`}>
             {vendor?.name}
           </BreadcrumbItem>
-          <BreadcrumbItem isDisabled>Products</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>{t('Products')}</BreadcrumbItem>
           <BreadcrumbItem>{product?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
       <DataGrid
-        title={`Versions (${versions?.length})`}
+        title={`${t('Versions')} (${versions?.length})`}
         addButton={
           <AddVersionButton
             productId={product?.id || ''}
