@@ -14,6 +14,7 @@ import {
 import { addToast, Button } from '@heroui/react'
 import { SelectItem } from '@heroui/select'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface RelationShipProps {
   sourceProducts: string[]
@@ -39,6 +40,8 @@ function ProductBox({
   products: string[]
   versions: string[]
 }) {
+  const { t } = useTranslation()
+
   return (
     (products.length !== 0 || versions.length !== 0) && (
       <div className="flex flex-col items-center rounded-lg border border-gray bg-white p-2 px-4">
@@ -48,13 +51,17 @@ function ProductBox({
           ))}
         </div>
 
-        <p className="text-sm text-zinc-500">Versions: {versions.join(', ')}</p>
+        <p className="text-sm text-zinc-500">
+          {t('Versions')}: {versions.join(', ')}
+        </p>
       </div>
     )
   )
 }
 
 export function AddRelationshipButton() {
+  const { t } = useTranslation()
+
   return (
     <Button
       color="primary"
@@ -62,14 +69,14 @@ export function AddRelationshipButton() {
       onPress={
         () =>
           addToast({
-            title: 'Not implemented yet',
+            title: t('Not implemented yet'),
           })
         // navigateToModal(
         //   `/product-versions/${versionId}/relationships/create`,
         // )
       }
     >
-      Add Relationship
+      {t('Add Relationship')}
     </Button>
   )
 }

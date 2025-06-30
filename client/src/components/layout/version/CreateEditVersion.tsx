@@ -19,6 +19,7 @@ import {
 import { parseDate, type DateValue } from '@internationalized/date'
 import { I18nProvider } from '@react-aria/i18n'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 interface CreateEditVersionProps {
@@ -123,6 +124,7 @@ function VersionSkeleton() {
 export default function CreateEditVersion() {
   const { navigate, location } = useRouter()
   const { productId, versionId } = useParams()
+  const { t } = useTranslation()
 
   const isCreateForm = !versionId
 
@@ -180,12 +182,12 @@ export default function CreateEditVersion() {
     <Modal isOpen onOpenChange={onClose} size="xl" isDismissable={false}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {versionId ? 'Edit Version' : 'Create Version'}
+          {versionId ? t('Edit Version') : t('Create Version')}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              Please check the form for errors.
+              {t('Please check the form for errors.')}
             </Alert>
           ) : null}
 
@@ -229,7 +231,7 @@ export default function CreateEditVersion() {
             Cancel
           </Button>
           <Button color="primary" onPress={mutateVersion} isLoading={isPending}>
-            {versionId ? 'Save' : 'Create'}
+            {versionId ? t('Save') : t('Create')}
           </Button>
         </ModalFooter>
       </ModalContent>

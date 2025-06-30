@@ -1,0 +1,27 @@
+{
+    "translation": {
+        "Create Vendor": "Anbieter erstellen",
+        "Go to Home": "Zur Startseite",
+        "Product Database": "Produktdatenbank",
+        "Versions": "Versionen",
+        "Not implemented yet": "Noch nicht implementiert",
+        "Add Relationship": "Beziehung hinzufügen",
+        "Add Product": "Produkt hinzufügen",
+        "Save": "Speichern",
+        "Create": "Erstellen",
+        "Add New Product": "Neues Produkt hinzufügen",
+        "Edit Product": "Produkt bearbeiten",
+        "Edit Version": "Version bearbeiten",
+        "Create Version": "Version erstellen",
+        "Edit Vendor": "Anbieter bearbeiten",
+        "Please check the form for errors.": "Bitte überprüfen Sie das Formular auf Fehler.",
+        "Vendors": "Anbieter",
+        "Products": "Produkte",
+        "Tree-View": "Baumansicht",
+        "No description": "Keine Beschreibung",
+        "Delete": "Löschen",
+        "Edit": "Bearbeiten",
+        "Product": "Produkt",
+        "Vendor": "Anbieter"
+    }
+}

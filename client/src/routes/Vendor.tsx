@@ -12,6 +12,7 @@ import { BreadcrumbItem } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 import { ProductItem, useVendorProductListQuery } from './Products'
 import { VendorProps } from './Vendors'
+import { useTranslation } from 'react-i18next'
 
 export function useVendorQuery(vendorId?: string) {
   const request = client.useQuery(
@@ -43,6 +44,7 @@ export function DeleteVendor({
 }) {
   const mutation = client.useMutation('delete', '/api/v1/vendors/{id}')
   const { navigate } = useRouter()
+  const { t } = useTranslation()
 
   return (
     <ConfirmButton
@@ -67,7 +69,7 @@ export function DeleteVendor({
       }}
     >
       <FontAwesomeIcon icon={faTrash} />
-      {!isIconButton && 'Delete'}
+      {!isIconButton && t('Delete')}
     </ConfirmButton>
   )
 }
@@ -86,6 +88,7 @@ export default function Vendor({
   hideBreadcrumbs?: boolean
 }) {
   const { vendorId: paramVendorId } = useParams()
+  const { t } = useTranslation()
   let vendorIdParam = vendorId
 
   if (!vendorIdParam) {
@@ -99,13 +102,13 @@ export default function Vendor({
     <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
-          <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors">{t('Vendors')}</BreadcrumbItem>
           <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
       <DataGrid
-        title={`Products (${products?.length})`}
+        title={`${t('Products')} (${products?.length})`}
         addButton={<AddProductButton vendorId={vendor?.id || ''} />}
       >
         {products?.map((product) => (

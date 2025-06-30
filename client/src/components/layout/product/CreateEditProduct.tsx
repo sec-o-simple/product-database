@@ -17,7 +17,9 @@ import {
   SelectItem,
   Spinner,
 } from '@heroui/react'
+import { t } from 'i18next'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 interface CreateEditProductProps {
@@ -79,6 +81,7 @@ export function useProductMutation({
 
 export function AddProductButton({ vendorId }: CreateEditProductProps) {
   const { navigateToModal } = useRouter()
+  const { t } = useTranslation()
 
   return (
     <Button
@@ -91,7 +94,7 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
         )
       }}
     >
-      Add Product
+      {t('Add Product')}
     </Button>
   )
 }
@@ -167,12 +170,12 @@ export default function CreateEditProduct() {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {isCreateForm ? 'Add New Product' : 'Edit Product'}
+          {isCreateForm ? t('Add New Product') : t('Edit Product')}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              Please check the form for errors.
+              {t('Please check the form for errors.')}
             </Alert>
           ) : null}
 
@@ -217,7 +220,7 @@ export default function CreateEditProduct() {
             Cancel
           </Button>
           <Button color="primary" onPress={mutateProduct} isLoading={isPending}>
-            {isCreateForm ? 'Create' : 'Save'}
+            {isCreateForm ? t('Create') : t('Save')}
           </Button>
         </ModalFooter>
       </ModalContent>

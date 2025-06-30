@@ -17,6 +17,7 @@ import {
   Spinner,
 } from '@heroui/react'
 import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
 export function useVendorMutation({
@@ -62,11 +63,12 @@ export function useVendorMutation({
 
 export function CreateVendorButton() {
   const { navigateToModal } = useRouter()
+  const { t } = useTranslation()
 
   return (
     <Button color="primary" onPress={() => navigateToModal('/vendors/create')}>
       <FontAwesomeIcon icon={faAdd} className="mr-2" />
-      Create Vendor
+      {t('Create Vendor')}
     </Button>
   )
 }
@@ -74,6 +76,7 @@ export function CreateVendorButton() {
 export default function CreateEditVendor() {
   const { navigate, location } = useRouter()
   const { vendorId } = useParams()
+  const { t } = useTranslation()
   const isCreateForm = !vendorId
 
   const { data: previousData, isLoading } = useVendorQuery(vendorId || '')
@@ -132,12 +135,12 @@ export default function CreateEditVendor() {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {isCreateForm ? 'Create Vendor' : 'Edit Vendor'}
+          {isCreateForm ? t('Create Vendor') : t('Edit Vendor')}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              Please check the form for errors.
+              {t('Please check the form for errors.')}
             </Alert>
           ) : null}
 
@@ -172,7 +175,7 @@ export default function CreateEditVendor() {
             Cancel
           </Button>
           <Button color="primary" onPress={mutateVendor} isLoading={isPending}>
-            {isCreateForm ? 'Create' : 'Save'}
+            {isCreateForm ? t('Create') : t('Save')}
           </Button>
         </ModalFooter>
       </ModalContent>

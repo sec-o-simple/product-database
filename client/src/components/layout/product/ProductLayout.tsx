@@ -22,6 +22,7 @@ import { Outlet } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { AddVersionButton } from '../version/CreateEditVersion'
+import { useTranslation } from 'react-i18next'
 
 export function AddIdHelper({
   onAdd,
@@ -67,7 +68,7 @@ export default function ProductLayout() {
     params: { productId },
     navigateToModal,
   } = useRouter()
-
+  const { t } = useTranslation()
   const { data: product } = useProductQuery(productId || '')
   const { data: vendor } = useVendorQuery(product?.vendor_id || '')
 
@@ -78,7 +79,7 @@ export default function ProductLayout() {
   return (
     <PageContainer>
       <TopBar
-        title={`Product: ${product.name}`}
+        title={`${t('Product')}: ${product.name}`}
         historyLink={`/products/${product.id}/history`}
       >
         <div className="flex flex-row gap-4">
@@ -130,7 +131,7 @@ export default function ProductLayout() {
                   )
                 }
               >
-                Edit Product
+                {t('Edit')}
               </Button>
             </div>
           }

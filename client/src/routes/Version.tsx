@@ -13,6 +13,7 @@ import { useParams } from 'react-router-dom'
 import { useProductQuery } from './Product'
 import { useVendorQuery } from './Vendor'
 import ListItem, { ListGroup } from '@/components/forms/ListItem'
+import { useTranslation } from 'react-i18next'
 
 export function useVersionQuery(versionId?: string) {
   const request = client.useQuery(
@@ -48,6 +49,7 @@ export function DeleteVersion({
     navigate,
     params: { productId },
   } = useRouter()
+  const { t } = useTranslation()
 
   return (
     <ConfirmButton
@@ -72,7 +74,7 @@ export function DeleteVersion({
       }}
     >
       <FontAwesomeIcon icon={faTrash} />
-      {!isIconButton && 'Delete'}
+      {!isIconButton && t('Delete')}
     </ConfirmButton>
   )
 }
@@ -88,6 +90,7 @@ export default function Version({
   hideBreadcrumbs?: boolean
 }) {
   const { versionId } = useParams()
+  const { t } = useTranslation()
 
   const { data: version } = useVersionQuery(versionId)
   const { data: product } = useProductQuery(version?.product_id)
@@ -108,13 +111,13 @@ export default function Version({
     <div className="flex w-full grow flex-col gap-4 p-2">
       {!hideBreadcrumbs && (
         <Breadcrumbs>
-          <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors">{t('Vendors')}</BreadcrumbItem>
           <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
-          <BreadcrumbItem isDisabled>Products</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>{t('Products')}</BreadcrumbItem>
           <BreadcrumbItem href={`/products/${product?.id}`}>
             {product?.name}
           </BreadcrumbItem>
-          <BreadcrumbItem isDisabled>Versions</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>{t('Versions')}</BreadcrumbItem>
           <BreadcrumbItem>{version?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
@@ -135,7 +138,7 @@ export default function Version({
                     <p>{product.product.full_name}</p>
                   </div>
                 }
-                description={'No description'}
+                description={t('No description')}
               />
             ))}
           </ListGroup>

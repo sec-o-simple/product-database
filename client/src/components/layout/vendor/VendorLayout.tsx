@@ -8,6 +8,7 @@ import { cn } from '@heroui/theme'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { AddProductButton } from '../product/CreateEditProduct'
+import { useTranslation } from 'react-i18next'
 
 export function Attribute({
   label,
@@ -49,6 +50,7 @@ export function Attribute({
 
 export default function VendorLayout() {
   const { navigateToModal, navigate } = useRouter()
+  const { t } = useTranslation()
 
   const { vendorId } = useParams()
   const { data: vendor } = useVendorQuery(vendorId || '')
@@ -62,7 +64,7 @@ export default function VendorLayout() {
   return (
     <PageContainer>
       <TopBar
-        title={`Vendor: ${vendor.name}`}
+        title={`${t('Vendor')}: ${vendor.name}`}
         historyLink={`/vendors/${vendorId}/history`}
       >
         <AddProductButton vendorId={vendor.id?.toString()} />
@@ -85,7 +87,7 @@ export default function VendorLayout() {
                   )
                 }
               >
-                Edit Vendor
+                {t('Edit')}
               </Button>
             </div>
           }
