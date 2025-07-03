@@ -15,7 +15,8 @@
             "emptyState": {
                 "title": "Keine Einträge",
                 "description": "Es gibt noch keine Einträge, die angezeigt werden können."
-            }
+            },
+            "confirm": "Bestätigen"
         },
         "vendor": {
             "label": "Anbieter"

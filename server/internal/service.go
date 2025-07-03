@@ -663,26 +663,53 @@ func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionI
 		return nil, notFoundError
 	}
 
-	groups := make(map[string][]RelationshipGroupItemDTO)
+	// Group by category first, then by product within each category
+	categoryGroups := make(map[string]map[string]*RelationshipGroupItemDTO)
 
 	for _, rel := range version.SourceRelationships {
-		item := RelationshipGroupItemDTO{
-			Product: NodeToProductDTO(*rel.TargetNode),
-			VersionRelationships: []ProductionVersionRelationshipDTO{
-				{
-					RelationshipID: rel.ID,
-					Version:        NodeToProductVersionDTO(*rel.TargetNode),
-				},
-			},
+		// We need to make sure the target node and its parent exist
+		if rel.TargetNode == nil || rel.TargetNode.Parent == nil {
+			continue
 		}
-		groups[string(rel.Category)] = append(groups[string(rel.Category)], item)
+
+		category := string(rel.Category)
+		productID := rel.TargetNode.Parent.ID
+
+		// Initialize category map if it doesn't exist
+		if categoryGroups[category] == nil {
+			categoryGroups[category] = make(map[string]*RelationshipGroupItemDTO)
+		}
+
+		// Get or create the product group item
+		if categoryGroups[category][productID] == nil {
+			categoryGroups[category][productID] = &RelationshipGroupItemDTO{
+				Product:              NodeToProductDTO(*rel.TargetNode.Parent),
+				VersionRelationships: []ProductionVersionRelationshipDTO{},
+			}
+		}
+
+		// Add the version relationship to the existing product group
+		versionRelationship := ProductionVersionRelationshipDTO{
+			RelationshipID: rel.ID,
+			Version:        NodeToProductVersionDTO(*rel.TargetNode),
+		}
+		categoryGroups[category][productID].VersionRelationships = append(
+			categoryGroups[category][productID].VersionRelationships,
+			versionRelationship,
+		)
 	}
 
+	// Convert the nested maps to the final result structure
 	var result []RelationshipGroupDTO
-	for category, items := range groups {
+	for category, productGroups := range categoryGroups {
+		var products []RelationshipGroupItemDTO
+		for _, productGroup := range productGroups {
+			products = append(products, *productGroup)
+		}
+
 		result = append(result, RelationshipGroupDTO{
 			Category: category,
-			Products: items,
+			Products: products,
 		})
 	}
 

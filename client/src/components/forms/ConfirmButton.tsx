@@ -50,7 +50,7 @@ export default function ConfirmButton({
                     onClose()
                   }}
                 >
-                  Confirm
+                  {t('common.confirm')}
                 </Button>
               </ModalFooter>
             </>

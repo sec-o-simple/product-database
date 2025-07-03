@@ -15,7 +15,8 @@
             "emptyState": {
                 "title": "No Data Available",
                 "description": "There are no items to display at this moment."
-            }
+            },
+            "confirm": "Confirm"
         },
         "vendor": {
             "label": "Vendor",

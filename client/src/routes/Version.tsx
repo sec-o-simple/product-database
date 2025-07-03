@@ -3,17 +3,18 @@ import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import ConfirmButton from '@/components/forms/ConfirmButton'
 import { AddRelationshipButton } from '@/components/layout/product/CreateRelationship'
 import { VersionProps } from '@/components/layout/version/CreateEditVersion'
-import { EmptyState } from '@/components/table/EmptyState'
 import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { BreadcrumbItem } from '@heroui/react'
+import { BreadcrumbItem, Chip, cn } from '@heroui/react'
 import { useParams } from 'react-router-dom'
 import { useProductQuery } from './Product'
 import { useVendorQuery } from './Vendor'
-import ListItem, { ListGroup } from '@/components/forms/ListItem'
+import { ListGroup } from '@/components/forms/ListItem'
 import { useTranslation } from 'react-i18next'
+import IconButton from '@/components/forms/IconButton'
+import DataGrid from '@/components/forms/DataGrid'
 
 export function useVersionQuery(versionId?: string) {
   const request = client.useQuery(
@@ -79,6 +80,69 @@ export function DeleteVersion({
   )
 }
 
+export function DeleteRelationshipGroup({
+  group,
+  version,
+}: {
+  version: {
+    full_name: string
+  }
+  group: {
+    category: string
+    products: {
+      product: {
+        description?: string
+        full_name: string
+        id: string
+        latest_versions?: {
+          description?: string
+          full_name: string
+          id: string
+          is_latest: boolean
+          name: string
+          predecessor_id?: string | null
+          product_id?: string
+          released_at?: string | null
+        }[]
+        name: string
+        type: string
+        vendor_id?: string
+      }
+      version_relationships: {
+        id: string
+        version: {
+          description?: string
+          full_name: string
+          id: string
+          is_latest: boolean
+          name: string
+          predecessor_id?: string | null
+          product_id?: string
+          released_at?: string | null
+        }
+      }[]
+    }[]
+  }
+}) {
+  const totalVersions = group.products.reduce((acc, product) => {
+    return acc + (product.version_relationships?.length || 0)
+  }, 0)
+
+  return (
+    <ConfirmButton
+      isIconOnly={true}
+      variant={'light'}
+      radius={'full'}
+      color="danger"
+      confirmTitle="Delete Relationship Group"
+      confirmText={`Are you sure you want to delete the "${group.category}" relationship from "${version.full_name}" to ${totalVersions} version${totalVersions !== 1 ? 's' : ''}? This action cannot be undone.`}
+      onConfirm={() => {}}
+    >
+      <FontAwesomeIcon icon={faTrash} />
+    </ConfirmButton>
+  )
+}
+
 /**
  *
  * @param hideBreadcrumbs - Whether to hide the breadcrumbs at the top of the page.
@@ -133,33 +197,57 @@ export default function Version({
       )}
 
       <div className="flex w-full flex-col items-center gap-4">
-        <EmptyState
-          add={
+        <DataGrid
+          title={`${t('relationship.label', { count: 2 })}`}
+          addButton={
             <AddRelationshipButton
               versionId={version.id}
               returnTo={`/product-versions/${version.id}`}
             />
           }
-        />
-        {relationships?.map((relationship) => (
-          <ListGroup title={relationship.category} key={relationship.category}>
-            {relationship.products.map((product) => (
-              <ListItem
-                key={`${relationship.category}-${product.product.id}`}
-                classNames={{
-                  base: 'border-default-200 border-b-0 rounded-none',
-                }}
-                title={
-                  <div className="flex items-center gap-2">
-                    {/* {version.id === 1 && <LatestChip />} */}
-                    <p>{product.product.full_name}</p>
+        >
+          {relationships?.map((relationship) => (
+            <ListGroup
+              title={relationship.category}
+              key={relationship.category}
+              headerActions={
+                <div className="flex gap-1">
+                  <IconButton icon={faEdit} onPress={() => {}} />
+
+                  <DeleteRelationshipGroup
+                    group={relationship}
+                    version={version}
+                  />
+                </div>
+              }
+            >
+              {relationship.products.map((product) => (
+                <div
+                  key={`${relationship.category}-${product.product.id}`}
+                  className={cn(
+                    'flex w-full gap-4 rounded-lg bg-white px-4 py-2 border-1 border-default-200',
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className={cn('text-lg font-semibold')}>
+                        {product.product.full_name}
+                      </div>
+                    </div>
                   </div>
-                }
-                description={t('common.noDescription')}
-              />
-            ))}
-          </ListGroup>
-        ))}
+
+                  <div className="flex gap-2 pb-1">
+                    {product.version_relationships?.map((versionRel) => (
+                      <Chip key={versionRel.id} variant="solid">
+                        {versionRel.version.name}
+                      </Chip>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </ListGroup>
+          ))}
+        </DataGrid>
       </div>
     </div>
   )
