@@ -94,7 +94,9 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
         )
       }}
     >
-      {t('Add Product')}
+      {t('common.createObject', {
+        label: t('product.label'),
+      })}
     </Button>
   )
 }
@@ -170,12 +172,14 @@ export default function CreateEditProduct() {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {isCreateForm ? t('Add New Product') : t('Edit Product')}
+          {t(isCreateForm ? 'common.createObject' : 'common.editObject', {
+            label: t('product.label'),
+          })}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              {t('Please check the form for errors.')}
+              {t('form.errors')}
             </Alert>
           ) : null}
 
@@ -217,10 +221,10 @@ export default function CreateEditProduct() {
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button color="primary" onPress={mutateProduct} isLoading={isPending}>
-            {isCreateForm ? t('Create') : t('Save')}
+            {isCreateForm ? t('common.create') : t('common.save')}
           </Button>
         </ModalFooter>
       </ModalContent>

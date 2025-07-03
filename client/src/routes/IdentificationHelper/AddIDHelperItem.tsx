@@ -10,8 +10,10 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 
 export function AddIdHelperItem(props?: ButtonProps) {
+  const { t } = useTranslation()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   return (
@@ -41,7 +43,7 @@ export function AddIdHelperItem(props?: ButtonProps) {
               </ModalBody>
               <ModalFooter>
                 <Button variant="light" onPress={onClose}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button color="primary" onPress={onClose}>
                   Create

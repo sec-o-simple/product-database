@@ -52,11 +52,11 @@ export default function VersionLayout() {
         title={
           <div className="flex flex-row items-center gap-2">
             <p>
-              {t('Product')}: {product?.name}
+              {t('product.label')}: {product?.name}
             </p>
 
             <Chip variant="flat" className="ml-2 rounded-md">
-              {t('Version')}: {version.name}
+              {t('version.label')}: {version.name}
             </Chip>
           </div>
         }
@@ -109,7 +109,7 @@ export default function VersionLayout() {
                   )
                 }
               >
-                {t('Edit')}
+                {t('common.edit')}
               </Button>
             </div>
           }

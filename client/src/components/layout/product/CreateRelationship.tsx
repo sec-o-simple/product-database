@@ -52,7 +52,8 @@ function ProductBox({
         </div>
 
         <p className="text-sm text-zinc-500">
-          {t('Versions')}: {versions.join(', ')}
+          {t('version.label', { count: versions.length })}:{' '}
+          {versions.join(', ')}
         </p>
       </div>
     )
@@ -69,14 +70,16 @@ export function AddRelationshipButton() {
       onPress={
         () =>
           addToast({
-            title: t('Not implemented yet'),
+            title: t('common.notImplemented'),
           })
         // navigateToModal(
         //   `/product-versions/${versionId}/relationships/create`,
         // )
       }
     >
-      {t('Add Relationship')}
+      {t('common.createObject', {
+        label: t('relationship.label'),
+      })}
     </Button>
   )
 }
@@ -86,6 +89,8 @@ export default function CreateRelationship() {
     goBack,
     params: { versionId },
   } = useRouter()
+
+  const { t } = useTranslation()
 
   const [selected, setSelected] = useState<RelationShipProps>({
     sourceProducts: [versionId || ''],
@@ -323,7 +328,7 @@ export default function CreateRelationship() {
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             color="primary"

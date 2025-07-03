@@ -182,12 +182,14 @@ export default function CreateEditVersion() {
     <Modal isOpen onOpenChange={onClose} size="xl" isDismissable={false}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {versionId ? t('Edit Version') : t('Create Version')}
+          {t(versionId ? 'common.editObject' : 'common.createObject', {
+            label: t('version.label'),
+          })}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              {t('Please check the form for errors.')}
+              {t('form.errors')}
             </Alert>
           ) : null}
 
@@ -228,10 +230,10 @@ export default function CreateEditVersion() {
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={() => onClose(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button color="primary" onPress={mutateVersion} isLoading={isPending}>
-            {versionId ? t('Save') : t('Create')}
+            {versionId ? t('common.save') : t('common.create')}
           </Button>
         </ModalFooter>
       </ModalContent>

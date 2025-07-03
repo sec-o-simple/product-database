@@ -64,7 +64,7 @@ export default function VendorLayout() {
   return (
     <PageContainer>
       <TopBar
-        title={`${t('Vendor')}: ${vendor.name}`}
+        title={`${t('vendor.label')}: ${vendor.name}`}
         historyLink={`/vendors/${vendorId}/history`}
       >
         <AddProductButton vendorId={vendor.id?.toString()} />
@@ -87,7 +87,7 @@ export default function VendorLayout() {
                   )
                 }
               >
-                {t('Edit')}
+                {t('common.edit')}
               </Button>
             </div>
           }

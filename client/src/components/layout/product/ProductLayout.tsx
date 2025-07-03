@@ -79,7 +79,7 @@ export default function ProductLayout() {
   return (
     <PageContainer>
       <TopBar
-        title={`${t('Product')}: ${product.name}`}
+        title={`${t('product.label')}: ${product.name}`}
         historyLink={`/products/${product.id}/history`}
       >
         <div className="flex flex-row gap-4">
@@ -131,7 +131,7 @@ export default function ProductLayout() {
                   )
                 }
               >
-                {t('Edit')}
+                {t('common.edit')}
               </Button>
             </div>
           }

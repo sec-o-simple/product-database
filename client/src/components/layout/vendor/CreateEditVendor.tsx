@@ -68,7 +68,7 @@ export function CreateVendorButton() {
   return (
     <Button color="primary" onPress={() => navigateToModal('/vendors/create')}>
       <FontAwesomeIcon icon={faAdd} className="mr-2" />
-      {t('Create Vendor')}
+      {t('common.createObject', { label: t('vendor.label') })}
     </Button>
   )
 }
@@ -135,12 +135,14 @@ export default function CreateEditVendor() {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {isCreateForm ? t('Create Vendor') : t('Edit Vendor')}
+          {t(isCreateForm ? 'common.createObject' : 'common.editObject', {
+            label: t('vendor.label'),
+          })}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              {t('Please check the form for errors.')}
+              {t('form.errors')}
             </Alert>
           ) : null}
 
@@ -172,10 +174,10 @@ export default function CreateEditVendor() {
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button color="primary" onPress={mutateVendor} isLoading={isPending}>
-            {isCreateForm ? t('Create') : t('Save')}
+            {isCreateForm ? t('common.create') : t('common.save')}
           </Button>
         </ModalFooter>
       </ModalContent>

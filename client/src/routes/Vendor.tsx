@@ -69,7 +69,7 @@ export function DeleteVendor({
       }}
     >
       <FontAwesomeIcon icon={faTrash} />
-      {!isIconButton && t('Delete')}
+      {!isIconButton && t('common.delete')}
     </ConfirmButton>
   )
 }
@@ -102,13 +102,15 @@ export default function Vendor({
     <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
-          <BreadcrumbItem href="/vendors">{t('Vendors')}</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors">
+            {t('vendor.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
       <DataGrid
-        title={`${t('Products')} (${products?.length})`}
+        title={`${t('product.label', { count: products?.length || 0 })} (${products?.length})`}
         addButton={<AddProductButton vendorId={vendor?.id || ''} />}
       >
         {products?.map((product) => (

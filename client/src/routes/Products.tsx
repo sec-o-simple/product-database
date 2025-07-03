@@ -51,9 +51,17 @@ export function DashboardTabs({
           color="primary"
           variant="light"
         >
-          <Tab key="vendors" title={t("Vendors")} href="/vendors" />
-          <Tab key="products" title={t("Products")} href="/products" />
-          <Tab key="tree" title={t("Tree-View")} href="/tree" />
+          <Tab
+            key="vendors"
+            title={t('vendor.label', { count: 2 })}
+            href="/vendors"
+          />
+          <Tab
+            key="products"
+            title={t('product.label', { count: 2 })}
+            href="/products"
+          />
+          <Tab key="tree" title={t('treeView.label')} href="/tree" />
         </Tabs>
 
         {endContent}

@@ -74,7 +74,7 @@ export function DeleteVersion({
       }}
     >
       <FontAwesomeIcon icon={faTrash} />
-      {!isIconButton && t('Delete')}
+      {!isIconButton && t('common.delete')}
     </ConfirmButton>
   )
 }
@@ -111,13 +111,19 @@ export default function Version({
     <div className="flex w-full grow flex-col gap-4 p-2">
       {!hideBreadcrumbs && (
         <Breadcrumbs>
-          <BreadcrumbItem href="/vendors">{t('Vendors')}</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors">
+            {t('vendor.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
-          <BreadcrumbItem isDisabled>{t('Products')}</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>
+            {t('product.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem href={`/products/${product?.id}`}>
             {product?.name}
           </BreadcrumbItem>
-          <BreadcrumbItem isDisabled>{t('Versions')}</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>
+            {t('version.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem>{version?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
@@ -138,7 +144,7 @@ export default function Version({
                     <p>{product.product.full_name}</p>
                   </div>
                 }
-                description={t('No description')}
+                description={t('common.noDescription')}
               />
             ))}
           </ListGroup>
