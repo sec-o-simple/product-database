@@ -25,12 +25,33 @@ func main() {
 		slog.Warn("CORS_ORIGIN environment variable is not set")
 	}
 
+	host := os.Getenv("HOST")
+	if host == "" {
+		host = "0.0.0.0"
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9999"
+	}
+
+	addr := host + ":" + port
+
+	env := os.Getenv("ENV")
+	if env == "" {
+		env = "development"
+	}
+
+	isProduction := env == "production"
+
 	s := fuego.NewServer(
-		fuego.WithAddr("0.0.0.0:9999"),
+		fuego.WithAddr(addr),
 		fuego.WithEngineOptions(
 			fuego.WithOpenAPIConfig(fuego.OpenAPIConfig{
 				JSONFilePath:     "../docs/openapi.json",
 				PrettyFormatJSON: true,
+				Disabled:         isProduction,
+				DisableLocalSave: isProduction,
 			}),
 		),
 		fuego.WithGlobalMiddlewares(func(next http.Handler) http.Handler {

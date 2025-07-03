@@ -93,3 +93,16 @@ make build
 ```
 
 The binary will be available at `./bin/server`.
+
+## Environment Variables
+
+The following environment variables can be configured:
+
+| Variable        | Required | Default       | Description                                                  |
+| --------------- | -------- | ------------- | ------------------------------------------------------------ |
+| `HOST`          | No       | `0.0.0.0`     | The host address for the server to bind to                   |
+| `PORT`          | No       | `9999`        | The port number for the server to listen on                  |
+| `ENV`           | No       | `development` | The environment mode. Set to `production` to hide the Swagger UI |
+| `CORS_ORIGIN`   | Yes      |               | The allowed CORS origin URL (e.g., `http://localhost:3000`)  |
+| `DATABASE_PATH` | Yes      |               | Path to the SQLite database file                             |
+
