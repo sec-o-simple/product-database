@@ -49,6 +49,7 @@ export default function VersionLayout() {
     <PageContainer>
       <TopBar
         historyLink={`/product-versions/${versionId}/history`}
+        backLink={`/products/${version.product_id}`}
         title={
           <div className="flex flex-row items-center gap-2">
             <p>
@@ -61,7 +62,10 @@ export default function VersionLayout() {
           </div>
         }
       >
-        <AddRelationshipButton />
+        <AddRelationshipButton
+          versionId={version.id}
+          returnTo={`/product-versions/${version.id}`}
+        />
       </TopBar>
 
       <div className="flex h-full grow flex-row">

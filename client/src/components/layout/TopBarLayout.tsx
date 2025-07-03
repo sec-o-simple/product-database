@@ -13,12 +13,14 @@ interface TopBarProps {
   children?: React.ReactNode
   historyLink?: string
   navigateBack?: boolean
+  backLink?: string
 }
 
 export function TopBar({
   title,
   children,
   navigateBack = true,
+  backLink,
 }: Readonly<TopBarProps>) {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -46,7 +48,7 @@ export function TopBar({
             color="primary"
             variant="light"
             isIconOnly={true}
-            onPress={() => navigate(-1)}
+            onPress={() => (backLink ? navigate(backLink) : navigate(-1))}
           />
         )}
 

@@ -11,7 +11,11 @@
             "notImplemented": "Noch nicht implementiert",
             "delete": "Löschen",
             "edit": "Bearbeiten",
-            "cancel": "Abbrechen"
+            "cancel": "Abbrechen",
+            "emptyState": {
+                "title": "Keine Einträge",
+                "description": "Es gibt noch keine Einträge, die angezeigt werden können."
+            }
         },
         "vendor": {
             "label": "Anbieter"

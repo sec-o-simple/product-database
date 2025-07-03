@@ -11,7 +11,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@heroui/modal'
-import { addToast, Button } from '@heroui/react'
+import { Button } from '@heroui/react'
 import { SelectItem } from '@heroui/select'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -60,21 +60,25 @@ function ProductBox({
   )
 }
 
-export function AddRelationshipButton() {
+export function AddRelationshipButton({
+  versionId,
+  returnTo,
+}: {
+  versionId: string
+  returnTo?: string
+}) {
   const { t } = useTranslation()
+  const { navigateToModal } = useRouter()
 
   return (
     <Button
       color="primary"
       startContent={<FontAwesomeIcon icon={faAdd} />}
-      onPress={
-        () =>
-          addToast({
-            title: t('common.notImplemented'),
-          })
-        // navigateToModal(
-        //   `/product-versions/${versionId}/relationships/create`,
-        // )
+      onPress={() =>
+        navigateToModal(
+          `/product-versions/${versionId}/relationships/create`,
+          returnTo,
+        )
       }
     >
       {t('common.createObject', {
@@ -171,7 +175,9 @@ export default function CreateRelationship() {
     <Modal isOpen isDismissable={false} onClose={onClose} size="2xl">
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          Create Product Relationship
+          {t('common.createObject', {
+            label: t('relationship.label'),
+          })}
         </ModalHeader>
         <ModalBody className="gap-4">
           {/* <div className="flex flex-row gap-2">
@@ -335,7 +341,7 @@ export default function CreateRelationship() {
             onPress={handleCreateRelationship}
             isLoading={mutation.isPending}
           >
-            Create
+            {t('common.create')}
           </Button>
         </ModalFooter>
       </ModalContent>

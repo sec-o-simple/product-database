@@ -65,6 +65,7 @@ export default function VendorLayout() {
     <PageContainer>
       <TopBar
         title={`${t('vendor.label')}: ${vendor.name}`}
+        backLink="/vendors"
         historyLink={`/vendors/${vendorId}/history`}
       >
         <AddProductButton vendorId={vendor.id?.toString()} />

@@ -20,24 +20,32 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
-export function useVendorMutation({
-  vendor,
-  onClose,
-}: {
-  vendor: VendorProps
-  onClose: () => void
-}) {
-  const onSuccess = useCallback(() => {
-    onClose()
-  }, [onClose])
+export function useVendorMutation({ vendor }: { vendor: VendorProps }) {
+  const { navigate } = useRouter()
+
+  const onSuccess = useCallback(
+    (id: string) => {
+      navigate(`/vendors/${id}`, {
+        replace: true,
+        state: {
+          shouldRefetch: true,
+        },
+      })
+    },
+    [navigate],
+  )
 
   const isCreateForm = !vendor.id
 
   const createMutation = client.useMutation('post', '/api/v1/vendors', {
-    onSuccess,
+    onSuccess: (res) => {
+      onSuccess(res.id)
+    },
   })
   const updateMutation = client.useMutation('put', '/api/v1/vendors/{id}', {
-    onSuccess,
+    onSuccess: (res) => {
+      onSuccess(res.id)
+    },
     params: { path: { id: vendor.id } },
   })
 
@@ -110,7 +118,6 @@ export default function CreateEditVendor() {
 
   const { mutateVendor, isPending, error } = useVendorMutation({
     vendor,
-    onClose: onClose,
   })
 
   const errorHelper = useErrorLocalization(error)

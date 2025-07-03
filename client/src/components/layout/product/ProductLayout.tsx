@@ -80,18 +80,10 @@ export default function ProductLayout() {
     <PageContainer>
       <TopBar
         title={`${t('product.label')}: ${product.name}`}
+        backLink={`/vendors/${product.vendor_id}`}
         historyLink={`/products/${product.id}/history`}
       >
         <div className="flex flex-row gap-4">
-          {/* <Button
-            color="primary"
-            variant="light"
-            disabled
-            startContent={<FontAwesomeIcon icon={faFileExport} />}
-          >
-            Export
-          </Button> */}
-
           <AddVersionButton
             productId={product.id}
             returnTo={`/products/${productId}`}

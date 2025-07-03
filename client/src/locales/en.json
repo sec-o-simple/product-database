@@ -11,7 +11,11 @@
             "notImplemented": "Not implemented yet",
             "delete": "Delete",
             "edit": "Edit",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "emptyState": {
+                "title": "No Data Available",
+                "description": "There are no items to display at this moment."
+            }
         },
         "vendor": {
             "label": "Vendor",

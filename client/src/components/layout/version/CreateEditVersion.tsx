@@ -36,15 +36,23 @@ export type VersionProps = {
 export function useVersionMutation({
   productId,
   version,
-  onClose,
 }: {
   productId?: string
   version: VersionProps
-  onClose: () => void
 }) {
-  const onSuccess = useCallback(() => {
-    onClose()
-  }, [onClose])
+  const { navigate } = useRouter()
+
+  const onSuccess = useCallback(
+    (id: string) => {
+      navigate(`/product-versions/${id}`, {
+        replace: true,
+        state: {
+          shouldRefetch: true,
+        },
+      })
+    },
+    [navigate],
+  )
 
   const isCreateForm = !version.id
 
@@ -52,7 +60,9 @@ export function useVersionMutation({
     'post',
     '/api/v1/product-versions',
     {
-      onSuccess,
+      onSuccess: (res) => {
+        onSuccess(res.id)
+      },
     },
   )
   const updateMutation = client.useMutation(
@@ -60,7 +70,9 @@ export function useVersionMutation({
     '/api/v1/product-versions/{id}',
     {
       params: { path: { id: version.id } },
-      onSuccess,
+      onSuccess: (res) => {
+        onSuccess(res.id)
+      },
     },
   )
 
@@ -68,7 +80,6 @@ export function useVersionMutation({
     const body = {
       product_id: productId || '',
       version: version.name,
-      // format: 'YYYY-MM-DD',
       release_date: version.releaseDate?.toString(),
     }
 
@@ -92,6 +103,7 @@ export function AddVersionButton({
   returnTo,
 }: CreateEditVersionProps) {
   const { navigateToModal } = useRouter()
+  const { t } = useTranslation()
 
   return (
     <Button
@@ -101,7 +113,9 @@ export function AddVersionButton({
         navigateToModal(`/products/${productId}/versions/create`, returnTo)
       }}
     >
-      Add Version
+      {t('common.createObject', {
+        label: t('version.label'),
+      })}
     </Button>
   )
 }
@@ -163,7 +177,6 @@ export default function CreateEditVersion() {
       name: version.name,
       releaseDate: version.releaseDate,
     },
-    onClose: onClose,
   })
 
   const errorHelper = useErrorLocalization(error)

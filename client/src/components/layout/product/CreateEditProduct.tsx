@@ -36,24 +36,35 @@ export type ProductProps = {
 
 export function useProductMutation({
   product,
-  onClose,
 }: {
   vendorId: string
   product: ProductProps
-  onClose: () => void
 }) {
+  const { navigate } = useRouter()
   const isCreateForm = !product.id
 
-  const onSuccess = () => {
-    onClose()
-  }
+  const onSuccess = useCallback(
+    (id: string) => {
+      navigate(`/products/${id}`, {
+        replace: true,
+        state: {
+          shouldRefetch: true,
+        },
+      })
+    },
+    [navigate],
+  )
 
   const createMutation = client.useMutation('post', '/api/v1/products', {
-    onSuccess,
+    onSuccess: (res) => {
+      onSuccess(res.id)
+    },
   })
   const updateMutation = client.useMutation('put', '/api/v1/products/{id}', {
     params: { path: { id: product.id } },
-    onSuccess,
+    onSuccess: (res) => {
+      onSuccess(res.id)
+    },
   })
 
   const mutateProduct = useCallback(() => {
@@ -147,7 +158,6 @@ export default function CreateEditProduct() {
   const { mutateProduct, isPending, error } = useProductMutation({
     vendorId: vendorId || '',
     product,
-    onClose: onClose,
   })
 
   const errorHelper = useErrorLocalization(error)

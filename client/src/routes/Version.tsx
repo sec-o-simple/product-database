@@ -107,6 +107,10 @@ export default function Version({
     },
   )
 
+  if (!version || !product || !vendor) {
+    return null
+  }
+
   return (
     <div className="flex w-full grow flex-col gap-4 p-2">
       {!hideBreadcrumbs && (
@@ -129,7 +133,14 @@ export default function Version({
       )}
 
       <div className="flex w-full flex-col items-center gap-4">
-        <EmptyState add={<AddRelationshipButton />} />
+        <EmptyState
+          add={
+            <AddRelationshipButton
+              versionId={version.id}
+              returnTo={`/product-versions/${version.id}`}
+            />
+          }
+        />
         {relationships?.map((relationship) => (
           <ListGroup title={relationship.category} key={relationship.category}>
             {relationship.products.map((product) => (
