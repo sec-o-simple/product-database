@@ -72,23 +72,23 @@ export default function Vendors() {
     <div className="flex grow flex-col items-center gap-4">
       <DashboardTabs
         selectedKey="vendors"
-        endContent={
-          <Input
-            classNames={{
-              base: 'max-w-full sm:max-w-[16rem] h-10',
-              mainWrapper: 'h-full',
-              input: 'text-small',
-              inputWrapper:
-                'h-full font-normal text-default-500 bg-white rounded-lg',
-            }}
-            placeholder="Type to search..."
-            disabled
-            size="sm"
-            startContent={<FontAwesomeIcon icon={faSearch} />}
-            type="search"
-            variant="bordered"
-          />
-        }
+        // endContent={
+        //   <Input
+        //     classNames={{
+        //       base: 'max-w-full sm:max-w-[16rem] h-10',
+        //       mainWrapper: 'h-full',
+        //       input: 'text-small',
+        //       inputWrapper:
+        //         'h-full font-normal text-default-500 bg-white rounded-lg',
+        //     }}
+        //     placeholder="Type to search..."
+        //     disabled
+        //     size="sm"
+        //     startContent={<FontAwesomeIcon icon={faSearch} />}
+        //     type="search"
+        //     variant="bordered"
+        //   />
+        // }
       />
 
       <div className="flex w-full flex-col gap-2">
