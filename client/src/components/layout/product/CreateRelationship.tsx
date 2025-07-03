@@ -1,6 +1,8 @@
 import client from '@/client'
 import Select from '@/components/forms/Select'
+import { useProductQuery } from '@/routes/Product'
 import { useProductListQuery } from '@/routes/Products'
+import { useVersionQuery } from '@/routes/Version'
 import useRouter from '@/utils/useRouter'
 import { faAdd, faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -13,14 +15,12 @@ import {
 } from '@heroui/modal'
 import { Button } from '@heroui/react'
 import { SelectItem } from '@heroui/select'
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-interface RelationShipProps {
-  sourceProducts: string[]
-  sourceVersions: string[]
-  targetProducts: string[]
-  targetVersions: string[]
+interface RelationshipProps {
+  sourceVersions: { name: string; id: string }[]
+  targetVersions: { name: string; id: string }[]
   relationshipType: string
   description: string
 }
@@ -34,29 +34,24 @@ const relationshipTypes = [
 ]
 
 function ProductBox({
-  products,
-  versions,
+  product,
+  version,
 }: {
-  products: string[]
-  versions: string[]
+  product?: { full_name: string; id: string }
+  version?: { name: string; id: string }
 }) {
   const { t } = useTranslation()
 
   return (
-    (products.length !== 0 || versions.length !== 0) && (
-      <div className="flex flex-col items-center rounded-lg border border-gray bg-white p-2 px-4">
-        <div className="flex flex-col gap-1">
-          {products.map((product) => (
-            <p key={product}>{product}</p>
-          ))}
-        </div>
-
-        <p className="text-sm text-zinc-500">
-          {t('version.label', { count: versions.length })}:{' '}
-          {versions.join(', ')}
-        </p>
+    <div className="flex flex-col items-center rounded-lg border border-gray bg-white p-2 px-4">
+      <div className="flex flex-col gap-1">
+        <p>{product?.full_name ?? '-/-'}</p>
       </div>
-    )
+
+      <p className="text-sm text-zinc-500">
+        {t('version.label')}: {version?.name ?? '-/-'}
+      </p>
+    </div>
   )
 }
 
@@ -88,87 +83,183 @@ export function AddRelationshipButton({
   )
 }
 
+interface ProductVersionSelectionProps {
+  initialProductId?: string
+  selectedVersions: { id: string; name: string }[]
+  onChange?: (
+    selectedVersions: { id: string; name: string }[],
+    selectedProduct: { id: string; full_name: string } | undefined,
+  ) => void
+  products?: { id: string; full_name: string }[]
+  label: string
+}
+
+function ProductVersionSelection({
+  products,
+  initialProductId,
+  selectedVersions = [],
+  onChange,
+  label,
+}: ProductVersionSelectionProps) {
+  const [selectedProductId, setSelectedProductId] = useState<
+    string | undefined
+  >(initialProductId)
+
+  const { data: versions } = client.useQuery(
+    'get',
+    `/api/v1/products/{id}/versions`,
+    {
+      params: {
+        path: {
+          id: selectedProductId || '',
+        },
+      },
+    },
+    {
+      enabled: !!selectedProductId,
+    },
+  )
+
+  const handleSelect = (key: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = key.target.value.split(',').filter((v) => v !== 'all')
+    onChange?.(
+      versions?.filter((v) => value.includes(v.id)) || [],
+      products?.find((p) => p.id === selectedProductId),
+    )
+  }
+
+  return (
+    <div className="flex flex-row gap-2">
+      <Select
+        label={label}
+        name="sourceProducts"
+        className="w-2/3"
+        selectedKeys={selectedProductId ? [selectedProductId] : []}
+        onChange={(productId) => {
+          setSelectedProductId(productId.target.value)
+          onChange?.(
+            [],
+            products?.find((p) => p.id === productId.target.value),
+          ) // Reset selected versions when product changes
+        }}
+      >
+        <>
+          {products?.map((product) => (
+            <SelectItem key={product.id}>{product.full_name}</SelectItem>
+          ))}
+        </>
+      </Select>
+
+      <Select
+        label="Version"
+        name="sourceVersions"
+        selectionMode="multiple"
+        className="w-1/3"
+        selectedKeys={selectedVersions.map((v) => v.id)}
+        onChange={handleSelect}
+        renderValue={(value) => {
+          if (value.length === versions?.length) return 'All'
+          return value
+            .map((v) => versions?.find((version) => version.id === v.key)?.name)
+            .join(', ')
+        }}
+      >
+        <>
+          {versions?.map((version) => (
+            <SelectItem key={version.id}>{version.name}</SelectItem>
+          ))}
+        </>
+      </Select>
+    </div>
+  )
+}
+
 export default function CreateRelationship() {
   const {
-    goBack,
     params: { versionId },
+    navigate,
   } = useRouter()
 
   const { t } = useTranslation()
 
-  const [selected, setSelected] = useState<RelationShipProps>({
-    sourceProducts: [versionId || ''],
+  const [selected, setSelected] = useState<RelationshipProps>({
     sourceVersions: [],
-    targetProducts: [],
     targetVersions: [],
     relationshipType: '',
     description: '',
   })
 
   const { data: products } = useProductListQuery()
-
-  let versions: { id: string; name: string }[] = []
-  // if (products && products.length > 0) {
-  //   for (const product of products) {
-  //     const { data: productVersions } = useVersionListQuery(product.id) as {
-  //       data: VersionProps[]
-  //     }
-
-  //     if (versions) {
-  //       versions.push(...(productVersions || []))
-  //     }
-  //   }
-  // }
-
-  const handleSelect = (key: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = key.target.value.split(',').filter((v) => v !== 'all')
-
-    setSelected((prevState) => ({
-      ...prevState,
-      [key.target.name]: value,
-    }))
-  }
-
-  const SelectAll = (property: keyof RelationShipProps) => {
-    const key = property as keyof RelationShipProps
-    return (
-      <SelectItem
-        key="all"
-        onClick={() => {
-          const newValue =
-            selected[key].length === versions.length
-              ? ([] as string[])
-              : versions.map((version) => version.id)
-
-          setSelected((prevState) => ({
-            ...prevState,
-            [key]: newValue,
-          }))
-        }}
-      >
-        {selected[key].length === versions.length
-          ? 'Unselect All'
-          : 'Select All'}
-      </SelectItem>
-    )
-  }
+  const { data: version } = useVersionQuery(versionId)
+  const { data: product } = useProductQuery(version?.product_id)
 
   const onClose = () => {
-    goBack()
+    navigate(`/product-versions/${versionId}`, {
+      replace: true,
+      state: {
+        shouldRefetch: true,
+      },
+    })
   }
 
   const mutation = client.useMutation('post', '/api/v1/relationships', {
-    onSuccess: onClose,
+    onSuccess: () => {
+      onClose()
+    },
   })
 
+  const canSubmit = useMemo(() => {
+    return (
+      selected.sourceVersions.length > 0 &&
+      selected.targetVersions.length > 0 &&
+      selected.relationshipType
+    )
+  }, [selected])
+
   const handleCreateRelationship = () => {
+    if (!canSubmit) {
+      return
+    }
+
     mutation.mutate({
       body: {
         category: 'installed_on',
-        source_node_id: selected.sourceProducts[0],
-        target_node_id: selected.targetVersions[0],
+        source_node_id: selected.sourceVersions[0].id,
+        target_node_id: selected.targetVersions[0].id,
       },
     })
+  }
+
+  const [sourceProduct, setSourceProduct] = useState<
+    | {
+        id: string
+        full_name: string
+      }
+    | undefined
+  >(undefined)
+
+  const [targetProduct, setTargetProduct] = useState<
+    | {
+        id: string
+        full_name: string
+      }
+    | undefined
+  >(undefined)
+
+  useEffect(() => {
+    if (product) {
+      setSourceProduct(product)
+    }
+    if (version) {
+      setSelected((prevState) => ({
+        ...prevState,
+        sourceVersions: [version],
+      }))
+    }
+  }, [product, version])
+
+  if (!products || !version || !product) {
+    return null
   }
 
   return (
@@ -180,95 +271,40 @@ export default function CreateRelationship() {
           })}
         </ModalHeader>
         <ModalBody className="gap-4">
-          {/* <div className="flex flex-row gap-2">
-              <Select
-                label="Source Product"
-                name="sourceProducts"
-                className="w-2/3"
-                selectionMode="multiple"
-                selectedKeys={selected.sourceProducts}
-                onChange={handleSelect}
-              >
-                <>
-                  {products.map((product) => (
-                    <SelectItem key={product.id}>{product.name}</SelectItem>
-                  ))}
-                </>
-              </Select>
+          <ProductVersionSelection
+            label="Source Product"
+            products={products}
+            initialProductId={version.product_id}
+            selectedVersions={selected.sourceVersions}
+            onChange={(selectedVersions, selectedProduct) => {
+              setSelected((prevState) => ({
+                ...prevState,
+                sourceVersions: selectedVersions,
+              }))
+              setSourceProduct(selectedProduct)
+            }}
+          />
 
-              <Select
-                label="Version"
-                name="sourceVersions"
-                selectionMode="multiple"
-                className="w-1/3"
-                selectedKeys={selected.sourceVersions}
-                onChange={handleSelect}
-                renderValue={(value) => {
-                  if (value.length === versions.length) return 'All'
-                  return value
-                    .map(
-                      (v) =>
-                        versions.find((version) => version.id === v.key)?.name,
-                    )
-                    .join(', ')
-                }}
-              >
-                <>
-                  {SelectAll('sourceVersions')}
-                  {versions.map((version) => (
-                    <SelectItem key={version.id}>{version.name}</SelectItem>
-                  ))}
-                </>
-              </Select>
-            </div> */}
-
-          <div className="flex flex-row gap-2">
-            <Select
-              label="Target Product"
-              name="targetProducts"
-              selectionMode="multiple"
-              onChange={handleSelect}
-              className="w-2/3"
-              selectedKeys={selected.targetProducts}
-            >
-              <>
-                {products?.map((product) => (
-                  <SelectItem key={product.id}>{product.name}</SelectItem>
-                ))}
-              </>
-            </Select>
-
-            <Select
-              label="Version"
-              name="targetVersions"
-              selectionMode="multiple"
-              onChange={handleSelect}
-              className="w-1/3"
-              renderValue={(value) => {
-                if (value.length === versions.length) return 'All'
-                return value
-                  .map(
-                    (v) =>
-                      versions.find((version) => version.id === v.key)?.name,
-                  )
-                  .join(', ')
-              }}
-              selectedKeys={selected.targetVersions}
-            >
-              <>
-                {SelectAll('targetVersions')}
-                {versions.map((version) => (
-                  <SelectItem key={version.id}>{version.name}</SelectItem>
-                ))}
-              </>
-            </Select>
-          </div>
+          <ProductVersionSelection
+            label="Target Product"
+            products={products}
+            selectedVersions={selected.targetVersions}
+            onChange={(selectedVersions, selectedProduct) => {
+              setSelected((prevState) => ({
+                ...prevState,
+                targetVersions: selectedVersions,
+              }))
+              setTargetProduct(selectedProduct)
+            }}
+          />
 
           <Select
             label="Relationship Type"
             placeholder="Select a type"
             selectionMode="single"
-            selectedKeys={selected.relationshipType}
+            selectedKeys={
+              selected.relationshipType ? [selected.relationshipType] : []
+            }
             onChange={(key) =>
               setSelected((prevState) => ({
                 ...prevState,
@@ -280,32 +316,16 @@ export default function CreateRelationship() {
               <SelectItem key={type}>{type}</SelectItem>
             ))}
           </Select>
-          {/* 
-            <Input
-              label="Description"
-              placeholder="Enter the description..."
-              className="w-full"
-              type="text"
-              value={selected.description}
-              onChange={(e) => {
-                setSelected((prevState) => ({
-                  ...prevState,
-                  description: e.target.value,
-                }))
-              }}
-            /> */}
 
           <div className="flex flex-row items-center justify-around gap-2 rounded-md bg-gray-100 p-4">
-            {/* <ProductBox
-              products={selected.sourceProducts.map(
-                (product) =>
-                  products?.find((p) => p.id === product)?.name as string,
-              )}
-              versions={selected.sourceVersions.map(
-                (version) =>
-                  versions.find((v) => v.id === version)?.name as string,
-              )}
-            /> */}
+            <ProductBox
+              product={sourceProduct}
+              version={
+                selected.sourceVersions.length
+                  ? selected.sourceVersions[0]
+                  : undefined
+              }
+            />
 
             <div className="flex flex-col items-center space-y-2">
               <FontAwesomeIcon
@@ -321,14 +341,12 @@ export default function CreateRelationship() {
             </div>
 
             <ProductBox
-              products={selected.targetProducts.map(
-                (product) =>
-                  products?.find((p) => p.id === product)?.name as string,
-              )}
-              versions={selected.targetVersions.map(
-                (version) =>
-                  versions.find((v) => v.id === version)?.name as string,
-              )}
+              product={targetProduct}
+              version={
+                selected.targetVersions.length
+                  ? selected.targetVersions[0]
+                  : undefined
+              }
             />
           </div>
         </ModalBody>
@@ -340,6 +358,7 @@ export default function CreateRelationship() {
             color="primary"
             onPress={handleCreateRelationship}
             isLoading={mutation.isPending}
+            isDisabled={!canSubmit}
           >
             {t('common.create')}
           </Button>
