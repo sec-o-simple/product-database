@@ -44,11 +44,17 @@ type ProductDTO struct {
 }
 
 func NodeToProductDTO(node Node) ProductDTO {
+	var fullName string
+	if node.Parent != nil {
+		fullName = node.Parent.Name + " " + node.Name
+	} else {
+		fullName = node.Name
+	}
 	return ProductDTO{
 		ID:          node.ID,
 		VendorID:    node.ParentID,
 		Name:        node.Name,
-		FullName:    node.Name, // Full name logic can be adjusted based on parent node
+		FullName:    fullName,
 		Description: node.Description,
 		Type:        string(node.ProductType),
 	}

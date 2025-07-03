@@ -306,10 +306,12 @@ func (s *Service) DeleteProduct(ctx context.Context, id string) error {
 }
 
 func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
-	nodes, err := s.repo.GetNodesByCategory(ctx, ProductName)
+	nodes, err := s.repo.GetNodesByCategory(ctx, ProductName, WithParent())
 	if err != nil {
 		return nil, err
 	}
+
+	println(nodes[0].Parent)
 
 	products := make([]ProductDTO, len(nodes))
 	for i, node := range nodes {
@@ -354,7 +356,7 @@ func (s *Service) ListVendorProducts(ctx context.Context, vendorID string) ([]Pr
 }
 
 func (s *Service) GetProductByID(ctx context.Context, id string) (ProductDTO, error) {
-	product, err := s.repo.GetNodeByID(ctx, id)
+	product, err := s.repo.GetNodeByID(ctx, id, WithParent())
 	notFoundError := fuego.NotFoundError{
 		Title: "Product not found",
 		Err:   nil,
