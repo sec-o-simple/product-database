@@ -12,6 +12,9 @@
 ```sh
 # Install NPM dependencies
 $ npm install
+
+# Copy .env.sample to .env and edit as needed
+$ cp .env.sample .env
 ```
 
 ### Run server
@@ -31,12 +34,6 @@ $ npm test
 ```
 
 ### Configuration
-
-The client can be configured using environment variables. Create a `.env.local` file in the client directory to override the default settings for local development:
-
-```sh
-VITE_API_BASE_URL=http://localhost:9999
-```
 
 **Available Environment Variables:**
 
