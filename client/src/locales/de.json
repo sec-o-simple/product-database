@@ -5,6 +5,7 @@
         "common": {
             "createObject": "{{label}} erstellen",
             "editObject": "{{label}} bearbeiten",
+            "addObject": "{{label}} hinzufügen",
             "create": "Erstellen",
             "save": "Speichern",
             "noDescription": "Keine Beschreibung",
@@ -16,7 +17,10 @@
                 "title": "Keine Einträge",
                 "description": "Es gibt noch keine Einträge, die angezeigt werden können."
             },
-            "confirm": "Bestätigen"
+            "confirm": "Bestätigen",
+            "confirmDeleteTitle": "Sind Sie sicher?",
+            "confirmDeleteText": "Sie sind dabei, {{resource}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+            "actions": "Aktionen"
         },
         "vendor": {
             "label": "Anbieter"
@@ -31,13 +35,40 @@
         },
         "relationship": {
             "label": "Beziehung",
-            "label_other": "Beziehungen"
+            "label_other": "Beziehungen",
+            "targetProduct": {
+                "empty": "Noch keine Zielprodukte hinzugefügt.",
+                "label": "Zielprodukt",
+                "label_other": "Zielprodukte"
+            },
+            "sourceProduct": {
+                "label": "Quellprodukt",
+                "label_other": "Quellprodukte"
+            },
+            "confirmDeleteResource": "die \"{{category}}\"-Beziehung zu {{totalVersions}} Version(en)",
+            "category": {
+                "default_component_of": "Standard-Komponente von",
+                "external_component_of": "Externe Komponente von",
+                "installed_on": "Installiert auf",
+                "installed_with": "Installiert mit",
+                "optional_component_of": "Optionale Komponente von"
+            }
         },
         "treeView": {
             "label" : "Baumansicht"
         },
         "form": {
-            "errors": "Bitte überprüfen Sie das Formular auf Fehler."
+            "errors": "Bitte überprüfen Sie das Formular auf Fehler.",
+            "select": "Bitte wählen Sie eine Option aus",
+            "fields": {
+                "name": "Name",
+                "description": "Beschreibung",
+                "vendor": "Anbieter",
+                "product": "Produkt",
+                "version": "Version",
+                "relationshipCategory": "Beziehungs-Kategorie",
+                "relationshipType": "Beziehungs-Typ"
+            }
         }
     }
 }

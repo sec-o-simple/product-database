@@ -137,6 +137,10 @@ func (r *repository) DeleteRelationship(ctx context.Context, id string) error {
 	return r.db.WithContext(ctx).Delete(&Relationship{}, "id = ?", id).Error
 }
 
+func (r *repository) DeleteRelationshipsBySourceAndCategory(ctx context.Context, sourceNodeID, category string) error {
+	return r.db.WithContext(ctx).Delete(&Relationship{}, "source_node_id = ? AND category = ?", sourceNodeID, category).Error
+}
+
 func (r *repository) CreateIdentificationHelper(ctx context.Context, helper IdentificationHelper) (IdentificationHelper, error) {
 	if err := r.db.WithContext(ctx).Create(&helper).Error; err != nil {
 		return IdentificationHelper{}, err
@@ -159,4 +163,17 @@ func (r *repository) UpdateIdentificationHelper(ctx context.Context, helper Iden
 
 func (r *repository) DeleteIdentificationHelper(ctx context.Context, id string) error {
 	return r.db.WithContext(ctx).Delete(&IdentificationHelper{}, "id = ?", id).Error
+}
+
+func (r *repository) GetRelationshipsBySourceAndCategory(ctx context.Context, sourceNodeID, category string) ([]Relationship, error) {
+	var relationships []Relationship
+	err := r.db.WithContext(ctx).
+		Where("source_node_id = ? AND category = ?", sourceNodeID, category).
+		Preload("SourceNode").
+		Preload("TargetNode").
+		Find(&relationships).Error
+	if err != nil {
+		return nil, err
+	}
+	return relationships, nil
 }

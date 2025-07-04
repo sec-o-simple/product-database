@@ -9,6 +9,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Chip } from '@heroui/react'
 import { DashboardTabs } from './Products'
 import { DeleteVendor } from './Vendor'
+import { useTranslation } from 'react-i18next'
 
 export type VendorProps = {
   id?: string
@@ -30,6 +31,7 @@ export function VendorItem({
   vendor: VendorProps
   returnTo?: string
 }) {
+  const { t } = useTranslation()
   const { navigate, navigateToModal } = useRouter()
 
   return (
@@ -37,7 +39,7 @@ export function VendorItem({
       key={vendor.id}
       onClick={() => navigate(`/vendors/${vendor.id}`)}
       title={vendor.name}
-      description={vendor.description}
+      description={vendor.description || t('common.noDescription')}
       actions={
         <div className="flex flex-row gap-1">
           <IconButton

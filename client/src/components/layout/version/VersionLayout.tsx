@@ -71,14 +71,18 @@ export default function VersionLayout() {
       <div className="flex h-full grow flex-row">
         <Sidebar
           attributes={[
-            <Attribute label="Version" value={version.name} key="name" />,
             <Attribute
-              label="Description"
+              label={t('version.label')}
+              value={version.name}
+              key="name"
+            />,
+            <Attribute
+              label={t('form.fields.description')}
               value={version.description || '-/-'}
               key="description"
             />,
             <Attribute
-              label="Product"
+              label={t('product.label')}
               value={product?.name || '-/-'}
               href={`/products/${version.product_id}`}
               key="product"

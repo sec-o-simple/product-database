@@ -83,60 +83,61 @@ export function DeleteVersion({
 export function DeleteRelationshipGroup({
   group,
   version,
+  onDelete,
 }: {
   version: {
-    full_name: string
+    id: string
   }
   group: {
     category: string
     products: {
-      product: {
-        description?: string
-        full_name: string
-        id: string
-        latest_versions?: {
-          description?: string
-          full_name: string
-          id: string
-          is_latest: boolean
-          name: string
-          predecessor_id?: string | null
-          product_id?: string
-          released_at?: string | null
-        }[]
-        name: string
-        type: string
-        vendor_id?: string
-      }
       version_relationships: {
         id: string
-        version: {
-          description?: string
-          full_name: string
-          id: string
-          is_latest: boolean
-          name: string
-          predecessor_id?: string | null
-          product_id?: string
-          released_at?: string | null
-        }
       }[]
     }[]
   }
+  onDelete?: () => void
 }) {
+  const { t } = useTranslation()
+
   const totalVersions = group.products.reduce((acc, product) => {
     return acc + (product.version_relationships?.length || 0)
   }, 0)
+
+  const deleteMutation = client.useMutation(
+    'delete',
+    '/api/v1/product-versions/{id}/relationships/{category}',
+    {
+      onSuccess: () => {
+        onDelete?.()
+      },
+    },
+  )
 
   return (
     <ConfirmButton
       isIconOnly={true}
       variant={'light'}
       radius={'full'}
+      isLoading={deleteMutation.isPending}
       color="danger"
-      confirmTitle="Delete Relationship Group"
-      confirmText={`Are you sure you want to delete the "${group.category}" relationship from "${version.full_name}" to ${totalVersions} version${totalVersions !== 1 ? 's' : ''}? This action cannot be undone.`}
-      onConfirm={() => {}}
+      confirmTitle={t('common.confirmDeleteTitle')}
+      confirmText={t('common.confirmDeleteText', {
+        resource: t('relationship.confirmDeleteResource', {
+          category: t(`relationship.category.${group.category}`),
+          totalVersions,
+        }),
+      })}
+      onConfirm={() => {
+        deleteMutation.mutate({
+          params: {
+            path: {
+              id: version.id,
+              category: group.category,
+            },
+          },
+        })
+      }}
     >
       <FontAwesomeIcon icon={faTrash} />
     </ConfirmButton>
@@ -155,11 +156,12 @@ export default function Version({
 }) {
   const { versionId } = useParams()
   const { t } = useTranslation()
+  const { navigateToModal } = useRouter()
 
   const { data: version } = useVersionQuery(versionId)
   const { data: product } = useProductQuery(version?.product_id)
   const { data: vendor } = useVendorQuery(product?.vendor_id)
-  const { data: relationships } = client.useQuery(
+  const relationshipRequest = client.useQuery(
     'get',
     `/api/v1/product-versions/{id}/relationships`,
     {
@@ -170,6 +172,8 @@ export default function Version({
       },
     },
   )
+  useRefetchQuery(relationshipRequest)
+  const relationships = relationshipRequest.data
 
   if (!version || !product || !vendor) {
     return null
@@ -208,43 +212,59 @@ export default function Version({
         >
           {relationships?.map((relationship) => (
             <ListGroup
-              title={relationship.category}
+              title={t(`relationship.category.${relationship.category}`)}
               key={relationship.category}
               headerActions={
                 <div className="flex gap-1">
-                  <IconButton icon={faEdit} onPress={() => {}} />
+                  <IconButton
+                    icon={faEdit}
+                    onPress={() => {
+                      navigateToModal(
+                        `/product-versions/${versionId}/relationships/${relationship.category}/edit`,
+                        `/product-versions/${versionId}`,
+                      )
+                    }}
+                  />
 
                   <DeleteRelationshipGroup
                     group={relationship}
                     version={version}
+                    onDelete={() => {
+                      relationshipRequest.refetch()
+                    }}
                   />
                 </div>
               }
             >
-              {relationship.products.map((product) => (
-                <div
-                  key={`${relationship.category}-${product.product.id}`}
-                  className={cn(
-                    'flex w-full gap-4 rounded-lg bg-white px-4 py-2 border-1 border-default-200',
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className={cn('text-lg font-semibold')}>
-                        {product.product.full_name}
+              {relationship.products
+                .slice()
+                .sort((a, b) =>
+                  a.product.full_name.localeCompare(b.product.full_name),
+                )
+                .map((product) => (
+                  <div
+                    key={`${relationship.category}-${product.product.id}`}
+                    className={cn(
+                      'flex w-full gap-4 bg-white px-4 py-2 border-1 border-default-200',
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={cn('text-lg font-semibold')}>
+                          {product.product.full_name}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex gap-2 pb-1">
-                    {product.version_relationships?.map((versionRel) => (
-                      <Chip key={versionRel.id} variant="solid">
-                        {versionRel.version.name}
-                      </Chip>
-                    ))}
+                    <div className="flex gap-2 pb-1">
+                      {product.version_relationships?.map((versionRel) => (
+                        <Chip key={versionRel.id} variant="solid">
+                          {versionRel.version.name}
+                        </Chip>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </ListGroup>
           ))}
         </DataGrid>

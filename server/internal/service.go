@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/go-fuego/fuego"
@@ -716,54 +717,66 @@ func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionI
 	return result, nil
 }
 
-func (s *Service) CreateRelationship(ctx context.Context, create CreateRelationshipDTO) (RelationshipDTO, error) {
-	// Validate source node exists and is a product version
-	sourceNode, err := s.repo.GetNodeByID(ctx, create.SourceNodeID)
-	if err != nil || sourceNode.Category != ProductVersion {
-		return RelationshipDTO{}, fuego.BadRequestError{
-			Title: "Invalid source node ID - must be a product version",
-			Errors: []fuego.ErrorItem{
-				{
-					Name:   "CreateRelationshipDTO.SourceNodeID",
-					Reason: "Source node ID must be a valid product version ID",
+func (s *Service) CreateRelationship(ctx context.Context, create CreateRelationshipDTO) error {
+	// Validate all source nodes exist and are product versions
+	sourceNodes := make([]Node, len(create.SourceNodeIDs))
+	for i, sourceNodeID := range create.SourceNodeIDs {
+		sourceNode, err := s.repo.GetNodeByID(ctx, sourceNodeID)
+		if err != nil || sourceNode.Category != ProductVersion {
+			return fuego.BadRequestError{
+				Title: "Invalid source node ID - must be a product version",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "CreateRelationshipDTO.SourceNodeIDs",
+						Reason: fmt.Sprintf("Source node ID %s must be a valid product version ID", sourceNodeID),
+					},
 				},
-			},
+			}
 		}
+		sourceNodes[i] = sourceNode
 	}
 
-	// Validate target node exists and is a product version
-	targetNode, err := s.repo.GetNodeByID(ctx, create.TargetNodeID)
-	if err != nil || targetNode.Category != ProductVersion {
-		return RelationshipDTO{}, fuego.BadRequestError{
-			Title: "Invalid target node ID - must be a product version",
-			Errors: []fuego.ErrorItem{
-				{
-					Name:   "CreateRelationshipDTO.TargetNodeID",
-					Reason: "Target node ID must be a valid product version ID",
+	// Validate all target nodes exist and are product versions
+	targetNodes := make([]Node, len(create.TargetNodeIDs))
+	for i, targetNodeID := range create.TargetNodeIDs {
+		targetNode, err := s.repo.GetNodeByID(ctx, targetNodeID)
+		if err != nil || targetNode.Category != ProductVersion {
+			return fuego.BadRequestError{
+				Title: "Invalid target node ID - must be a product version",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "CreateRelationshipDTO.TargetNodeIDs",
+						Reason: fmt.Sprintf("Target node ID %s must be a valid product version ID", targetNodeID),
+					},
 				},
-			},
+			}
+		}
+		targetNodes[i] = targetNode
+	}
+
+	// Create relationships for each source-target combination
+	for _, sourceNode := range sourceNodes {
+		for _, targetNode := range targetNodes {
+			relationship := Relationship{
+				ID:           uuid.New().String(),
+				Category:     RelationshipCategory(create.Category),
+				SourceNodeID: sourceNode.ID,
+				SourceNode:   &sourceNode,
+				TargetNodeID: targetNode.ID,
+				TargetNode:   &targetNode,
+			}
+
+			_, err := s.repo.CreateRelationship(ctx, relationship)
+			if err != nil {
+				return fuego.InternalServerError{
+					Title: "Failed to create relationship",
+					Err:   err,
+				}
+			}
 		}
 	}
 
-	// Create the relationship
-	relationship := Relationship{
-		ID:           uuid.New().String(),
-		Category:     RelationshipCategory(create.Category),
-		SourceNodeID: create.SourceNodeID,
-		SourceNode:   &sourceNode,
-		TargetNodeID: create.TargetNodeID,
-		TargetNode:   &targetNode,
-	}
-
-	createdRelationship, err := s.repo.CreateRelationship(ctx, relationship)
-	if err != nil {
-		return RelationshipDTO{}, fuego.InternalServerError{
-			Title: "Failed to create relationship",
-			Err:   err,
-		}
-	}
-
-	return RelationshipToDTO(createdRelationship), nil
+	return nil
 }
 
 func (s *Service) GetRelationshipByID(ctx context.Context, id string) (RelationshipDTO, error) {
@@ -793,71 +806,108 @@ func (s *Service) GetRelationshipByID(ctx context.Context, id string) (Relations
 	return RelationshipToDTO(relationship), nil
 }
 
-func (s *Service) UpdateRelationship(ctx context.Context, id string, update UpdateRelationshipDTO) (RelationshipDTO, error) {
-	relationship, err := s.repo.GetRelationshipByID(ctx, id)
-
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return RelationshipDTO{}, fuego.NotFoundError{
-				Title: "Relationship not found",
-			}
-		}
-		return RelationshipDTO{}, fuego.InternalServerError{
-			Title: "Failed to fetch relationship",
-			Err:   err,
-		}
-	}
-
-	if update.Category != nil {
-		relationship.Category = RelationshipCategory(*update.Category)
-	}
-
-	if update.SourceNodeID != nil {
-		sourceNode, err := s.repo.GetNodeByID(ctx, *update.SourceNodeID)
-
-		if err != nil || sourceNode.Category != ProductVersion {
-			return RelationshipDTO{}, fuego.BadRequestError{
-				Title: "Invalid source node ID",
-				Errors: []fuego.ErrorItem{
-					{
-						Name:   "UpdateRelationshipDTO.SourceNodeID",
-						Reason: "Source node ID must be a valid product version ID",
-					},
+func (s *Service) UpdateRelationship(ctx context.Context, update UpdateRelationshipDTO) error {
+	// Validate source node exists and is a product version
+	sourceNode, err := s.repo.GetNodeByID(ctx, update.SourceNodeID)
+	if err != nil || sourceNode.Category != ProductVersion {
+		return fuego.BadRequestError{
+			Title: "Invalid source node ID",
+			Errors: []fuego.ErrorItem{
+				{
+					Name:   "UpdateRelationshipDTO.SourceNodeID",
+					Reason: "Source node ID must be a valid product version ID",
 				},
-			}
+			},
 		}
-
-		relationship.SourceNodeID = *update.SourceNodeID
-		relationship.SourceNode = &sourceNode
 	}
 
-	if update.TargetNodeID != nil {
-		targetNode, err := s.repo.GetNodeByID(ctx, *update.TargetNodeID)
-
+	// Validate all target nodes exist and are product versions
+	targetNodes := make([]Node, len(update.TargetNodeIDs))
+	for i, targetNodeID := range update.TargetNodeIDs {
+		targetNode, err := s.repo.GetNodeByID(ctx, targetNodeID)
 		if err != nil || targetNode.Category != ProductVersion {
-			return RelationshipDTO{}, fuego.BadRequestError{
-				Title: "Invalid target node ID",
+			return fuego.BadRequestError{
+				Title: "Invalid target node ID - must be a product version",
 				Errors: []fuego.ErrorItem{
 					{
-						Name:   "UpdateRelationshipDTO.TargetNodeID",
-						Reason: "Target node ID must be a valid product version ID",
+						Name:   "UpdateRelationshipDTO.TargetNodeIDs",
+						Reason: fmt.Sprintf("Target node ID %s must be a valid product version ID", targetNodeID),
 					},
 				},
 			}
 		}
-
-		relationship.TargetNodeID = *update.TargetNodeID
-		relationship.TargetNode = &targetNode
+		targetNodes[i] = targetNode
 	}
 
-	if err := s.repo.UpdateRelationship(ctx, relationship); err != nil {
-		return RelationshipDTO{}, fuego.InternalServerError{
-			Title: "Failed to update relationship",
+	// Get existing relationships for the source node and old category
+	existingRelationships, err := s.repo.GetRelationshipsBySourceAndCategory(ctx, update.SourceNodeID, update.PreviousCategory)
+	if err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to fetch existing relationships",
 			Err:   err,
 		}
 	}
 
-	return RelationshipToDTO(relationship), nil
+	// Delete relationships where target is not in the new target list
+	targetNodeIDSet := make(map[string]bool)
+	for _, targetNodeID := range update.TargetNodeIDs {
+		targetNodeIDSet[targetNodeID] = true
+	}
+
+	for _, existingRel := range existingRelationships {
+		if !targetNodeIDSet[existingRel.TargetNodeID] {
+			if err := s.repo.DeleteRelationship(ctx, existingRel.ID); err != nil {
+				return fuego.InternalServerError{
+					Title: "Failed to delete existing relationship",
+					Err:   err,
+				}
+			}
+		}
+	}
+
+	// Update category for existing relationships that should remain
+	if update.Category != update.PreviousCategory {
+		for _, existingRel := range existingRelationships {
+			if targetNodeIDSet[existingRel.TargetNodeID] {
+				existingRel.Category = RelationshipCategory(update.Category)
+				if err := s.repo.UpdateRelationship(ctx, existingRel); err != nil {
+					return fuego.InternalServerError{
+						Title: "Failed to update relationship category",
+						Err:   err,
+					}
+				}
+			}
+		}
+	}
+
+	// Create new relationships for targets that don't exist yet
+	existingTargetIDSet := make(map[string]bool)
+	for _, existingRel := range existingRelationships {
+		existingTargetIDSet[existingRel.TargetNodeID] = true
+	}
+
+	for _, targetNode := range targetNodes {
+		if !existingTargetIDSet[targetNode.ID] {
+			relationship := Relationship{
+				ID:           uuid.New().String(),
+				Category:     RelationshipCategory(update.Category),
+				SourceNodeID: update.SourceNodeID,
+				SourceNode:   &sourceNode,
+				TargetNodeID: targetNode.ID,
+				TargetNode:   &targetNode,
+			}
+
+			_, err := s.repo.CreateRelationship(ctx, relationship)
+			if err != nil {
+				return fuego.InternalServerError{
+					Title: "Failed to create new relationship",
+					Err:   err,
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 func (s *Service) DeleteRelationship(ctx context.Context, id string) error {
@@ -878,6 +928,39 @@ func (s *Service) DeleteRelationship(ctx context.Context, id string) error {
 	if err := s.repo.DeleteRelationship(ctx, id); err != nil {
 		return fuego.InternalServerError{
 			Title: "Failed to delete relationship",
+			Err:   err,
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) DeleteRelationshipsByVersionAndCategory(ctx context.Context, versionID, category string) error {
+	// Verify the version exists
+	node, err := s.repo.GetNodeByID(ctx, versionID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return fuego.NotFoundError{
+				Title: "Product version not found",
+			}
+		}
+		return fuego.InternalServerError{
+			Title: "Failed to fetch product version",
+			Err:   err,
+		}
+	}
+
+	// Verify it's a product version
+	if node.Category != ProductVersion {
+		return fuego.NotFoundError{
+			Title: "Product version not found",
+		}
+	}
+
+	// Delete relationships by source node and category
+	if err := s.repo.DeleteRelationshipsBySourceAndCategory(ctx, versionID, category); err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to delete relationships",
 			Err:   err,
 		}
 	}

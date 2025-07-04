@@ -90,6 +90,7 @@ export function ProductItem({
   }
 }) {
   const { navigateToModal, navigate } = useRouter()
+  const { t } = useTranslation()
 
   const handleOnActionClick = (href: string) => {
     navigateToModal(href)
@@ -122,7 +123,7 @@ export function ProductItem({
           </Chip>
         )
       }
-      description={product.description}
+      description={product.description || t('common.noDescription')}
     />
   )
 }
