@@ -1,0 +1,75 @@
+{
+    "translation": {
+        "goHome": "Go to Home",
+        "title": "Product Database",
+        "common": {
+            "createObject": "Create {{label}}",
+            "editObject": "Edit {{label}}",
+            "addObject": "Add {{label}}",
+            "create": "Create",
+            "save": "Save",
+            "noDescription": "No description",
+            "notImplemented": "Not implemented yet",
+            "delete": "Delete",
+            "edit": "Edit",
+            "cancel": "Cancel",
+            "emptyState": {
+                "title": "No Data Available",
+                "description": "There are no items to display at this moment."
+            },
+            "confirm": "Confirm",
+            "confirmDeleteTitle": "Are you sure?",
+            "confirmDeleteText": "You are about to delete {{resource}}. This action cannot be undone.",
+            "actions": "Actions"
+        },
+        "vendor": {
+            "label": "Vendor",
+            "label_other": "Vendors"
+        },
+        "product": {
+            "label": "Product",
+            "label_other": "Products"
+        },
+        "version": {
+            "label": "Version",
+            "label_other": "Versions"
+        },
+        "relationship": {
+            "label": "Relationship",
+            "label_other": "Relationships",
+            "targetProduct": {
+                "empty": "No target added yet.",
+                "label": "Target Product",
+                "label_other": "Target Products"
+            },
+            "sourceProduct": {
+                "label": "Source Product",
+                "label_other": "Source Products"
+            },
+            "category": {
+                "default_component_of": "Default Component Of",
+                "external_component_of": "External Component Of",
+                "installed_on": "Installed On",
+                "installed_with": "Installed With",
+                "optional_component_of": "Optional Component Of"
+            },
+            "confirmDeleteResource": "the \"{{category}}\" relationship to {{totalVersions}} version(s)"
+        },
+        "treeView": {
+            "label" : "Tree-View"
+        },
+        "form": {
+            "errors": "Please check the form for errors.",
+            "select": "Please select an option",
+            "fields": {
+                "name": "Name",
+                "description": "Description",
+                "vendor": "Vendor",
+                "product": "Product",
+                "version": "Version",
+                "relationshipCategory": "Relationship Category",
+                "relationshipType": "Relationship Type"
+            }
+        }
+    }
+}

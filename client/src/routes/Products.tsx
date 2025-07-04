@@ -1,13 +1,11 @@
 import client from '@/client'
 import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
-import { Input } from '@/components/forms/Input'
 import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
-import { faEdit, faSearch } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Chip, Divider } from '@heroui/react'
 import { Tab, Tabs } from '@heroui/tabs'
 import { DeleteProduct } from './Product'
@@ -51,9 +49,17 @@ export function DashboardTabs({
           color="primary"
           variant="light"
         >
-          <Tab key="vendors" title={t("Vendors")} href="/vendors" />
-          <Tab key="products" title={t("Products")} href="/products" />
-          <Tab key="tree" title={t("Tree-View")} href="/tree" />
+          <Tab
+            key="vendors"
+            title={t('vendor.label', { count: 2 })}
+            href="/vendors"
+          />
+          <Tab
+            key="products"
+            title={t('product.label', { count: 2 })}
+            href="/products"
+          />
+          <Tab key="tree" title={t('treeView.label')} href="/tree" />
         </Tabs>
 
         {endContent}
@@ -84,6 +90,7 @@ export function ProductItem({
   }
 }) {
   const { navigateToModal, navigate } = useRouter()
+  const { t } = useTranslation()
 
   const handleOnActionClick = (href: string) => {
     navigateToModal(href)
@@ -116,7 +123,7 @@ export function ProductItem({
           </Chip>
         )
       }
-      description={product.description}
+      description={product.description || t('common.noDescription')}
     />
   )
 }
@@ -128,23 +135,23 @@ export default function Products() {
     <div className="flex grow flex-col items-center gap-4">
       <DashboardTabs
         selectedKey="products"
-        endContent={
-          <Input
-            classNames={{
-              base: 'max-w-full sm:max-w-[16rem] h-10',
-              mainWrapper: 'h-full',
-              input: 'text-small',
-              inputWrapper:
-                'h-full font-normal text-default-500 bg-white rounded-lg',
-            }}
-            placeholder="Type to search..."
-            disabled
-            size="sm"
-            startContent={<FontAwesomeIcon icon={faSearch} />}
-            type="search"
-            variant="bordered"
-          />
-        }
+        // endContent={
+        //   <Input
+        //     classNames={{
+        //       base: 'max-w-full sm:max-w-[16rem] h-10',
+        //       mainWrapper: 'h-full',
+        //       input: 'text-small',
+        //       inputWrapper:
+        //         'h-full font-normal text-default-500 bg-white rounded-lg',
+        //     }}
+        //     placeholder="Type to search..."
+        //     disabled
+        //     size="sm"
+        //     startContent={<FontAwesomeIcon icon={faSearch} />}
+        //     type="search"
+        //     variant="bordered"
+        //   />
+        // }
       />
 
       <DataGrid>

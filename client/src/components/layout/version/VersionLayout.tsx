@@ -49,32 +49,40 @@ export default function VersionLayout() {
     <PageContainer>
       <TopBar
         historyLink={`/product-versions/${versionId}/history`}
+        backLink={`/products/${version.product_id}`}
         title={
           <div className="flex flex-row items-center gap-2">
             <p>
-              {t('Product')}: {product?.name}
+              {t('product.label')}: {product?.name}
             </p>
 
             <Chip variant="flat" className="ml-2 rounded-md">
-              {t('Version')}: {version.name}
+              {t('version.label')}: {version.name}
             </Chip>
           </div>
         }
       >
-        <AddRelationshipButton />
+        <AddRelationshipButton
+          versionId={version.id}
+          returnTo={`/product-versions/${version.id}`}
+        />
       </TopBar>
 
       <div className="flex h-full grow flex-row">
         <Sidebar
           attributes={[
-            <Attribute label="Version" value={version.name} key="name" />,
             <Attribute
-              label="Description"
+              label={t('version.label')}
+              value={version.name}
+              key="name"
+            />,
+            <Attribute
+              label={t('form.fields.description')}
               value={version.description || '-/-'}
               key="description"
             />,
             <Attribute
-              label="Product"
+              label={t('product.label')}
               value={product?.name || '-/-'}
               href={`/products/${version.product_id}`}
               key="product"
@@ -109,7 +117,7 @@ export default function VersionLayout() {
                   )
                 }
               >
-                {t('Edit')}
+                {t('common.edit')}
               </Button>
             </div>
           }

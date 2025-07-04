@@ -88,19 +88,23 @@
 						"example": "default_component_of",
 						"type": "string"
 					},
-					"source_node_id": {
-						"example": "123e4567-e89b-12d3-a456-426614174000",
-						"type": "string"
+					"source_node_ids": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
 					},
-					"target_node_id": {
-						"example": "123e4567-e89b-12d3-a456-426614174000",
-						"type": "string"
+					"target_node_ids": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
 					"category",
-					"source_node_id",
-					"target_node_id"
+					"source_node_ids",
+					"target_node_ids"
 				],
 				"type": "object"
 			},
@@ -732,21 +736,30 @@
 				"description": "UpdateRelationshipDTO schema",
 				"properties": {
 					"category": {
-						"description": "string schema",
+						"example": "default_component_of",
+						"type": "string"
+					},
+					"previous_category": {
 						"example": "default_component_of",
 						"type": "string"
 					},
 					"source_node_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"type": "string"
 					},
-					"target_node_id": {
-						"description": "string schema",
-						"example": "123e4567-e89b-12d3-a456-426614174000",
-						"type": "string"
+					"target_node_ids": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
 					}
 				},
+				"required": [
+					"previous_category",
+					"category",
+					"source_node_id",
+					"target_node_ids"
+				],
 				"type": "object"
 			},
 			"UpdateVendorDTO": {
@@ -1694,6 +1707,92 @@
 				]
 			}
 		},
+		"/api/v1/product-versions/{id}/relationships/{category}": {
+			"delete": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteRelationshipsByVersionAndCategory`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a relationship for a product version and category",
+				"operationId": "DELETE_/api/v1/product-versions/:id/relationships/:category",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "category",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Delete relationship for product version and category",
+				"tags": [
+					"api/v1",
+					"product-versions"
+				]
+			}
+		},
 		"/api/v1/products": {
 			"get": {
 				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ListProducts`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns a list of all products in the system",
@@ -2176,7 +2275,7 @@
 		},
 		"/api/v1/relationships": {
 			"post": {
-				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).CreateRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nCreates a new relationship between two product versions",
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).CreateRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nCreates a relationship among product versions. Works similar to the update operation but relationships of node IDs that are missing in the body but exist in the database will not be removed.",
 				"operationId": "POST_/api/v1/relationships",
 				"parameters": [
 					{
@@ -2203,12 +2302,12 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/RelationshipDTO"
+									"$ref": "#/components/schemas/unknown-interface"
 								}
 							},
 							"application/xml": {
 								"schema": {
-									"$ref": "#/components/schemas/RelationshipDTO"
+									"$ref": "#/components/schemas/unknown-interface"
 								}
 							}
 						},
@@ -2248,17 +2347,15 @@
 						"description": ""
 					}
 				},
-				"summary": "Create relationship",
+				"summary": "Create relationships",
 				"tags": [
 					"api/v1",
 					"relationships"
 				]
-			}
-		},
-		"/api/v1/relationships/{id}": {
-			"delete": {
-				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a relationship between product versions",
-				"operationId": "DELETE_/api/v1/relationships/:id",
+			},
+			"put": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).UpdateRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nUpdates the relationship among product versions. Works similar to the create operation but will remove any relationships of node IDs that are not present in the body. Requires 'oldCategory' query parameter.",
+				"operationId": "PUT_/api/v1/relationships",
 				"parameters": [
 					{
 						"in": "header",
@@ -2266,16 +2363,19 @@
 						"schema": {
 							"type": "string"
 						}
-					},
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
 					}
 				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateRelationshipDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.UpdateRelationshipDTO",
+					"required": true
+				},
 				"responses": {
 					"200": {
 						"content": {
@@ -2326,12 +2426,14 @@
 						"description": ""
 					}
 				},
-				"summary": "Delete relationship",
+				"summary": "Update relationships",
 				"tags": [
 					"api/v1",
 					"relationships"
 				]
-			},
+			}
+		},
+		"/api/v1/relationships/{id}": {
 			"get": {
 				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).GetRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns details for a specific relationship",
 				"operationId": "GET_/api/v1/relationships/:id",
@@ -2403,93 +2505,6 @@
 					}
 				},
 				"summary": "Get relationship by ID",
-				"tags": [
-					"api/v1",
-					"relationships"
-				]
-			},
-			"put": {
-				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).UpdateRelationship`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nUpdates an existing relationship between product versions",
-				"operationId": "PUT_/api/v1/relationships/:id",
-				"parameters": [
-					{
-						"in": "header",
-						"name": "Accept",
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"in": "path",
-						"name": "id",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"content": {
-						"*/*": {
-							"schema": {
-								"$ref": "#/components/schemas/UpdateRelationshipDTO"
-							}
-						}
-					},
-					"description": "Request body for internal.UpdateRelationshipDTO",
-					"required": true
-				},
-				"responses": {
-					"200": {
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/RelationshipDTO"
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/RelationshipDTO"
-								}
-							}
-						},
-						"description": "OK"
-					},
-					"400": {
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/HTTPError"
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/HTTPError"
-								}
-							}
-						},
-						"description": "Bad Request _(validation or deserialization error)_"
-					},
-					"500": {
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/HTTPError"
-								}
-							},
-							"application/xml": {
-								"schema": {
-									"$ref": "#/components/schemas/HTTPError"
-								}
-							}
-						},
-						"description": "Internal Server Error _(panics)_"
-					},
-					"default": {
-						"description": ""
-					}
-				},
-				"summary": "Update relationship",
 				"tags": [
 					"api/v1",
 					"relationships"

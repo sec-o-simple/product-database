@@ -17,14 +17,19 @@ interface ListItemProps {
 export function ListGroup({
   title,
   children,
+  headerActions,
 }: {
   title: string
+  headerActions?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
     <div className="flex w-full flex-col rounded-lg bg-white">
       <div className="flex items-center justify-between rounded-t-lg border-1 border-b-0 border-default-200 p-4">
         <p className="text-lg font-bold">{title}</p>
+        {headerActions && (
+          <div className="flex items-center gap-2">{headerActions}</div>
+        )}
       </div>
       {children}
     </div>

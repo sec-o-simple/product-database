@@ -15,6 +15,7 @@ import {
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { AddIdHelper } from './AddIDHelper'
+import { useTranslation } from 'react-i18next'
 
 interface IDTypeProps {
   id: number
@@ -116,6 +117,7 @@ function IndentificationItem({
   onUpdate: (data: ItemProps, fields: FieldProps[]) => void
   onDelete: () => void
 }) {
+  const { t } = useTranslation()
   const [edit, setEdit] = useState(false)
   const [editFields, setEditFields] = useState(data.fields)
 
@@ -199,7 +201,7 @@ function IndentificationItem({
           {edit && (
             <div className="flex justify-end gap-2">
               <Button variant="light" size="sm" onPress={() => setEdit(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 color="primary"

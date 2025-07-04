@@ -13,12 +13,14 @@ interface TopBarProps {
   children?: React.ReactNode
   historyLink?: string
   navigateBack?: boolean
+  backLink?: string
 }
 
 export function TopBar({
   title,
   children,
   navigateBack = true,
+  backLink,
 }: Readonly<TopBarProps>) {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -26,7 +28,7 @@ export function TopBar({
   return (
     <div className="flex w-full items-center justify-between gap-8 border-b bg-white px-6 py-4">
       <span className="flex items-center gap-2 text-2xl font-bold">
-        <Tooltip content={t('Go to Home')} placement="bottom" showArrow>
+        <Tooltip content={t('goHome')} placement="bottom" showArrow>
           <Button
             isIconOnly
             variant="light"
@@ -46,7 +48,7 @@ export function TopBar({
             color="primary"
             variant="light"
             isIconOnly={true}
-            onPress={() => navigate(-1)}
+            onPress={() => (backLink ? navigate(backLink) : navigate(-1))}
           />
         )}
 
@@ -76,7 +78,7 @@ export default function TopBarLayout() {
 
   return (
     <div className="flex flex-col bg-[#F9FAFB]">
-      <TopBar title={t('Product Database')} navigateBack={false}>
+      <TopBar title={t('title')} navigateBack={false}>
         <LanguageSwitcher />
       </TopBar>
 

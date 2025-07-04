@@ -244,47 +244,51 @@ func (h *Handler) GetRelationship(c fuego.ContextNoBody) (RelationshipDTO, error
 	return relationship, nil
 }
 
-func (h *Handler) UpdateRelationship(c fuego.ContextWithBody[UpdateRelationshipDTO]) (RelationshipDTO, error) {
-	relationshipID := c.PathParam("id")
+func (h *Handler) UpdateRelationship(c fuego.ContextWithBody[UpdateRelationshipDTO]) (any, error) {
 	body, err := c.Body()
-
 	if err != nil {
-		return RelationshipDTO{}, err
+		return nil, err
 	}
 
-	relationship, err := h.svc.UpdateRelationship(c.Request().Context(), relationshipID, body)
-
+	err = h.svc.UpdateRelationship(c.Request().Context(), body)
 	if err != nil {
-		return RelationshipDTO{}, err
+		return nil, err
 	}
 
-	return relationship, nil
+	return map[string]any{
+		"status": "success",
+	}, nil
 }
 
-func (h *Handler) DeleteRelationship(c fuego.ContextNoBody) (any, error) {
-	err := h.svc.DeleteRelationship(c.Request().Context(), c.PathParam("id"))
+func (h *Handler) DeleteRelationshipsByVersionAndCategory(c fuego.ContextNoBody) (any, error) {
+	versionID := c.PathParam("id")
+	category := c.PathParam("category")
+
+	err := h.svc.DeleteRelationshipsByVersionAndCategory(c.Request().Context(), versionID, category)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return nil, nil
+	return map[string]any{
+		"status": "success",
+	}, nil
 }
 
-func (h *Handler) CreateRelationship(c fuego.ContextWithBody[CreateRelationshipDTO]) (RelationshipDTO, error) {
+func (h *Handler) CreateRelationship(c fuego.ContextWithBody[CreateRelationshipDTO]) (any, error) {
 	body, err := c.Body()
-
 	if err != nil {
-		return RelationshipDTO{}, err
+		return nil, err
 	}
 
-	relationship, err := h.svc.CreateRelationship(c.Request().Context(), body)
-
+	err = h.svc.CreateRelationship(c.Request().Context(), body)
 	if err != nil {
-		return RelationshipDTO{}, err
+		return nil, err
 	}
 
-	return relationship, nil
+	return map[string]any{
+		"status": "success",
+	}, nil
 }
 
 // Identification Helpers

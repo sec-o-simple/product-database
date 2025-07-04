@@ -270,6 +270,36 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/api/v1/product-versions/{id}/relationships/{category}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /**
+     * Delete relationship for product version and category
+     * @description #### Controller:
+     *
+     *     `product-database-api/internal.(*Handler).DeleteRelationshipsByVersionAndCategory`
+     *
+     *     #### Middlewares:
+     *
+     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+     *
+     *     ---
+     *
+     *     Removes a relationship for a product version and category
+     */
+    delete: operations['DELETE_/api/v1/product-versions/:id/relationships/:category']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/api/v1/products': {
     parameters: {
       query?: never
@@ -410,9 +440,23 @@ export interface paths {
       cookie?: never
     }
     get?: never
-    put?: never
     /**
-     * Create relationship
+     * Update relationships
+     * @description #### Controller:
+     *
+     *     `product-database-api/internal.(*Handler).UpdateRelationship`
+     *
+     *     #### Middlewares:
+     *
+     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+     *
+     *     ---
+     *
+     *     Updates the relationship among product versions. Works similar to the create operation but will remove any relationships of node IDs that are not present in the body. Requires 'oldCategory' query parameter.
+     */
+    put: operations['PUT_/api/v1/relationships']
+    /**
+     * Create relationships
      * @description #### Controller:
      *
      *     `product-database-api/internal.(*Handler).CreateRelationship`
@@ -423,7 +467,7 @@ export interface paths {
      *
      *     ---
      *
-     *     Creates a new relationship between two product versions
+     *     Creates a relationship among product versions. Works similar to the update operation but relationships of node IDs that are missing in the body but exist in the database will not be removed.
      */
     post: operations['POST_/api/v1/relationships']
     delete?: never
@@ -454,37 +498,9 @@ export interface paths {
      *     Returns details for a specific relationship
      */
     get: operations['GET_/api/v1/relationships/:id']
-    /**
-     * Update relationship
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).UpdateRelationship`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *     Updates an existing relationship between product versions
-     */
-    put: operations['PUT_/api/v1/relationships/:id']
+    put?: never
     post?: never
-    /**
-     * Delete relationship
-     * @description #### Controller:
-     *
-     *     `product-database-api/internal.(*Handler).DeleteRelationship`
-     *
-     *     #### Middlewares:
-     *
-     *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
-     *
-     *     ---
-     *
-     *     Removes a relationship between product versions
-     */
-    delete: operations['DELETE_/api/v1/relationships/:id']
+    delete?: never
     options?: never
     head?: never
     patch?: never
@@ -667,10 +683,8 @@ export interface components {
     CreateRelationshipDTO: {
       /** @example default_component_of */
       category: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      source_node_id: string
-      /** @example 123e4567-e89b-12d3-a456-426614174000 */
-      target_node_id: string
+      source_node_ids: string[]
+      target_node_ids: string[]
     }
     /** @description CreateVendorDTO schema */
     CreateVendorDTO: {
@@ -1002,21 +1016,13 @@ export interface components {
     }
     /** @description UpdateRelationshipDTO schema */
     UpdateRelationshipDTO: {
-      /**
-       * @description string schema
-       * @example default_component_of
-       */
-      category?: string
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      source_node_id?: string
-      /**
-       * @description string schema
-       * @example 123e4567-e89b-12d3-a456-426614174000
-       */
-      target_node_id?: string
+      /** @example default_component_of */
+      category: string
+      /** @example default_component_of */
+      previous_category: string
+      /** @example 123e4567-e89b-12d3-a456-426614174000 */
+      source_node_id: string
+      target_node_ids: string[]
     }
     /** @description UpdateVendorDTO schema */
     UpdateVendorDTO: {
@@ -1630,6 +1636,58 @@ export interface operations {
       }
     }
   }
+  'DELETE_/api/v1/product-versions/:id/relationships/:category': {
+    parameters: {
+      query?: never
+      header?: {
+        Accept?: string
+      }
+      path: {
+        id: string
+        category: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['unknown-interface']
+          'application/xml': components['schemas']['unknown-interface']
+        }
+      }
+      /** @description Bad Request _(validation or deserialization error)_ */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPError']
+          'application/xml': components['schemas']['HTTPError']
+        }
+      }
+      /** @description Internal Server Error _(panics)_ */
+      500: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPError']
+          'application/xml': components['schemas']['HTTPError']
+        }
+      }
+      default: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   'GET_/api/v1/products': {
     parameters: {
       query?: never
@@ -1942,6 +2000,60 @@ export interface operations {
       }
     }
   }
+  'PUT_/api/v1/relationships': {
+    parameters: {
+      query?: never
+      header?: {
+        Accept?: string
+      }
+      path?: never
+      cookie?: never
+    }
+    /** @description Request body for internal.UpdateRelationshipDTO */
+    requestBody: {
+      content: {
+        '*/*': components['schemas']['UpdateRelationshipDTO']
+      }
+    }
+    responses: {
+      /** @description OK */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['unknown-interface']
+          'application/xml': components['schemas']['unknown-interface']
+        }
+      }
+      /** @description Bad Request _(validation or deserialization error)_ */
+      400: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPError']
+          'application/xml': components['schemas']['HTTPError']
+        }
+      }
+      /** @description Internal Server Error _(panics)_ */
+      500: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPError']
+          'application/xml': components['schemas']['HTTPError']
+        }
+      }
+      default: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
   'POST_/api/v1/relationships': {
     parameters: {
       query?: never
@@ -1964,8 +2076,8 @@ export interface operations {
           [name: string]: unknown
         }
         content: {
-          'application/json': components['schemas']['RelationshipDTO']
-          'application/xml': components['schemas']['RelationshipDTO']
+          'application/json': components['schemas']['unknown-interface']
+          'application/xml': components['schemas']['unknown-interface']
         }
       }
       /** @description Bad Request _(validation or deserialization error)_ */
@@ -2017,113 +2129,6 @@ export interface operations {
         content: {
           'application/json': components['schemas']['RelationshipDTO']
           'application/xml': components['schemas']['RelationshipDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'PUT_/api/v1/relationships/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    /** @description Request body for internal.UpdateRelationshipDTO */
-    requestBody: {
-      content: {
-        '*/*': components['schemas']['UpdateRelationshipDTO']
-      }
-    }
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['RelationshipDTO']
-          'application/xml': components['schemas']['RelationshipDTO']
-        }
-      }
-      /** @description Bad Request _(validation or deserialization error)_ */
-      400: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      /** @description Internal Server Error _(panics)_ */
-      500: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['HTTPError']
-          'application/xml': components['schemas']['HTTPError']
-        }
-      }
-      default: {
-        headers: {
-          [name: string]: unknown
-        }
-        content?: never
-      }
-    }
-  }
-  'DELETE_/api/v1/relationships/:id': {
-    parameters: {
-      query?: never
-      header?: {
-        Accept?: string
-      }
-      path: {
-        id: string
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      /** @description OK */
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          'application/json': components['schemas']['unknown-interface']
-          'application/xml': components['schemas']['unknown-interface']
         }
       }
       /** @description Bad Request _(validation or deserialization error)_ */

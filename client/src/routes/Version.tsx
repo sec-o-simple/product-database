@@ -1,19 +1,20 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import ConfirmButton from '@/components/forms/ConfirmButton'
+import DataGrid from '@/components/forms/DataGrid'
+import IconButton from '@/components/forms/IconButton'
+import { ListGroup } from '@/components/forms/ListItem'
 import { AddRelationshipButton } from '@/components/layout/product/CreateRelationship'
 import { VersionProps } from '@/components/layout/version/CreateEditVersion'
-import { EmptyState } from '@/components/table/EmptyState'
 import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
-import { faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { BreadcrumbItem } from '@heroui/react'
+import { BreadcrumbItem, Chip, cn } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { useProductQuery } from './Product'
 import { useVendorQuery } from './Vendor'
-import ListItem, { ListGroup } from '@/components/forms/ListItem'
-import { useTranslation } from 'react-i18next'
 
 export function useVersionQuery(versionId?: string) {
   const request = client.useQuery(
@@ -74,7 +75,71 @@ export function DeleteVersion({
       }}
     >
       <FontAwesomeIcon icon={faTrash} />
-      {!isIconButton && t('Delete')}
+      {!isIconButton && t('common.delete')}
+    </ConfirmButton>
+  )
+}
+
+export function DeleteRelationshipGroup({
+  group,
+  version,
+  onDelete,
+}: {
+  version: {
+    id: string
+  }
+  group: {
+    category: string
+    products: {
+      version_relationships: {
+        id: string
+      }[]
+    }[]
+  }
+  onDelete?: () => void
+}) {
+  const { t } = useTranslation()
+
+  const totalVersions = group.products.reduce((acc, product) => {
+    return acc + (product.version_relationships?.length || 0)
+  }, 0)
+
+  const deleteMutation = client.useMutation(
+    'delete',
+    '/api/v1/product-versions/{id}/relationships/{category}',
+    {
+      onSuccess: () => {
+        onDelete?.()
+      },
+    },
+  )
+
+  return (
+    <ConfirmButton
+      isIconOnly={true}
+      variant={'light'}
+      radius={'full'}
+      isLoading={deleteMutation.isPending}
+      color="danger"
+      confirmTitle={t('common.confirmDeleteTitle')}
+      confirmText={t('common.confirmDeleteText', {
+        resource: t('relationship.confirmDeleteResource', {
+          category: t(`relationship.category.${group.category}`),
+          totalVersions,
+        }),
+      })}
+      onConfirm={() => {
+        deleteMutation.mutate({
+          params: {
+            path: {
+              id: version.id,
+              category: group.category,
+            },
+          },
+        })
+      }}
+    >
+      <FontAwesomeIcon icon={faTrash} />
     </ConfirmButton>
   )
 }
@@ -91,11 +156,12 @@ export default function Version({
 }) {
   const { versionId } = useParams()
   const { t } = useTranslation()
+  const { navigateToModal, navigate } = useRouter()
 
   const { data: version } = useVersionQuery(versionId)
   const { data: product } = useProductQuery(version?.product_id)
   const { data: vendor } = useVendorQuery(product?.vendor_id)
-  const { data: relationships } = client.useQuery(
+  const relationshipRequest = client.useQuery(
     'get',
     `/api/v1/product-versions/{id}/relationships`,
     {
@@ -106,43 +172,115 @@ export default function Version({
       },
     },
   )
+  useRefetchQuery(relationshipRequest)
+  const relationships = relationshipRequest.data
+
+  if (!version || !product || !vendor) {
+    return null
+  }
 
   return (
     <div className="flex w-full grow flex-col gap-4 p-2">
       {!hideBreadcrumbs && (
         <Breadcrumbs>
-          <BreadcrumbItem href="/vendors">{t('Vendors')}</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors">
+            {t('vendor.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
-          <BreadcrumbItem isDisabled>{t('Products')}</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>
+            {t('product.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem href={`/products/${product?.id}`}>
             {product?.name}
           </BreadcrumbItem>
-          <BreadcrumbItem isDisabled>{t('Versions')}</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>
+            {t('version.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem>{version?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
       <div className="flex w-full flex-col items-center gap-4">
-        <EmptyState add={<AddRelationshipButton />} />
-        {relationships?.map((relationship) => (
-          <ListGroup title={relationship.category} key={relationship.category}>
-            {relationship.products.map((product) => (
-              <ListItem
-                key={`${relationship.category}-${product.product.id}`}
-                classNames={{
-                  base: 'border-default-200 border-b-0 rounded-none',
-                }}
-                title={
-                  <div className="flex items-center gap-2">
-                    {/* {version.id === 1 && <LatestChip />} */}
-                    <p>{product.product.full_name}</p>
+        <DataGrid
+          title={`${t('relationship.label', { count: 2 })}`}
+          addButton={
+            <AddRelationshipButton
+              versionId={version.id}
+              returnTo={`/product-versions/${version.id}`}
+            />
+          }
+        >
+          {relationships?.map((relationship) => (
+            <ListGroup
+              title={t(`relationship.category.${relationship.category}`)}
+              key={relationship.category}
+              headerActions={
+                <div className="flex gap-1">
+                  <IconButton
+                    icon={faEdit}
+                    onPress={() => {
+                      navigateToModal(
+                        `/product-versions/${versionId}/relationships/${relationship.category}/edit`,
+                        `/product-versions/${versionId}`,
+                      )
+                    }}
+                  />
+
+                  <DeleteRelationshipGroup
+                    group={relationship}
+                    version={version}
+                    onDelete={() => {
+                      relationshipRequest.refetch()
+                    }}
+                  />
+                </div>
+              }
+            >
+              {relationship.products
+                .slice()
+                .sort((a, b) =>
+                  a.product.full_name.localeCompare(b.product.full_name),
+                )
+                .map((product, index) => (
+                  <div
+                    key={`${relationship.category}-${product.product.id}`}
+                    className={cn(
+                      'flex flex-col w-full gap-2 bg-white px-4 py-2 border-1 border-default-200',
+                      relationship.products.length - 1 === index
+                        ? 'rounded-b-lg'
+                        : '',
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={cn('text-lg font-semibold')}>
+                          {product.product.full_name}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pb-1">
+                      {product.version_relationships?.map((versionRel) => (
+                        <Chip
+                          key={versionRel.id}
+                          variant="solid"
+                          radius="md"
+                          className="cursor-pointer hover:underline"
+                          onClick={() => {
+                            navigate(
+                              `/product-versions/${versionRel.version.id}`,
+                            )
+                          }}
+                        >
+                          {versionRel.version.name}
+                        </Chip>
+                      ))}
+                    </div>
                   </div>
-                }
-                description={t('No description')}
-              />
-            ))}
-          </ListGroup>
-        ))}
+                ))}
+            </ListGroup>
+          ))}
+        </DataGrid>
       </div>
     </div>
   )

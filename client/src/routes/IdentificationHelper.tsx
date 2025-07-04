@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { BreadcrumbItem, Tooltip } from '@heroui/react'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface IDTypeProps {
   id: number
@@ -40,6 +41,7 @@ function IndentificationItem({
 }) {
   const [edit, setEdit] = useState(false)
   const [editFields, setEditFields] = useState(data.fields)
+  const { t } = useTranslation()
 
   return (
     <div className="flex w-full flex-col justify-between gap-2 rounded-lg border-1 border-default-200 bg-gray-50 px-4 py-2 hover:bg-gray-100 hover:transition-background">
@@ -81,7 +83,7 @@ function IndentificationItem({
           {edit && (
             <div className="flex justify-end gap-2">
               <Button variant="light" size="sm" onPress={() => setEdit(false)}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <Button
                 color="primary"

@@ -36,24 +36,35 @@ export type ProductProps = {
 
 export function useProductMutation({
   product,
-  onClose,
 }: {
   vendorId: string
   product: ProductProps
-  onClose: () => void
 }) {
+  const { navigate } = useRouter()
   const isCreateForm = !product.id
 
-  const onSuccess = () => {
-    onClose()
-  }
+  const onSuccess = useCallback(
+    (id: string) => {
+      navigate(`/products/${id}`, {
+        replace: true,
+        state: {
+          shouldRefetch: true,
+        },
+      })
+    },
+    [navigate],
+  )
 
   const createMutation = client.useMutation('post', '/api/v1/products', {
-    onSuccess,
+    onSuccess: (res) => {
+      onSuccess(res.id)
+    },
   })
   const updateMutation = client.useMutation('put', '/api/v1/products/{id}', {
     params: { path: { id: product.id } },
-    onSuccess,
+    onSuccess: (res) => {
+      onSuccess(res.id)
+    },
   })
 
   const mutateProduct = useCallback(() => {
@@ -94,7 +105,9 @@ export function AddProductButton({ vendorId }: CreateEditProductProps) {
         )
       }}
     >
-      {t('Add Product')}
+      {t('common.createObject', {
+        label: t('product.label'),
+      })}
     </Button>
   )
 }
@@ -145,7 +158,6 @@ export default function CreateEditProduct() {
   const { mutateProduct, isPending, error } = useProductMutation({
     vendorId: vendorId || '',
     product,
-    onClose: onClose,
   })
 
   const errorHelper = useErrorLocalization(error)
@@ -170,12 +182,14 @@ export default function CreateEditProduct() {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {isCreateForm ? t('Add New Product') : t('Edit Product')}
+          {t(isCreateForm ? 'common.createObject' : 'common.editObject', {
+            label: t('product.label'),
+          })}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              {t('Please check the form for errors.')}
+              {t('form.errors')}
             </Alert>
           ) : null}
 
@@ -217,10 +231,10 @@ export default function CreateEditProduct() {
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button color="primary" onPress={mutateProduct} isLoading={isPending}>
-            {isCreateForm ? t('Create') : t('Save')}
+            {isCreateForm ? t('common.create') : t('common.save')}
           </Button>
         </ModalFooter>
       </ModalContent>
