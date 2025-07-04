@@ -43,7 +43,7 @@ export default function DataGrid({
   return (
     <div className="flex w-full flex-col items-center gap-4">
       {title && (
-        <div className="flex w-full items-center justify-between rounded-lg border-1 border-gray bg-white p-4">
+        <div className="flex w-full items-center justify-between rounded-lg border-1 border-default-200 bg-white p-4">
           <p className="text-xl font-semibold text-primary">{title}</p>
         </div>
       )}

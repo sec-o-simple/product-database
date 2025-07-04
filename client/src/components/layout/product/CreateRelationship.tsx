@@ -199,7 +199,7 @@ function RelationshipSelectionTable({
         <TableBody>
           {selectedProducts.map((item, index) => (
             <TableRow key={`${item.product.id}-${index}`}>
-              <TableCell>
+              <TableCell width="60%">
                 <Select
                   isDisabled={isDisabled}
                   name="sourceProducts"
@@ -230,9 +230,9 @@ function RelationshipSelectionTable({
 
               <TableCell>
                 <IconButton
-                  icon={faTrash}
                   onPress={() => handleRemoveProduct(index)}
                   isDisabled={isDisabled}
+                  icon={faTrash}
                 />
               </TableCell>
             </TableRow>
@@ -387,7 +387,7 @@ export default function CreateRelationship() {
   }
 
   return (
-    <Modal isOpen isDismissable={false} onClose={onClose} size="2xl">
+    <Modal isOpen isDismissable={false} onClose={onClose} size="3xl">
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           {t(isCreateForm ? 'common.createObject' : 'common.editObject', {

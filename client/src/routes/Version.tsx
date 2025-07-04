@@ -1,6 +1,9 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
 import ConfirmButton from '@/components/forms/ConfirmButton'
+import DataGrid from '@/components/forms/DataGrid'
+import IconButton from '@/components/forms/IconButton'
+import { ListGroup } from '@/components/forms/ListItem'
 import { AddRelationshipButton } from '@/components/layout/product/CreateRelationship'
 import { VersionProps } from '@/components/layout/version/CreateEditVersion'
 import useRefetchQuery from '@/utils/useRefetchQuery'
@@ -8,13 +11,10 @@ import useRouter from '@/utils/useRouter'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem, Chip, cn } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { useProductQuery } from './Product'
 import { useVendorQuery } from './Vendor'
-import { ListGroup } from '@/components/forms/ListItem'
-import { useTranslation } from 'react-i18next'
-import IconButton from '@/components/forms/IconButton'
-import DataGrid from '@/components/forms/DataGrid'
 
 export function useVersionQuery(versionId?: string) {
   const request = client.useQuery(
@@ -156,7 +156,7 @@ export default function Version({
 }) {
   const { versionId } = useParams()
   const { t } = useTranslation()
-  const { navigateToModal } = useRouter()
+  const { navigateToModal, navigate } = useRouter()
 
   const { data: version } = useVersionQuery(versionId)
   const { data: product } = useProductQuery(version?.product_id)
@@ -241,11 +241,14 @@ export default function Version({
                 .sort((a, b) =>
                   a.product.full_name.localeCompare(b.product.full_name),
                 )
-                .map((product) => (
+                .map((product, index) => (
                   <div
                     key={`${relationship.category}-${product.product.id}`}
                     className={cn(
-                      'flex w-full gap-4 bg-white px-4 py-2 border-1 border-default-200',
+                      'flex flex-col w-full gap-2 bg-white px-4 py-2 border-1 border-default-200',
+                      relationship.products.length - 1 === index
+                        ? 'rounded-b-lg'
+                        : '',
                     )}
                   >
                     <div className="flex items-center justify-between">
@@ -258,7 +261,17 @@ export default function Version({
 
                     <div className="flex gap-2 pb-1">
                       {product.version_relationships?.map((versionRel) => (
-                        <Chip key={versionRel.id} variant="solid">
+                        <Chip
+                          key={versionRel.id}
+                          variant="solid"
+                          radius="md"
+                          className="cursor-pointer hover:underline"
+                          onClick={() => {
+                            navigate(
+                              `/product-versions/${versionRel.version.id}`,
+                            )
+                          }}
+                        >
                           {versionRel.version.name}
                         </Chip>
                       ))}
