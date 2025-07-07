@@ -7,6 +7,7 @@ import {
   ModalHeader,
   useDisclosure,
 } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 
 type ConfirmButtonProps = {
   confirmText: string
@@ -20,6 +21,7 @@ export default function ConfirmButton({
   onConfirm,
   ...props
 }: ConfirmButtonProps) {
+  const { t } = useTranslation()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   return (
@@ -39,7 +41,7 @@ export default function ConfirmButton({
               </ModalBody>
               <ModalFooter>
                 <Button variant="light" onPress={onClose}>
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   color="primary"
@@ -48,7 +50,7 @@ export default function ConfirmButton({
                     onClose()
                   }}
                 >
-                  Confirm
+                  {t('common.confirm')}
                 </Button>
               </ModalFooter>
             </>

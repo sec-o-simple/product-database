@@ -44,11 +44,17 @@ type ProductDTO struct {
 }
 
 func NodeToProductDTO(node Node) ProductDTO {
+	var fullName string
+	if node.Parent != nil {
+		fullName = node.Parent.Name + " " + node.Name
+	} else {
+		fullName = node.Name
+	}
 	return ProductDTO{
 		ID:          node.ID,
 		VendorID:    node.ParentID,
 		Name:        node.Name,
-		FullName:    node.Name, // Full name logic can be adjusted based on parent node
+		FullName:    fullName,
 		Description: node.Description,
 		Type:        string(node.ProductType),
 	}
@@ -97,15 +103,16 @@ func NodeToProductVersionDTO(node Node) ProductVersionDTO {
 
 // Relationships
 type CreateRelationshipDTO struct {
-	Category     string `json:"category" example:"default_component_of" validate:"required"`
-	SourceNodeID string `json:"source_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
-	TargetNodeID string `json:"target_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
+	Category      string   `json:"category" example:"default_component_of" validate:"required"`
+	SourceNodeIDs []string `json:"source_node_ids" validate:"required,dive,uuid"`
+	TargetNodeIDs []string `json:"target_node_ids" validate:"required,dive,uuid"`
 }
 
 type UpdateRelationshipDTO struct {
-	Category     *string `json:"category" example:"default_component_of"`
-	SourceNodeID *string `json:"source_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
-	TargetNodeID *string `json:"target_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
+	PreviousCategory string   `json:"previous_category" example:"default_component_of" validate:"required"`
+	Category         string   `json:"category" example:"default_component_of" validate:"required"`
+	SourceNodeID     string   `json:"source_node_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
+	TargetNodeIDs    []string `json:"target_node_ids" validate:"required,dive,uuid"`
 }
 
 type RelationshipDTO struct {

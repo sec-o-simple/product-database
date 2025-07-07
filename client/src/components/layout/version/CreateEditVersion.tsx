@@ -36,15 +36,23 @@ export type VersionProps = {
 export function useVersionMutation({
   productId,
   version,
-  onClose,
 }: {
   productId?: string
   version: VersionProps
-  onClose: () => void
 }) {
-  const onSuccess = useCallback(() => {
-    onClose()
-  }, [onClose])
+  const { navigate } = useRouter()
+
+  const onSuccess = useCallback(
+    (id: string) => {
+      navigate(`/product-versions/${id}`, {
+        replace: true,
+        state: {
+          shouldRefetch: true,
+        },
+      })
+    },
+    [navigate],
+  )
 
   const isCreateForm = !version.id
 
@@ -52,7 +60,9 @@ export function useVersionMutation({
     'post',
     '/api/v1/product-versions',
     {
-      onSuccess,
+      onSuccess: (res) => {
+        onSuccess(res.id)
+      },
     },
   )
   const updateMutation = client.useMutation(
@@ -60,7 +70,9 @@ export function useVersionMutation({
     '/api/v1/product-versions/{id}',
     {
       params: { path: { id: version.id } },
-      onSuccess,
+      onSuccess: (res) => {
+        onSuccess(res.id)
+      },
     },
   )
 
@@ -68,7 +80,6 @@ export function useVersionMutation({
     const body = {
       product_id: productId || '',
       version: version.name,
-      // format: 'YYYY-MM-DD',
       release_date: version.releaseDate?.toString(),
     }
 
@@ -92,6 +103,7 @@ export function AddVersionButton({
   returnTo,
 }: CreateEditVersionProps) {
   const { navigateToModal } = useRouter()
+  const { t } = useTranslation()
 
   return (
     <Button
@@ -101,7 +113,9 @@ export function AddVersionButton({
         navigateToModal(`/products/${productId}/versions/create`, returnTo)
       }}
     >
-      Add Version
+      {t('common.createObject', {
+        label: t('version.label'),
+      })}
     </Button>
   )
 }
@@ -163,7 +177,6 @@ export default function CreateEditVersion() {
       name: version.name,
       releaseDate: version.releaseDate,
     },
-    onClose: onClose,
   })
 
   const errorHelper = useErrorLocalization(error)
@@ -182,12 +195,14 @@ export default function CreateEditVersion() {
     <Modal isOpen onOpenChange={onClose} size="xl" isDismissable={false}>
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {versionId ? t('Edit Version') : t('Create Version')}
+          {t(versionId ? 'common.editObject' : 'common.createObject', {
+            label: t('version.label'),
+          })}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              {t('Please check the form for errors.')}
+              {t('form.errors')}
             </Alert>
           ) : null}
 
@@ -228,10 +243,10 @@ export default function CreateEditVersion() {
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={() => onClose(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button color="primary" onPress={mutateVersion} isLoading={isPending}>
-            {versionId ? t('Save') : t('Create')}
+            {versionId ? t('common.save') : t('common.create')}
           </Button>
         </ModalFooter>
       </ModalContent>

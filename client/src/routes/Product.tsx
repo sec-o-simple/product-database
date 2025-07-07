@@ -71,7 +71,7 @@ export function DeleteProduct({
       }}
     >
       <FontAwesomeIcon icon={faTrash} />
-      {!isIconButton && t('Delete')}
+      {!isIconButton && t('common.delete')}
     </ConfirmButton>
   )
 }
@@ -126,7 +126,7 @@ export function VersionItem({
           <p>{version.name}</p>
         </div>
       }
-      description={version.description || t('No description')}
+      description={version.description || t('common.noDescription')}
       actions={
         <div className="flex flex-row gap-1">
           <IconButton
@@ -187,17 +187,21 @@ export default function Product({
     <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
-          <BreadcrumbItem href="/vendors">{t('Vendors')}</BreadcrumbItem>
+          <BreadcrumbItem href="/vendors">
+            {t('vendor.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem href={`/vendors/${vendor?.id}`}>
             {vendor?.name}
           </BreadcrumbItem>
-          <BreadcrumbItem isDisabled>{t('Products')}</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>
+            {t('product.label', { count: 2 })}
+          </BreadcrumbItem>
           <BreadcrumbItem>{product?.name}</BreadcrumbItem>
         </Breadcrumbs>
       )}
 
       <DataGrid
-        title={`${t('Versions')} (${versions?.length})`}
+        title={`${t('version.label', { count: versions?.length || 0 })} (${versions?.length})`}
         addButton={
           <AddVersionButton
             productId={product?.id || ''}

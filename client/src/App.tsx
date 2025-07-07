@@ -105,6 +105,11 @@ function App() {
             path="product-versions/:versionId/relationships/create"
             element={<CreateRelationship />}
           />
+
+          <Route
+            path="product-versions/:versionId/relationships/:category/edit"
+            element={<CreateRelationship />}
+          />
         </Routes>
       )}
     </>

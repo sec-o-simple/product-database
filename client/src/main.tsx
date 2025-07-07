@@ -8,6 +8,7 @@ import './index.css'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import deLocales from './locales/de.json'
+import enLocales from './locales/en.json'
 
 const rootElement = document.getElementById('root') as HTMLElement
 const root = ReactDOM.createRoot(rootElement)
@@ -39,6 +40,7 @@ i18n
   .init({
     resources: {
       de: deLocales,
+      en: enLocales,
     },
     lng: defaultLang,
     fallbackLng: 'en',

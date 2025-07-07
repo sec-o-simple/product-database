@@ -99,6 +99,10 @@ func RegisterRoutes(s *fuego.Server, svc *Service) {
 		option.Summary("List version relationships"),
 		option.Description("Returns all relationships associated with a product version"))
 
+	fuego.Delete(productVersions, "/{id}/relationships/{category}", h.DeleteRelationshipsByVersionAndCategory,
+		option.Summary("Delete relationship for product version and category"),
+		option.Description("Removes a relationship for a product version and category"))
+
 	fuego.Get(productVersions, "/{id}/identification-helpers", h.ListIdentificationHelpersByProductVersion,
 		option.Summary("List identification helpers"),
 		option.Description("Returns all identification helpers for a product version"))
@@ -113,17 +117,13 @@ func RegisterRoutes(s *fuego.Server, svc *Service) {
 		option.Summary("Get relationship by ID"),
 		option.Description("Returns details for a specific relationship"))
 
-	fuego.Put(relationships, "/{id}", h.UpdateRelationship,
-		option.Summary("Update relationship"),
-		option.Description("Updates an existing relationship between product versions"))
-
-	fuego.Delete(relationships, "/{id}", h.DeleteRelationship,
-		option.Summary("Delete relationship"),
-		option.Description("Removes a relationship between product versions"))
-
 	fuego.Post(relationships, "", h.CreateRelationship,
-		option.Summary("Create relationship"),
-		option.Description("Creates a new relationship between two product versions"))
+		option.Summary("Create relationships"),
+		option.Description("Creates a relationship among product versions. Works similar to the update operation but relationships of node IDs that are missing in the body but exist in the database will not be removed."))
+
+	fuego.Put(relationships, "", h.UpdateRelationship,
+		option.Summary("Update relationships"),
+		option.Description("Updates the relationship among product versions. Works similar to the create operation but will remove any relationships of node IDs that are not present in the body. Requires 'oldCategory' query parameter."))
 
 	identificationHelpers := fuego.Group(api, "/identification-helper",
 		option.Summary("Identification helper operations"),

@@ -20,24 +20,32 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
-export function useVendorMutation({
-  vendor,
-  onClose,
-}: {
-  vendor: VendorProps
-  onClose: () => void
-}) {
-  const onSuccess = useCallback(() => {
-    onClose()
-  }, [onClose])
+export function useVendorMutation({ vendor }: { vendor: VendorProps }) {
+  const { navigate } = useRouter()
+
+  const onSuccess = useCallback(
+    (id: string) => {
+      navigate(`/vendors/${id}`, {
+        replace: true,
+        state: {
+          shouldRefetch: true,
+        },
+      })
+    },
+    [navigate],
+  )
 
   const isCreateForm = !vendor.id
 
   const createMutation = client.useMutation('post', '/api/v1/vendors', {
-    onSuccess,
+    onSuccess: (res) => {
+      onSuccess(res.id)
+    },
   })
   const updateMutation = client.useMutation('put', '/api/v1/vendors/{id}', {
-    onSuccess,
+    onSuccess: (res) => {
+      onSuccess(res.id)
+    },
     params: { path: { id: vendor.id } },
   })
 
@@ -68,7 +76,7 @@ export function CreateVendorButton() {
   return (
     <Button color="primary" onPress={() => navigateToModal('/vendors/create')}>
       <FontAwesomeIcon icon={faAdd} className="mr-2" />
-      {t('Create Vendor')}
+      {t('common.createObject', { label: t('vendor.label') })}
     </Button>
   )
 }
@@ -110,7 +118,6 @@ export default function CreateEditVendor() {
 
   const { mutateVendor, isPending, error } = useVendorMutation({
     vendor,
-    onClose: onClose,
   })
 
   const errorHelper = useErrorLocalization(error)
@@ -135,12 +142,14 @@ export default function CreateEditVendor() {
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
-          {isCreateForm ? t('Create Vendor') : t('Edit Vendor')}
+          {t(isCreateForm ? 'common.createObject' : 'common.editObject', {
+            label: t('vendor.label'),
+          })}
         </ModalHeader>
         <ModalBody className="gap-4">
           {error ? (
             <Alert color="danger" className="mb-4">
-              {t('Please check the form for errors.')}
+              {t('form.errors')}
             </Alert>
           ) : null}
 
@@ -172,10 +181,10 @@ export default function CreateEditVendor() {
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button color="primary" onPress={mutateVendor} isLoading={isPending}>
-            {isCreateForm ? t('Create') : t('Save')}
+            {isCreateForm ? t('common.create') : t('common.save')}
           </Button>
         </ModalFooter>
       </ModalContent>

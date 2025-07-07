@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "test": "vitest",
     "lint": "eslint .",
-    "format": "eslint --fix .",
+    "lint:fix": "eslint --fix .",
     "preview": "vite preview",
     "dev-all": "concurrently \"npm run dev\" \"npm run dev:api\"",
     "generate:api": "openapi-typescript ../docs/openapi.json --output src/client/schema.d.ts"

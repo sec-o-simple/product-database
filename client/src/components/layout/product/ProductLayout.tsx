@@ -79,19 +79,11 @@ export default function ProductLayout() {
   return (
     <PageContainer>
       <TopBar
-        title={`${t('Product')}: ${product.name}`}
+        title={`${t('product.label')}: ${product.name}`}
+        backLink={`/vendors/${product.vendor_id}`}
         historyLink={`/products/${product.id}/history`}
       >
         <div className="flex flex-row gap-4">
-          {/* <Button
-            color="primary"
-            variant="light"
-            disabled
-            startContent={<FontAwesomeIcon icon={faFileExport} />}
-          >
-            Export
-          </Button> */}
-
           <AddVersionButton
             productId={product.id}
             returnTo={`/products/${productId}`}
@@ -131,7 +123,7 @@ export default function ProductLayout() {
                   )
                 }
               >
-                {t('Edit')}
+                {t('common.edit')}
               </Button>
             </div>
           }
