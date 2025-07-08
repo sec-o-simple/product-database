@@ -76,6 +76,7 @@ export function ProductItem({
     id: string
     name: string
     description?: string
+    vendor_id?: string
     type?: string
     latest_versions?: {
       description?: string
@@ -93,7 +94,7 @@ export function ProductItem({
   const { t } = useTranslation()
 
   const handleOnActionClick = (href: string) => {
-    navigateToModal(href)
+    navigateToModal(href, `/vendors/${product.vendor_id}`)
   }
 
   return (

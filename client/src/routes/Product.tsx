@@ -112,7 +112,8 @@ export function VersionItem({
     navigateToModal,
   } = useRouter()
 
-  const handleOnActionClick = (href: string) => navigateToModal(href)
+  const handleOnActionClick = (href: string) =>
+    navigateToModal(href, `/products/${productId}`)
   const { t } = useTranslation()
 
   return (
