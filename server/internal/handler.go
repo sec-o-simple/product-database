@@ -183,9 +183,14 @@ func (h *Handler) ListRelationshipsByProductVersion(c fuego.ContextNoBody) ([]Re
 }
 
 func (h *Handler) ListIdentificationHelpersByProductVersion(c fuego.ContextNoBody) ([]IdentificationHelperListItemDTO, error) {
-	return nil, fuego.InternalServerError{
-		Title: "Not implemented",
+	productVersionID := c.PathParam("id")
+	helpers, err := h.svc.GetIdentificationHelpersByProductVersion(c.Request().Context(), productVersionID)
+
+	if err != nil {
+		return nil, err
 	}
+
+	return helpers, nil
 }
 
 func (h *Handler) UpdateProductVersion(c fuego.ContextWithBody[UpdateProductVersionDTO]) (ProductVersionDTO, error) {

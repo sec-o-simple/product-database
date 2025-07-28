@@ -57,6 +57,79 @@
         "treeView": {
             "label" : "Baumansicht"
         },
+        "identificationHelper": {
+            "label": "Identifikationshilfe",
+            "label_other": "Identifikationshilfen",
+            "notConfigured": "Nicht konfiguriert",
+            "addHelper": "{{label}} hinzufügen",
+            "editHelper": "Bearbeiten",
+            "deleteHelper": "Löschen",
+            "deleteConfirmTitle": "ID-Hilfe löschen",
+            "deleteConfirmText": "Sind Sie sicher, dass Sie diese {{label}}-Konfiguration löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "createTitle": "{{label}} erstellen",
+            "editTitle": "{{label}} bearbeiten",
+            "andMore": "und {{count}} weitere",
+            "addFile": "Datei hinzufügen",
+            "addHash": "Hash hinzufügen",
+            "addURI": "URI hinzufügen",
+            "filename": "Dateiname",
+            "algorithm": "Algorithmus",
+            "hashValue": "Hash-Wert",
+            "hashValues": "Hash-Werte",
+            "namespace": "Namespace",
+            "noDataYet": "Noch keine {{type}} hinzugefügt. Klicken Sie auf \"{{buttonText}}\", um zu beginnen.",
+            "fields": {
+                "cpeString": "CPE-String",
+                "purlString": "PURL-String",
+                "models": "Modelle",
+                "serialNumbers": "Seriennummern",
+                "sbomUrls": "SBOM-URLs",
+                "skus": "SKUs",
+                "genericUris": "Generische URIs"
+            },
+            "types": {
+                "cpe": {
+                    "label": "CPE",
+                    "entryTitle": "CPE",
+                    "description": "Common Platform Enumeration (CPE) ist ein strukturiertes Namensschema für Informationssysteme, Software und Pakete."
+                },
+                "hashes": {
+                    "label": "Hashes",
+                    "entryTitle": "Hash",
+                    "description": "Datei-Hashes mit Algorithmen und Werten zur Integritätsprüfung."
+                },
+                "models": {
+                    "label": "Modellnummern",
+                    "entryTitle": "Modell",
+                    "description": "Modellnummern sind spezifische Identifikatoren für Produktvarianten."
+                },
+                "purl": {
+                    "label": "PURL",
+                    "entryTitle": "PURL",
+                    "description": "Package URL (PURL) ist ein Schema zur Identifizierung von Softwarepaketen."
+                },
+                "sbom": {
+                    "label": "SBOM URLs",
+                    "entryTitle": "SBOM URL",
+                    "description": "Software Bill of Materials (SBOM) URLs mit Links zu Komponentenlisten."
+                },
+                "serial": {
+                    "label": "Seriennummern",
+                    "entryTitle": "Seriennummer",
+                    "description": "Eindeutige Seriennummern zur Verfolgung einzelner Produktinstanzen."
+                },
+                "sku": {
+                    "label": "SKUs",
+                    "entryTitle": "SKU",
+                    "description": "Stock Keeping Units (SKUs) für Lagerverwaltung und Identifikation."
+                },
+                "uri": {
+                    "label": "Generische URIs",
+                    "entryTitle": "URI",
+                    "description": "Generische Uniform Resource Identifiers mit Namespace- und URI-Paaren."
+                }
+            }
+        },
         "form": {
             "errors": "Bitte überprüfen Sie das Formular auf Fehler.",
             "select": "Bitte wählen Sie eine Option aus",
@@ -67,7 +140,9 @@
                 "product": "Produkt",
                 "version": "Version",
                 "relationshipCategory": "Beziehungs-Kategorie",
-                "relationshipType": "Beziehungs-Typ"
+                "relationshipType": "Beziehungs-Typ",
+                "helperType": "Hilfsmittel-Typ",
+                "selectHelperType": "Hilfsmittel-Typ auswählen"
             }
         }
     }

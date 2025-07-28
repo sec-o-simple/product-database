@@ -29,7 +29,7 @@ export function useProductQuery(productId?: string) {
       },
     },
     {
-      enabled: !!productId,
+      enabled: !!productId?.length,
     },
   )
 

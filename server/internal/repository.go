@@ -165,6 +165,17 @@ func (r *repository) DeleteIdentificationHelper(ctx context.Context, id string) 
 	return r.db.WithContext(ctx).Delete(&IdentificationHelper{}, "id = ?", id).Error
 }
 
+func (r *repository) GetIdentificationHelpersByProductVersion(ctx context.Context, productVersionID string) ([]IdentificationHelper, error) {
+	var helpers []IdentificationHelper
+	err := r.db.WithContext(ctx).
+		Where("node_id = ?", productVersionID).
+		Find(&helpers).Error
+	if err != nil {
+		return nil, err
+	}
+	return helpers, nil
+}
+
 func (r *repository) GetRelationshipsBySourceAndCategory(ctx context.Context, sourceNodeID, category string) ([]Relationship, error) {
 	var relationships []Relationship
 	err := r.db.WithContext(ctx).

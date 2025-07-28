@@ -163,6 +163,7 @@ type IdentificationHelperListItemDTO struct {
 	ID               string `json:"id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required"`
 	Category         string `json:"category" example:"hashes" validate:"required"`
 	ProductVersionID string `json:"product_version_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
+	Metadata         string `json:"metadata" example:"{\"hash\":\"abc123\"}" validate:"required,json"` // JSON string
 }
 
 type IdentificationHelperDTO struct {

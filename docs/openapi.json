@@ -218,6 +218,10 @@
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"type": "string"
 					},
+					"metadata": {
+						"example": "{\"hash\":\"abc123\"}",
+						"type": "string"
+					},
 					"product_version_id": {
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"type": "string"
@@ -226,7 +230,8 @@
 				"required": [
 					"id",
 					"category",
-					"product_version_id"
+					"product_version_id",
+					"metadata"
 				],
 				"type": "object"
 			},
