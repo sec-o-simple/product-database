@@ -1,246 +1,232 @@
 import client from '@/client'
 import Breadcrumbs from '@/components/forms/Breadcrumbs'
-import { Input } from '@/components/forms/Input'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContent from '@/components/forms/PageContent'
-import { EmptyState } from '@/components/table/EmptyState'
-import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
+import useRefetchQuery from '@/utils/useRefetchQuery'
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
-import {
-  Accordion,
-  AccordionItem,
-  BreadcrumbItem,
-  Tooltip,
-} from '@heroui/react'
-import React, { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { AddIdHelper } from './AddIDHelper'
+import { BreadcrumbItem, Tooltip } from '@heroui/react'
+import { useState, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import CreateEditIDHelper from './CreateIDHelper'
+import { useVendorQuery } from '../Vendor'
+import { useVersionQuery } from '../Version'
+import { useProductQuery } from '../Product'
 
-interface IDTypeProps {
-  id: number
-  label: string
-  items: ItemProps[]
-}
-
-interface ItemProps {
-  id: number
-  fields: FieldProps[]
-}
-
-interface FieldProps {
-  id: number
-  label: string
-  value: string
-  items?: ItemProps[]
-}
-
-type FieldType =
-  | { type: 'text'; key: string; label: string; required?: boolean }
-  | { type: 'number'; key: string; label: string; required?: boolean }
-  | { type: 'date'; key: string; label: string; required?: boolean }
-  | { type: 'hashes'; key: string; label: string; hashes: string[] }
-  | { type: 'file'; key: string; label: string; subFields: FieldType[] }
-
-export interface HelperTypeProps {
-  id: number | string
-  label: string
-  entryTitle: string
-  description: string
-  fields: FieldType[]
+interface IdentificationHelperListItemDTO {
+  id: string
+  category: string
+  product_version_id: string
+  metadata?: string
 }
 
 export const idHelperTypes = [
   {
-    id: 1,
-    label: 'Hashes',
-    entryTitle: 'Hash',
-    description:
-      'A hash is a fixed-size string of characters generated from data of any size. It is used to verify the integrity of data.',
-    fields: [
-      { label: 'Algorithm of the hash', type: 'text' },
-      { label: 'Hash Value', type: 'text' },
-    ],
+    id: 'cpe',
+    translationKey: 'identificationHelper.types.cpe',
+    component: 'cpe' as const,
   },
   {
-    id: 2,
-    label: 'Models',
-    entryTitle: 'Model',
-    description:
-      'A model is a specific version or variant of a product. It is used to identify the product in the market.',
-    fields: [{ label: 'Model Number', type: 'text' }],
+    id: 'hashes',
+    translationKey: 'identificationHelper.types.hashes',
+    component: 'hashes' as const,
   },
   {
-    id: 3,
-    label: 'SBOM URLs',
-    entryTitle: 'SBOM URL',
-    description:
-      'A Software Bill of Materials (SBOM) URL is a link to a document that lists the components of a software product. It is used to identify the software components and their versions.',
-    fields: [{ label: 'SBOM URL', type: 'text' }],
+    id: 'models',
+    translationKey: 'identificationHelper.types.models',
+    component: 'models' as const,
   },
   {
-    id: 4,
-    label: 'Serial Numbers',
-    entryTitle: 'Serial Number',
-    description:
-      'A serial number is a unique identifier assigned to a product. It is used to track the product throughout its lifecycle.',
-    fields: [{ label: 'Serial Number', type: 'text' }],
+    id: 'purl',
+    translationKey: 'identificationHelper.types.purl',
+    component: 'purl' as const,
   },
   {
-    id: 5,
-    label: 'Stock Keeping Units (SKUs)',
-    entryTitle: 'SKU',
-    description:
-      'A Stock Keeping Unit (SKU) is a unique identifier assigned to a product for inventory management. It is used to track the product in the supply chain.',
-    fields: [{ label: 'Stock Keeping Unit', type: 'text' }],
+    id: 'sbom',
+    translationKey: 'identificationHelper.types.sbom',
+    component: 'sbom' as const,
   },
   {
-    id: 6,
-    label: 'Generic URIs',
-    entryTitle: 'URI',
-    description:
-      'A Uniform Resource Identifier (URI) is a string of characters that identifies a particular resource. It is used to identify the product in the market.',
-    fields: [
-      { label: 'Namespace of URI', type: 'text' },
-      { label: 'URI', type: 'text' },
-    ],
+    id: 'serial',
+    translationKey: 'identificationHelper.types.serial',
+    component: 'serial' as const,
   },
-] as HelperTypeProps[]
+  {
+    id: 'sku',
+    translationKey: 'identificationHelper.types.sku',
+    component: 'sku' as const,
+  },
+  {
+    id: 'uri',
+    translationKey: 'identificationHelper.types.uri',
+    component: 'uri' as const,
+  },
+] as const
 
-function IndentificationItem({
-  data,
-  chips,
-  onUpdate,
+export type HelperTypeProps = (typeof idHelperTypes)[number]
+
+function IdentificationItem({
+  helper,
+  helperType,
+  onEdit,
+  onDelete,
 }: {
-  data: ItemProps
-  chips?: React.ReactNode
-  onUpdate: (data: ItemProps, fields: FieldProps[]) => void
+  helper: IdentificationHelperListItemDTO
+  helperType: HelperTypeProps
+  onEdit: () => void
   onDelete: () => void
 }) {
   const { t } = useTranslation()
-  const [edit, setEdit] = useState(false)
-  const [editFields, setEditFields] = useState(data.fields)
+
+  // Helper function to format array data with "and more" pattern
+  const formatArrayData = (items: string[]) => {
+    if (!items || items.length === 0) return null
+    const count = items.length
+    const first = items[0]
+    return count === 1
+      ? first
+      : `${first} ${t('identificationHelper.andMore', { count: count - 1 })}`
+  }
+
+  // Parse metadata to show relevant information
+  const getDisplayInfo = () => {
+    try {
+      const metadata = JSON.parse(helper.metadata || '{}')
+
+      switch (helperType.component) {
+        case 'hashes':
+          if (metadata.file_hashes && Array.isArray(metadata.file_hashes)) {
+            const count = metadata.file_hashes.length
+            const first = metadata.file_hashes[0]
+            const display = first?.filename
+            return count === 1
+              ? display
+              : `${display} ${t('identificationHelper.andMore', { count: count - 1 })}`
+          }
+          break
+        case 'cpe':
+          if (metadata.cpe) {
+            return metadata.cpe
+          }
+          break
+        case 'purl':
+          if (metadata.purl) {
+            return metadata.purl
+          }
+          break
+        case 'models':
+          if (metadata.models && Array.isArray(metadata.models)) {
+            return formatArrayData(metadata.models)
+          }
+          break
+        case 'serial':
+          if (
+            metadata.serial_numbers &&
+            Array.isArray(metadata.serial_numbers)
+          ) {
+            return formatArrayData(metadata.serial_numbers)
+          }
+          break
+        case 'sku':
+          if (metadata.skus && Array.isArray(metadata.skus)) {
+            return formatArrayData(metadata.skus)
+          }
+          break
+        case 'sbom':
+          if (metadata.sbom_urls && Array.isArray(metadata.sbom_urls)) {
+            return formatArrayData(metadata.sbom_urls)
+          }
+          break
+        case 'uri':
+          if (metadata.uris && Array.isArray(metadata.uris)) {
+            const count = metadata.uris.length
+            const first = metadata.uris[0]
+            const display = first?.namespace
+              ? `${first.namespace}: ${first.uri}`
+              : first?.uri
+            return count === 1
+              ? display
+              : `${display} ${t('identificationHelper.andMore', { count: count - 1 })}`
+          }
+          break
+      }
+    } catch {
+      // Fallback if JSON parsing fails
+    }
+
+    return t('identificationHelper.notConfigured')
+  }
+
+  const displayText = getDisplayInfo()
 
   return (
-    <div className="flex w-full flex-col justify-between gap-2 rounded-lg border-1 border-default-200 bg-gray-50 px-4 py-2 hover:bg-gray-100 hover:transition-background">
+    <div className="group flex w-full flex-col justify-between gap-2 rounded-lg border-1 border-default-200 bg-gray-50 px-4 py-2 hover:bg-gray-100 hover:transition-background">
       <div className="flex items-center justify-between">
-        <div className="flex grow flex-col gap-2">
-          {data.fields.map((field) => {
-            if (!edit)
-              return (
-                <div key={field.id}>
-                  <div className="text-sm text-default-500">{field.label}</div>
-                  <div className="text-lg font-medium">{field.value}</div>
-                </div>
-              )
-            return (
-              <div
-                key={field.id}
-                className="flex flex-col items-end gap-2 py-1"
-              >
-                <Input
-                  type="text"
-                  label={field.label}
-                  labelPlacement="outside"
-                  classNames={{
-                    inputWrapper: 'bg-white',
-                  }}
-                  value={editFields.find((f) => f.id === field.id)?.value}
-                  onChange={(e) => {
-                    setEditFields((prev) =>
-                      prev.map((f) => {
-                        if (f.id === field.id) {
-                          return { ...f, value: e.target.value }
-                        }
-                        return f
-                      }),
-                    )
-                  }}
-                />
-                {field.items && (
-                  <Accordion defaultExpandedKeys={['0']}>
-                    {field.items.map((subItems, index) => (
-                      <AccordionItem
-                        key={index}
-                        title={subItems.fields[0].label}
-                      >
-                        <div className="mb-2 flex flex-col gap-2">
-                          {subItems.fields.map((subField) => (
-                            <Input
-                              key={subField.id}
-                              type="text"
-                              label={subField.label}
-                              labelPlacement="outside"
-                              classNames={{
-                                inputWrapper: 'bg-white',
-                              }}
-                              value={
-                                editFields.find((f) => f.id === subField.id)
-                                  ?.value || ''
-                              }
-                              onChange={(e) => {
-                                setEditFields((prev) =>
-                                  prev.map((f) => {
-                                    if (f.id === subField.id) {
-                                      return { ...f, value: e.target.value }
-                                    }
-                                    return f
-                                  }),
-                                )
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                )}
-              </div>
-            )
-          })}
-          {edit && (
-            <div className="flex justify-end gap-2">
-              <Button variant="light" size="sm" onPress={() => setEdit(false)}>
-                {t('common.cancel')}
-              </Button>
-              <Button
-                color="primary"
-                size="sm"
-                onPress={() => {
-                  setEdit(false)
-                  onUpdate(data, editFields)
-                }}
-              >
-                Save
-              </Button>
+        <div className="flex grow flex-col gap-1">
+          <div>
+            <div className="text-sm text-default-500">
+              {t(`${helperType.translationKey}.label`)}
             </div>
-          )}
+            <div className="truncate text-lg font-medium">{displayText}</div>
+          </div>
+        </div>
+        <div className="flex gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+          <Tooltip
+            content={t('identificationHelper.editHelper')}
+            placement="top"
+          >
+            <Button
+              isIconOnly
+              variant="light"
+              color="primary"
+              size="sm"
+              onPress={onEdit}
+            >
+              <FontAwesomeIcon icon={faEdit} />
+            </Button>
+          </Tooltip>
+          <Tooltip
+            content={t('identificationHelper.deleteHelper')}
+            placement="top"
+          >
+            <ConfirmButton
+              isIconOnly
+              variant="light"
+              color="danger"
+              size="sm"
+              confirmTitle={t('identificationHelper.deleteConfirmTitle')}
+              confirmText={t('identificationHelper.deleteConfirmText', {
+                label: t(`${helperType.translationKey}.label`).toLowerCase(),
+              })}
+              onConfirm={onDelete}
+            >
+              <FontAwesomeIcon icon={faTrash} />
+            </ConfirmButton>
+          </Tooltip>
         </div>
       </div>
-
-      {chips}
     </div>
   )
 }
 
 export function IdentificationGroup({
-  label,
-  description,
-  items,
-  setHelper,
-  deleteable = false,
+  helperType,
+  helper,
   onClick,
-  add,
+  onEditHelper,
+  onDeleteHelper,
+  onAddHelper,
 }: {
-  label: string
-  description: string
-  items: ItemProps[]
-  setHelper?: React.Dispatch<React.SetStateAction<IDTypeProps[]>>
-  deleteable?: boolean
+  helperType: HelperTypeProps
+  helper?: IdentificationHelperListItemDTO
   onClick?: () => void
-  add?: React.ReactNode
+  onEditHelper?: (helperId: string) => void
+  onDeleteHelper?: (helperId: string) => void
+  onAddHelper?: () => void
 }) {
-  const [showMore, setShowMore] = useState(items.length > 3)
+  const { t } = useTranslation()
 
   return (
     <div
@@ -251,99 +237,37 @@ export function IdentificationGroup({
     >
       <div className="mb-2">
         <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold">{label}</p>
-
-          {deleteable && (
-            <Tooltip content="Delete Entry" placement="bottom">
-              <Button
-                isIconOnly
-                variant="light"
-                color="primary"
-                className="invisible group-hover:visible"
-                onPress={() => {
-                  if (!setHelper) return
-
-                  setHelper((prev) => prev.filter((h) => h.label !== label))
-                }}
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </Button>
-            </Tooltip>
-          )}
+          <p className="text-lg font-semibold">
+            {t(`${helperType.translationKey}.label`)}
+          </p>
         </div>
-        <Tooltip
-          content={description}
-          placement="bottom"
-          closeDelay={0}
-          className="max-w-[400px]"
-        >
-          <p className="line-clamp-2 text-zinc-500">{description}</p>
-        </Tooltip>
+        <p className="line-clamp-2 text-zinc-500">
+          {t(`${helperType.translationKey}.description`)}
+        </p>
       </div>
 
-      {items.map((item, index) => {
-        if (!showMore && index + 1 > 3) return null
-
-        return (
-          <IndentificationItem
-            key={item.id}
-            data={item}
-            onUpdate={(data, fields) => {
-              if (!setHelper) return
-
-              setHelper((prev) =>
-                prev.map((h) => {
-                  if (h.label === label) {
-                    return {
-                      ...h,
-                      items: h.items.map((i) => {
-                        if (i.id === data.id) {
-                          return {
-                            ...i,
-                            fields: fields.map((f) => ({
-                              ...f,
-                              value: f.value,
-                            })),
-                          }
-                        }
-                        return i
-                      }),
-                    }
-                  }
-                  return h
-                }),
-              )
-            }}
-            onDelete={() => {
-              if (!setHelper) return
-
-              setHelper((prev) =>
-                prev.map((h) => {
-                  if (h.label === label) {
-                    return {
-                      ...h,
-                      items: h.items.filter((i) => i.id !== item.id),
-                    }
-                  }
-                  return h
-                }),
-              )
-            }}
-          />
-        )
-      })}
-
-      {items.length > 3 && (
-        <Button
-          variant="light"
-          color="primary"
-          onPress={() => setShowMore(!showMore)}
-        >
-          {showMore ? 'Show less' : 'Show more'}
-        </Button>
+      {helper && (
+        <IdentificationItem
+          key={helper.id}
+          helper={helper}
+          helperType={helperType}
+          onEdit={() => onEditHelper?.(helper.id)}
+          onDelete={() => onDeleteHelper?.(helper.id)}
+        />
       )}
 
-      {add}
+      {!helper && (
+        <Button
+          variant="bordered"
+          className="border-dashed border-gray text-gray"
+          startContent={<FontAwesomeIcon icon={faEdit} />}
+          onPress={onAddHelper}
+        >
+          {t('identificationHelper.addHelper', {
+            label: t(`${helperType.translationKey}.label`),
+          })}
+        </Button>
+      )}
     </div>
   )
 }
@@ -353,38 +277,67 @@ export default function IdentificationOverview({
 }: {
   hideBreadcrumbs?: boolean
 }) {
-  const { productId, versionId } = useParams()
-  const navigate = useNavigate()
-  const [helper, setHelper] = useState([] as IDTypeProps[])
+  const { versionId } = useParams()
+  const { t } = useTranslation()
+  const [editingHelper, setEditingHelper] = useState<{
+    type: HelperTypeProps
+    helperId: string
+  } | null>(null)
 
-  const { data: product } = client.useQuery('get', `/api/v1/products/{id}`, {
-    params: { path: { id: productId || '' } },
-  })
+  const { data: version } = useVersionQuery(versionId)
+  const { data: product } = useProductQuery(version?.product_id)
+  const { data: vendor } = useVendorQuery(product?.vendor_id)
 
-  const { data: version } = client.useQuery(
+  const identificationHelpersRequest = client.useQuery(
     'get',
-    '/api/v1/product-versions/{id}',
+    '/api/v1/product-versions/{id}/identification-helpers',
     {
       params: { path: { id: versionId || '' } },
     },
+    {
+      enabled: !!versionId,
+    },
+  )
+  useRefetchQuery(identificationHelpersRequest)
+
+  const deleteMutation = client.useMutation(
+    'delete',
+    '/api/v1/identification-helper/{id}',
+    {
+      onSettled: () => {
+        identificationHelpersRequest.refetch()
+      },
+    },
   )
 
-  const idHelperTypes = [] as HelperTypeProps[]
+  const helpersByCategory = useMemo(() => {
+    const helpers = identificationHelpersRequest.data || []
+    const map = new Map<string, IdentificationHelperListItemDTO>()
 
-  function handleAddIdHelper(type: { id: number; label: string }) {
-    setHelper((prev) => {
-      const existingType = prev.find((t) => t.label === type.label)
-      if (existingType) {
-        return prev
-      }
-      return [
-        ...prev,
-        {
-          id: type.id,
-          label: type.label,
-          items: [],
+    helpers.forEach((helper) => {
+      map.set(helper.category, helper)
+    })
+
+    return map
+  }, [identificationHelpersRequest.data])
+
+  function handleDeleteHelper(helperId: string) {
+    deleteMutation.mutate(
+      {
+        params: { path: { id: helperId } },
+      },
+      {
+        onSuccess: () => {
+          identificationHelpersRequest.refetch()
         },
-      ]
+      },
+    )
+  }
+
+  function handleEditHelper(helperType: HelperTypeProps, helperId: string) {
+    setEditingHelper({
+      type: helperType,
+      helperId,
     })
   }
 
@@ -392,65 +345,67 @@ export default function IdentificationOverview({
     <PageContent>
       {!hideBreadcrumbs && (
         <Breadcrumbs>
-          <BreadcrumbItem href="/vendors">Vendors</BreadcrumbItem>
-          <BreadcrumbItem href={`/vendors/${product?.vendor_id}`}>
-            Vendor
+          <BreadcrumbItem href="/vendors">
+            {t('vendor.label', { count: 2 })}
+          </BreadcrumbItem>
+          <BreadcrumbItem>{vendor?.name}</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>
+            {t('product.label', { count: 2 })}
           </BreadcrumbItem>
           <BreadcrumbItem href={`/products/${product?.id}`}>
-            {product?.name || 'Product'}
+            {product?.name}
           </BreadcrumbItem>
-          <BreadcrumbItem isDisabled>Versions</BreadcrumbItem>
-          <BreadcrumbItem href={`/products/${productId}/versions/${versionId}`}>
-            {version?.name || 'Version'}
+          <BreadcrumbItem isDisabled>
+            {t('version.label', { count: 2 })}
           </BreadcrumbItem>
-          <BreadcrumbItem>Identification Helper</BreadcrumbItem>
+          <BreadcrumbItem isDisabled>{version?.name}</BreadcrumbItem>
+          <BreadcrumbItem>
+            {t('identificationHelper.label', { count: 2 })}
+          </BreadcrumbItem>
         </Breadcrumbs>
       )}
 
       <div className="flex w-full items-center justify-between rounded-md border-1 border-slate-200 bg-white p-4">
         <p className="text-xl font-semibold text-primary">
-          Identification Helper
+          {t('identificationHelper.label', { count: 2 })}
         </p>
-
-        <AddIdHelper
-          onAdd={handleAddIdHelper}
-          isDisabled={(type) => helper.some((h) => h.id === type.id)}
-        />
       </div>
 
-      {helper.length === 0 && (
-        <EmptyState add={<AddIdHelper onAdd={handleAddIdHelper} />} />
-      )}
-
       <div className="grid grid-cols-2 gap-2">
-        {helper.map((helper) => {
-          const existingType = idHelperTypes.find((t) => t.id === helper.id)
-          if (!existingType) return null
+        {idHelperTypes.map((helperType) => {
+          const helper = helpersByCategory.get(helperType.id as string)
 
           return (
             <IdentificationGroup
-              key={existingType.label}
-              label={existingType.label}
-              description={existingType.description}
-              items={helper.items}
-              setHelper={setHelper}
-              deleteable={true}
-              add={
-                <Button
-                  variant="bordered"
-                  className="border-dashed border-gray text-gray"
-                  startContent={<FontAwesomeIcon icon={faAdd} />}
-                  onPress={() => {
-                    navigate(`/identification-helpers/${existingType.id}`)
-                  }}
-                >
-                  Add {helper.label}
-                </Button>
+              key={helperType.id}
+              helperType={helperType}
+              helper={helper}
+              onEditHelper={(helperId) =>
+                handleEditHelper(helperType, helperId)
               }
+              onDeleteHelper={handleDeleteHelper}
+              onAddHelper={() => {
+                setEditingHelper({
+                  type: helperType,
+                  helperId: '',
+                })
+              }}
             />
           )
         })}
       </div>
+
+      {editingHelper && (
+        <CreateEditIDHelper
+          editData={{
+            type: editingHelper.type,
+            helperId: editingHelper.helperId,
+          }}
+          onClose={() => {
+            setEditingHelper(null)
+          }}
+        />
+      )}
     </PageContent>
   )
 }

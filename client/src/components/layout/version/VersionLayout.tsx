@@ -1,15 +1,15 @@
+import client from '@/client'
 import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
 import { EmptyState } from '@/components/table/EmptyState'
 import { useProductQuery } from '@/routes/Product'
 import { DeleteVersion, useVersionQuery } from '@/routes/Version'
+import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
-import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { Chip } from '@heroui/chip'
-import { Outlet, useParams } from 'react-router-dom'
+import { Outlet, useParams, useLocation } from 'react-router-dom'
 import { AddRelationshipButton } from '../product/CreateRelationship'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next'
 export default function VersionLayout() {
   const { navigateToModal, navigate } = useRouter()
   const { versionId } = useParams()
+  const location = useLocation()
   const { t } = useTranslation()
 
   const { data: version, isLoading: isVersionLoading } = useVersionQuery(
@@ -26,6 +27,54 @@ export default function VersionLayout() {
   )
   const { data: product, isLoading: isProductLoading } = useProductQuery(
     version?.product_id,
+  )
+
+  const relationshipRequest = client.useQuery(
+    'get',
+    `/api/v1/product-versions/{id}/relationships`,
+    {
+      params: {
+        path: {
+          id: versionId || '',
+        },
+      },
+    },
+    {
+      enabled: !!versionId,
+    },
+  )
+  useRefetchQuery(relationshipRequest)
+  const relationships = relationshipRequest.data
+
+  const relationshipCount =
+    relationships?.reduce((total, relationshipGroup) => {
+      return (
+        total +
+        relationshipGroup.products.reduce((groupTotal, product) => {
+          return groupTotal + (product.version_relationships?.length || 0)
+        }, 0)
+      )
+    }, 0) || 0
+
+  const identificationHelpersRequest = client.useQuery(
+    'get',
+    '/api/v1/product-versions/{id}/identification-helpers',
+    {
+      params: { path: { id: versionId || '' } },
+    },
+    {
+      enabled: !!versionId,
+    },
+  )
+  useRefetchQuery(identificationHelpersRequest)
+  const identificationHelpersCount =
+    identificationHelpersRequest.data?.length || 0
+
+  const isRelationshipsActive =
+    location.pathname === `/product-versions/${versionId}` ||
+    location.pathname.startsWith(`/product-versions/${versionId}/relationships`)
+  const isIdentificationHelpersActive = location.pathname.includes(
+    '/identification-helpers',
   )
 
   useEffect(() => {
@@ -62,10 +111,12 @@ export default function VersionLayout() {
           </div>
         }
       >
-        <AddRelationshipButton
-          versionId={version.id}
-          returnTo={`/product-versions/${version.id}`}
-        />
+        {isRelationshipsActive && (
+          <AddRelationshipButton
+            versionId={version.id}
+            returnTo={`/product-versions/${version.id}`}
+          />
+        )}
       </TopBar>
 
       <div className="flex h-full grow flex-row">
@@ -88,9 +139,42 @@ export default function VersionLayout() {
               key="product"
             />,
             <Button
-              variant="light"
+              variant={isRelationshipsActive ? 'solid' : 'light'}
               color="primary"
-              className="w-full justify-between px-2 text-base font-semibold"
+              className={`w-full justify-between px-3 py-2 text-sm font-medium transition-all ${
+                isRelationshipsActive
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'hover:bg-default-100'
+              }`}
+              onPress={() => navigate(`/product-versions/${version.id}`)}
+              key="relationships"
+            >
+              <span>
+                {t('relationship.label', { count: relationshipCount })}
+              </span>
+              {relationshipCount > 0 && (
+                <Chip
+                  size="sm"
+                  variant={isRelationshipsActive ? 'solid' : 'flat'}
+                  color={isRelationshipsActive ? 'default' : 'primary'}
+                  className={
+                    isRelationshipsActive
+                      ? 'bg-primary-foreground/20 text-primary-foreground'
+                      : ''
+                  }
+                >
+                  {relationshipCount}
+                </Chip>
+              )}
+            </Button>,
+            <Button
+              variant={isIdentificationHelpersActive ? 'solid' : 'light'}
+              color="primary"
+              className={`w-full justify-between px-3 py-2 text-sm font-medium transition-all ${
+                isIdentificationHelpersActive
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'hover:bg-default-100'
+              }`}
               onPress={() =>
                 navigate(
                   `/product-versions/${version.id}/identification-helpers`,
@@ -98,8 +182,25 @@ export default function VersionLayout() {
               }
               key="identificationHelpers"
             >
-              Identification Helpers
-              <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+              <span>
+                {t('identificationHelper.label', {
+                  count: identificationHelpersCount,
+                })}
+              </span>
+              {identificationHelpersCount > 0 && (
+                <Chip
+                  size="sm"
+                  variant={isIdentificationHelpersActive ? 'solid' : 'flat'}
+                  color={isIdentificationHelpersActive ? 'default' : 'primary'}
+                  className={
+                    isIdentificationHelpersActive
+                      ? 'bg-primary-foreground/20 text-primary-foreground'
+                      : ''
+                  }
+                >
+                  {identificationHelpersCount}
+                </Chip>
+              )}
             </Button>,
           ]}
           actions={

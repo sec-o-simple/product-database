@@ -11,7 +11,6 @@ import CreateEditVersion from './components/layout/version/CreateEditVersion'
 import VersionHistory from './components/layout/version/VersionHistory'
 import VersionLayout from './components/layout/version/VersionLayout'
 import Layout from './Layout'
-import Helper from './routes/IdentificationHelper/Helper'
 import IdentificationOverview from './routes/IdentificationHelper/IdentificationOverview'
 import Product from './routes/Product'
 import Products from './routes/Products'
@@ -70,7 +69,6 @@ function App() {
 
                 <Route path="identification-helpers">
                   <Route index element={<IdentificationOverview />} />
-                  <Route path=":helperId" element={<Helper />} />
                 </Route>
               </Route>
             </Route>

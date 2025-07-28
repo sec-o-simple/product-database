@@ -1020,6 +1020,28 @@ func (s *Service) GetIdentificationHelperByID(ctx context.Context, id string) (I
 	return IdentificationHelperToDTO(helper), nil
 }
 
+func (s *Service) GetIdentificationHelpersByProductVersion(ctx context.Context, productVersionID string) ([]IdentificationHelperListItemDTO, error) {
+	helpers, err := s.repo.GetIdentificationHelpersByProductVersion(ctx, productVersionID)
+	if err != nil {
+		return nil, fuego.InternalServerError{
+			Title: "Failed to get identification helpers",
+			Err:   err,
+		}
+	}
+
+	result := make([]IdentificationHelperListItemDTO, len(helpers))
+	for i, helper := range helpers {
+		result[i] = IdentificationHelperListItemDTO{
+			ID:               helper.ID,
+			Category:         string(helper.Category),
+			ProductVersionID: helper.NodeID,
+			Metadata:         string(helper.Metadata),
+		}
+	}
+
+	return result, nil
+}
+
 func (s *Service) UpdateIdentificationHelper(ctx context.Context, id string, update UpdateIdentificationHelperDTO) (IdentificationHelperDTO, error) {
 	helper, err := s.repo.GetIdentificationHelperByID(ctx, id)
 	if err != nil {
