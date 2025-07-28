@@ -98,7 +98,6 @@ function CPEComponent({
       classNames={{ inputWrapper: 'bg-white' }}
       value={data.cpe}
       onChange={(e) => onChange({ cpe: e.target.value })}
-      isRequired
     />
   )
 }
