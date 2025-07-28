@@ -759,6 +759,7 @@ export default function CreateEditIDHelper({
         onOpenChange={handleClose}
         isDismissable={false}
         size="3xl"
+        scrollBehavior="inside"
       >
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
