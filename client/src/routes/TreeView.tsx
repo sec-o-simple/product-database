@@ -1,3 +1,4 @@
+import { DashboardTabs } from '@/components/DashboardTabs'
 import {
   faArrowDown,
   faArrowUp,
@@ -15,7 +16,7 @@ import {
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Product from './Product'
-import { DashboardTabs, useProductListQuery } from './Products'
+import { useProductListQuery } from './Products'
 import Vendor from './Vendor'
 import { useVendorListQuery } from './Vendors'
 import Version from './Version'

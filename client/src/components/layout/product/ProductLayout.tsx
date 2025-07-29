@@ -18,11 +18,11 @@ import {
   DropdownSection,
   DropdownTrigger,
 } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { AddVersionButton } from '../version/CreateEditVersion'
-import { useTranslation } from 'react-i18next'
 
 export function AddIdHelper({
   onAdd,
@@ -76,6 +76,10 @@ export default function ProductLayout() {
     return null
   }
 
+  const openEditModal = () => {
+    navigateToModal(`/products/${productId}/edit`, `/products/${productId}`)
+  }
+
   return (
     <PageContainer>
       <TopBar
@@ -94,18 +98,32 @@ export default function ProductLayout() {
       <div className="flex grow flex-row overflow-scroll">
         <Sidebar
           attributes={[
-            <Attribute label="Name" value={product.name} key="name" />,
+            <Attribute
+              label={t('form.fields.name')}
+              value={product.name}
+              key="name"
+            />,
             <Attribute
               key="description"
-              label="Description"
+              label={t('form.fields.description')}
               value={product.description || '-/-'}
             />,
-            <Attribute label="Type" value={product.type || '-/-'} key="type" />,
+            <Attribute
+              label={t('form.fields.type')}
+              value={product.type || '-/-'}
+              key="type"
+            />,
             <Attribute
               key="idHelpers"
-              label="Vendor"
+              label={t('form.fields.vendor')}
               value={vendor?.name || '-/-'}
               href={`/vendors/${product.vendor_id}`}
+            />,
+            <Attribute
+              key="productFamily"
+              label={t('form.fields.productFamily')}
+              value={product.product_family || '-/-'}
+              onClick={() => openEditModal()}
             />,
           ]}
           actions={
@@ -116,12 +134,7 @@ export default function ProductLayout() {
                 variant="solid"
                 color="primary"
                 fullWidth
-                onPress={() =>
-                  navigateToModal(
-                    `/products/${productId}/edit`,
-                    `/products/${productId}`,
-                  )
-                }
+                onPress={() => openEditModal()}
               >
                 {t('common.edit')}
               </Button>

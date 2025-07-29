@@ -2,12 +2,19 @@ import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { useProductQuery } from '@/routes/Product'
+import {
+  ProductFamilyChains,
+  ProductFamilyProps,
+  useProductFamilyListQuery,
+} from '@/routes/ProductFamilies'
 import { useErrorLocalization } from '@/utils/useErrorLocalization'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Alert,
+  Autocomplete,
+  AutocompleteItem,
   Button,
   Modal,
   ModalBody,
@@ -117,6 +124,9 @@ export default function CreateEditProduct() {
   const { productId, vendorId } = useParams()
   const isCreateForm = !productId
 
+  const { data: families } = useProductFamilyListQuery(true) as unknown as {
+    data: ProductFamilyProps[]
+  }
   const { data: previousData, isLoading } = useProductQuery(productId || '')
 
   const [product, setProduct] = useState<ProductProps>({
@@ -228,6 +238,23 @@ export default function CreateEditProduct() {
             }
             type="text"
           />
+
+          <Autocomplete
+            labelPlacement="outside"
+            label={t('form.fields.parent')}
+            variant="bordered"
+            inputProps={{
+              classNames: {
+                inputWrapper: 'border-1 shadow-none',
+              },
+            }}
+          >
+            {families.map((item) => (
+              <AutocompleteItem key={item.id}>
+                <ProductFamilyChains item={item} />
+              </AutocompleteItem>
+            ))}
+          </Autocomplete>
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>

@@ -1,4 +1,5 @@
 import client from '@/client'
+import { DashboardTabs } from '@/components/DashboardTabs'
 import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
@@ -7,9 +8,8 @@ import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Chip } from '@heroui/react'
-import { DashboardTabs } from './Products'
-import { DeleteVendor } from './Vendor'
 import { useTranslation } from 'react-i18next'
+import { DeleteVendor } from './Vendor'
 
 export type VendorProps = {
   id?: string
