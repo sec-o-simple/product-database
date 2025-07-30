@@ -6,7 +6,7 @@ import { CreateProductGroupButton } from '@/components/layout/productFamily/Crea
 import useRouter from '@/utils/useRouter'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 
-export interface RawProductFamily {
+export interface DBProductFamily {
   id: string
   name: string
   parent: string | null
@@ -50,10 +50,10 @@ const data = {
       name: 'Pro',
       parent: '3',
     },
-  ] as RawProductFamily[],
+  ] as DBProductFamily[],
 }
 
-function mapWithParentObjects(items: RawProductFamily[]): ProductFamilyProps[] {
+function mapWithParentObjects(items: DBProductFamily[]): ProductFamilyProps[] {
   const byId = new Map<string, ProductFamilyProps>()
 
   // Zuerst leere Objekte erstellen, ohne parents
@@ -77,11 +77,9 @@ function sortProductFamiliesTree(
 ): ProductFamilyProps[] {
   const result: ProductFamilyProps[] = []
 
-  // Map zum schnellen Zugriff nach ID
   const byId = new Map<string, ProductFamilyProps>()
   families.forEach((f) => byId.set(f.id, f))
 
-  // Liste der Kinder pro Parent-ID
   const childrenMap = new Map<string | null, ProductFamilyProps[]>()
   families.forEach((f) => {
     const key = f.parent?.id ?? null
@@ -89,17 +87,16 @@ function sortProductFamiliesTree(
     childrenMap.get(key)!.push(f)
   })
 
-  // Rekursiv sortiert anhängen
   function visit(parentId: string | null) {
     const children = childrenMap.get(parentId) || []
     const sorted = children.sort((a, b) => a.name.localeCompare(b.name))
     for (const child of sorted) {
       result.push(child)
-      visit(child.id) // rekursiv Kinder besuchen
+      visit(child.id)
     }
   }
 
-  visit(null) // Starte bei Root-Level
+  visit(null)
 
   return result
 }
@@ -119,7 +116,7 @@ export function useProductFamilyListQuery(withParents = false) {
 
 export function useProductFamilyQuery(id: string) {
   const { data: productFamilies } = data as unknown as {
-    data: RawProductFamily[]
+    data: DBProductFamily[]
   }
 
   const productFamily = productFamilies.find((pf) => pf.id === id) || null

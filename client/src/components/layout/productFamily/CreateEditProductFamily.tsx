@@ -1,9 +1,9 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
 import {
+  DBProductFamily,
   ProductFamilyChains,
   ProductFamilyProps,
-  RawProductFamily,
   useProductFamilyListQuery,
   useProductFamilyQuery,
 } from '@/routes/ProductFamilies'
@@ -99,7 +99,7 @@ export default function CreateEditProductFamily() {
     data: ProductFamilyProps[]
   }
   const { data: previousData } = useProductFamilyQuery(familyId || '')
-  const [family, setFamily] = useState<RawProductFamily>({
+  const [family, setFamily] = useState<DBProductFamily>({
     id: previousData?.id || '',
     name: previousData?.name || '',
     parent: previousData?.parent || null,
@@ -137,8 +137,6 @@ export default function CreateEditProductFamily() {
   //     </Modal>
   //   )
   // }
-
-  console.log('families', family, families)
 
   return (
     <Modal
@@ -182,14 +180,25 @@ export default function CreateEditProductFamily() {
                 inputWrapper: 'border-1 shadow-none',
               },
             }}
-            inputValue={
-              families.find((item) => item.id === family.parent)?.name || ''
-            }
+            onSelectionChange={(key) => {
+              if (key === null) {
+                setFamily({ ...family, parent: null })
+                return
+              }
+
+              setFamily({
+                ...family,
+                parent: key === '' ? null : key?.toString(),
+              })
+            }}
           >
             {families
               .filter((item) => item.id !== family.id)
               .map((item) => (
-                <AutocompleteItem key={item.id}>
+                <AutocompleteItem
+                  key={item.id.toString()}
+                  textValue={item.name}
+                >
                   <ProductFamilyChains item={item} />
                 </AutocompleteItem>
               ))}
