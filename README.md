@@ -83,3 +83,9 @@ Key guidelines:
 - Ensure linting and automated tests pass before submitting.  
 - Open a pull request using the template
 - Address reviewer feedback promptly
+
+## Security Considerations
+
+Please refer to [`SECURITY-CONSIDERATIONS.md`](SECURITY-CONSIDERATIONS.md) for details about how product-database addresses the [OWASP Top 10 Web Application Security Risks](https://owasp.org/www-project-top-ten/).
+
+[(back to top)](#bsi-secvisogram-csaf-20-web-editor)
