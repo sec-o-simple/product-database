@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:api": "cd ../backend && go run main.go",
+    "dev:api": "cd ../server && make dev",
     "build": "tsc && vite build",
     "test": "vitest",
     "lint": "eslint .",

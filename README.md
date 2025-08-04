@@ -1,5 +1,9 @@
 # Product Database
 
+## Introduction
+
+_Placeholder for BSI Description_
+
 ## Project Structure
 
 ```
@@ -28,7 +32,7 @@ This is a monorepo. Each subproject (`server`, `client`) has its own setup instr
 
 ## Architecture Overview
 
-A modern web application with a **React + Tailwind + HeroUI** frontend and a **Go backend**. API contracts are defined via **OpenAPI/Swagger**, and asynchronous or background processing is handled through **Fuego**. The system emphasizes clear interface contracts, modularity, scalability, and great developer ergonomics.
+A modern web application with a **React + Tailwind + HeroUI** frontend and a **Go backend**. API contracts are defined via **OpenAPI/Swagger** automatically handled by the framework **Fuego**. The system emphasizes clear interface contracts, modularity, scalability, and great developer ergonomics.
 
 ### Tech Stack
 
@@ -40,8 +44,9 @@ A modern web application with a **React + Tailwind + HeroUI** frontend and a **G
 
 - **Backend:**  
   - Golang  
-  - Fuego (background job / workflow orchestration)  
+  - Fuego (HTTP Framework)  
   - Swagger / OpenAPI for API specification and interactive docs  
+  - GORM (ORM Library)
 
 ### High-Level Architecture
 
@@ -71,18 +76,11 @@ in order to prevent large merge conflicts.
 - Pull requests must follow the [Template](https://raw.githubusercontent.com/sec-o-simple/sec-o-simple/refs/heads/main/.github/pull_request_template.md)
 
 - Commit messages should be clear and imperative. 
+- Address reviewer feedback promptly
 
 ## Contributing
 
 Please refer to this [document](CONTRIBUTING.md).
-
-Key guidelines:
-
-- Fork or branch off `main`.  
-- Use descriptive branch names (`feat/...`, `fix/...`).  
-- Ensure linting and automated tests pass before submitting.  
-- Open a pull request using the template
-- Address reviewer feedback promptly
 
 ## Security Considerations
 

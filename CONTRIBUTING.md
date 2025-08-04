@@ -15,10 +15,10 @@ Please submit all contributions and issues to the specific repositories:
 
 The process described here has several goals:
 
-    Maintain Sec-O-Simple's quality
+    Maintain the quality of the software
     Fix problems that are important to users
-    Engage the community in working toward the best possible Sec-O-Simple
-    Enable a sustainable system for Sec-O-Simple's maintainers to review contributions
+    Engage the community in working toward the best possible solutions
+    Enable a sustainable system for the maintainers to review contributions
 
 The following rules apply:
 
