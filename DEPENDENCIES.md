@@ -40,7 +40,7 @@ This project is split into [frontend](./client/README.md) and [backend](./server
 
 | Module | Purpose |
 |--------|---------|
-| `github.com/go-fuego/fuego` | Background job and workflow orchestration. |
+| `github.com/go-fuego/fuego` | HTTP framework |
 | `github.com/google/uuid` | UUID generation. |
 | `github.com/joho/godotenv` | Environment configuration loading. |
 | `gorm.io/gorm`, `gorm.io/driver/sqlite` | ORM layer and SQLite persistence driver. |
