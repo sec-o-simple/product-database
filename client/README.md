@@ -22,6 +22,9 @@ $ cp .env.sample .env
 ```sh
 # Start vite development server
 $ npm run dev
+
+# Run Backend & Frontend in the same terminal
+$ npm run dev-all
 ```
 
 The webapp is now accessible at [http://localhost:8080](http://localhost:8080)
