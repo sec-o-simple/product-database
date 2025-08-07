@@ -3,7 +3,7 @@
     "goHome": "Zur Startseite",
     "title": "Produktdatenbank",
     "export": {
-      "label": "Exportieren",
+      "label": "CSAF Produktbaum exportieren",
       "exportSelected": "Einträge exportieren ({{count}})",
       "stopSelection": "Auswahl beenden",
       "error": {

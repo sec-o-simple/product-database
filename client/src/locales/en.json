@@ -3,7 +3,7 @@
     "goHome": "Go to Home",
     "title": "Product Database",
     "export": {
-      "label": "Export",
+      "label": "Export CSAF Product Tree",
       "exportSelected": "Export Selected ({{count}})",
       "stopSelection": "Stop Selection",
       "error": {
