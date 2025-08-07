@@ -5,9 +5,12 @@ import LatestChip from '@/components/forms/Latest'
 import ListItem from '@/components/forms/ListItem'
 import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
-import { Chip, Divider } from '@heroui/react'
+import { faEdit, faFileExport } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Button } from '@heroui/button'
+import { addToast, Chip, Divider } from '@heroui/react'
 import { Tab, Tabs } from '@heroui/tabs'
+import { createContext, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeleteProduct } from './Product'
 
@@ -130,18 +133,110 @@ export function ProductItem({
   )
 }
 
+export const SelectableContext = createContext<{
+  selectable: boolean
+  toggleSelectable: () => void
+  selected: string[]
+  setSelected: React.Dispatch<React.SetStateAction<string[]>>
+}>({
+  selectable: false,
+  toggleSelectable: () => {},
+  selected: [],
+  setSelected: () => {},
+})
+
+function useExportProductTree() {
+  const { t } = useTranslation()
+
+  return client.useMutation('get', '/api/v1/products/export', {
+    onSuccess: (response) => {
+      const blob = new Blob([JSON.stringify(response, null, 2)], {
+        type: 'application/json',
+      })
+
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `product_tree_export_${Date.now()}.json`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    },
+    onError: (error) => {
+      addToast({
+        title: t('export.error.title'),
+        description: error?.title || t('export.error.text'),
+        color: 'danger',
+      })
+    },
+  })
+}
+
 export default function Products() {
   const { data: products } = client.useQuery('get', '/api/v1/products')
+  const { t } = useTranslation()
+  const [selected, setSelected] = useState<string[]>([])
+  const [selectable, setSelectable] = useState<boolean>(false)
+  const toggleSelectable = () => {
+    setSelectable(!selectable)
+    setSelected([])
+  }
+
+  const exportMutation = useExportProductTree()
+
+  const onExportClick = useCallback(() => {
+    exportMutation.mutate({
+      params: {
+        query: { ids: selected.join(',') },
+      },
+    })
+  }, [exportMutation, selected])
 
   return (
     <div className="flex grow flex-col items-center gap-4">
       <DashboardTabs selectedKey="products" />
 
-      <DataGrid exportable>
-        {products?.map((product) => (
-          <ProductItem key={product.id} product={product} />
-        ))}
-      </DataGrid>
+      <div className="flex w-full items-center justify-end gap-2">
+        {selectable ? (
+          <>
+            <Button variant="light" color="danger" onPress={toggleSelectable}>
+              {t('export.stopSelection')}
+            </Button>
+
+            <Button
+              color="primary"
+              onPress={onExportClick}
+              isDisabled={selected.length === 0}
+            >
+              <FontAwesomeIcon icon={faFileExport} />
+              {t('export.exportSelected', { count: selected.length })}
+            </Button>
+          </>
+        ) : (
+          <Button variant="light" color="primary" onPress={toggleSelectable}>
+            {t('export.label')}
+          </Button>
+        )}
+      </div>
+
+      <SelectableContext.Provider
+        value={{
+          selectable,
+          toggleSelectable: () => {
+            setSelectable(!selectable)
+            setSelected([])
+          },
+          selected,
+          setSelected,
+        }}
+      >
+        <DataGrid>
+          {products?.map((product) => (
+            <ProductItem key={product.id} product={product} />
+          ))}
+        </DataGrid>
+      </SelectableContext.Provider>
 
       {/* <Pagination /> */}
     </div>

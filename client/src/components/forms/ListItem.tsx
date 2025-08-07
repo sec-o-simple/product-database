@@ -1,6 +1,6 @@
+import { SelectableContext } from '@/routes/Products'
 import { cn } from '@heroui/theme'
-import React from 'react'
-import { SelectableContext } from './DataGrid'
+import React, { useContext } from 'react'
 
 interface ListItemProps {
   id?: string
@@ -47,8 +47,7 @@ export default function ListItem({
   actions,
   ...props
 }: Readonly<ListItemProps>) {
-  const { selectable, selected, setSelected } =
-    React.useContext(SelectableContext)
+  const { selectable, selected, setSelected } = useContext(SelectableContext)
 
   const baseClassnames =
     'group flex w-full flex-col gap-1 justify-between rounded-lg bg-white px-4 py-2 border-1 border-default-200 transition-all'
