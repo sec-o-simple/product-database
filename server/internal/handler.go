@@ -108,13 +108,13 @@ func (h *Handler) GetProduct(c fuego.ContextNoBody) (ProductDTO, error) {
 	return product, nil
 }
 
-func (h *Handler) ExportProductTree(c fuego.ContextWithBody[[]string]) (map[string]interface{}, error) {
+func (h *Handler) ExportProductTree(c fuego.ContextWithBody[ExportRequestDTO]) (map[string]interface{}, error) {
 	body, err := c.Body()
 	if err != nil {
 		return nil, err
 	}
 
-	return h.svc.ExportProducts(c.Request().Context(), body)
+	return h.svc.ExportCSAFProductTree(c.Request().Context(), body.ProductIDs)
 }
 
 func (h *Handler) ListProductVersions(c fuego.ContextNoBody) ([]ProductVersionDTO, error) {

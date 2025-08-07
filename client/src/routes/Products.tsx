@@ -187,7 +187,9 @@ export default function Products() {
 
   const onExportClick = useCallback(() => {
     exportMutation.mutate({
-      body: selected.length > 0 ? selected : [],
+      body: {
+        product_ids: selected,
+      },
     })
   }, [exportMutation, selected])
 

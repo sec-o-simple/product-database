@@ -725,6 +725,11 @@ export interface components {
             /** @example Vendor Name */
             name: string;
         };
+        /** @description ExportRequestDTO schema */
+        ExportRequestDTO: {
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_ids: string[];
+        };
         /** @description HTTPError schema */
         HTTPError: {
             /** @description Human readable error message */
@@ -1832,10 +1837,10 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
-        /** @description Request body for []string */
+        /** @description Request body for internal.ExportRequestDTO */
         requestBody: {
             content: {
-                "*/*": components["schemas"]["string"][];
+                "*/*": components["schemas"]["ExportRequestDTO"];
             };
         };
         responses: {

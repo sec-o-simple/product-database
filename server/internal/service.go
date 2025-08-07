@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/go-fuego/fuego"
@@ -181,15 +180,10 @@ func (s *Service) DeleteVendor(ctx context.Context, id string) error {
 
 // Products
 
-func (s *Service) ExportProducts(ctx context.Context, ids []string) (map[string]interface{}, error) {
+func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string) (map[string]interface{}, error) {
 	vendorMap := make(map[string]map[string]interface{})
 
-	for _, raw := range ids {
-		id := strings.TrimSpace(raw)
-		if id == "" {
-			continue
-		}
-
+	for _, id := range productIDs {
 		p, err := s.repo.GetNodeByID(ctx, id, WithParent())
 		if err != nil {
 			return nil, err
@@ -199,7 +193,7 @@ func (s *Service) ExportProducts(ctx context.Context, ids []string) (map[string]
 			return nil, err
 		}
 
-		vers, err := s.repo.GetNodeByID(ctx, *&p.ID, WithChildren())
+		vers, err := s.repo.GetNodeByID(ctx, p.ID, WithChildren())
 		if err != nil {
 			return nil, err
 		}

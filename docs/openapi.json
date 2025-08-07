@@ -128,6 +128,22 @@
 				],
 				"type": "object"
 			},
+			"ExportRequestDTO": {
+				"description": "ExportRequestDTO schema",
+				"properties": {
+					"product_ids": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"product_ids"
+				],
+				"type": "object"
+			},
 			"HTTPError": {
 				"description": "HTTPError schema",
 				"properties": {
@@ -1973,14 +1989,11 @@
 					"content": {
 						"*/*": {
 							"schema": {
-								"items": {
-									"$ref": "#/components/schemas/string"
-								},
-								"type": "array"
+								"$ref": "#/components/schemas/ExportRequestDTO"
 							}
 						}
 					},
-					"description": "Request body for []string",
+					"description": "Request body for internal.ExportRequestDTO",
 					"required": true
 				},
 				"responses": {
