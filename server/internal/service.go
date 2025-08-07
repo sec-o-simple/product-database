@@ -212,17 +212,15 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			if err != nil {
 				return nil, err
 			}
-			var rawHelpers []json.RawMessage
-			for _, helper := range helpers {
-				rawHelpers = append(rawHelpers, json.RawMessage(helper.Metadata))
-			}
 
 			prodMap := map[string]interface{}{
 				"name":       v.Name + " " + p.Name + " " + ver.Name,
 				"product_id": ver.ID,
 			}
-			if len(rawHelpers) > 0 {
-				prodMap["product_identification_helper"] = rawHelpers
+
+			csafHelpers := s.convertIdentificationHelpersToCSAF(helpers)
+			if len(csafHelpers) > 0 {
+				prodMap["product_identification_helper"] = csafHelpers
 			}
 
 			versionNodes = append(versionNodes, map[string]interface{}{
@@ -1089,6 +1087,74 @@ func (s *Service) CreateIdentificationHelper(ctx context.Context, create CreateI
 	}
 
 	return IdentificationHelperToDTO(createdHelper), nil
+}
+
+// Converts a slice of IdentificationHelperListItemDTO to a merged product_identification_helper object for export
+func (s *Service) convertIdentificationHelpersToCSAF(helpers []IdentificationHelperListItemDTO) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	for _, helper := range helpers {
+		if helper.Metadata == "" {
+			continue
+		}
+
+		var metadata map[string]interface{}
+		if err := json.Unmarshal([]byte(helper.Metadata), &metadata); err != nil {
+			continue
+		}
+
+		switch helper.Category {
+		case "cpe":
+			if cpe, ok := metadata["cpe"]; ok {
+				result["cpe"] = cpe
+			}
+		case "models":
+			if models, ok := metadata["models"]; ok {
+				result["model_numbers"] = models
+			}
+		case "sbom":
+			if sbomUrls, ok := metadata["sbom_urls"]; ok {
+				result["sbom_urls"] = sbomUrls
+			}
+		case "sku":
+			if skus, ok := metadata["skus"]; ok {
+				result["skus"] = skus
+			}
+		case "uri":
+			if uris, ok := metadata["uris"]; ok {
+				result["x_generic_uris"] = uris
+			}
+		case "hashes":
+			if fileHashes, ok := metadata["file_hashes"].([]interface{}); ok {
+				var hashes []map[string]interface{}
+				for _, fileHash := range fileHashes {
+					if hashMap, ok := fileHash.(map[string]interface{}); ok {
+						if items, hasItems := hashMap["items"].([]interface{}); hasItems {
+							if filename, hasFilename := hashMap["filename"].(string); hasFilename {
+								hashes = append(hashes, map[string]interface{}{
+									"file_hashes": items,
+									"filename":    filename,
+								})
+							}
+						}
+					}
+				}
+				if len(hashes) > 0 {
+					result["hashes"] = hashes
+				}
+			}
+		case "purl":
+			if purl, ok := metadata["purl"]; ok {
+				result["purl"] = purl
+			}
+		case "serial":
+			if serialNumbers, ok := metadata["serial_numbers"]; ok {
+				result["serial_numbers"] = serialNumbers
+			}
+		}
+	}
+
+	return result
 }
 
 func (s *Service) GetIdentificationHelperByID(ctx context.Context, id string) (IdentificationHelperDTO, error) {
