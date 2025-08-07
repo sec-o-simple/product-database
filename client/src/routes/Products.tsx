@@ -14,6 +14,17 @@ import { createContext, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeleteProduct } from './Product'
 
+type VersionDTO = {
+  description?: string
+  full_name: string
+  id: string
+  is_latest: boolean
+  name: string
+  predecessor_id?: string | null
+  product_id?: string
+  released_at?: string | null
+}
+
 export function useProductListQuery() {
   const request = client.useQuery('get', '/api/v1/products')
 
@@ -81,16 +92,8 @@ export function ProductItem({
     description?: string
     vendor_id?: string
     type?: string
-    latest_versions?: {
-      description?: string
-      full_name: string
-      id: string
-      is_latest: boolean
-      name: string
-      predecessor_id?: string | null
-      product_id?: string
-      released_at?: string | null
-    }[]
+    versions?: VersionDTO[]
+    latest_versions?: VersionDTO[]
   }
 }) {
   const { navigateToModal, navigate } = useRouter()
@@ -122,11 +125,18 @@ export function ProductItem({
         </div>
       }
       chips={
-        product.type && (
-          <Chip radius="md" size="sm">
-            {product.type}
-          </Chip>
-        )
+        <div className="flex items-center gap-2">
+          {product.type && (
+            <Chip radius="md" color="primary" variant="flat">
+              {t(`product.type.${product.type}`)}
+            </Chip>
+          )}
+          {product.versions && product.versions?.length > 0 && (
+            <Chip radius="md">
+              {t('version.label_count', { count: product.versions.length })}
+            </Chip>
+          )}
+        </div>
       }
       description={product.description || t('common.noDescription')}
     />
@@ -237,8 +247,6 @@ export default function Products() {
           ))}
         </DataGrid>
       </SelectableContext.Provider>
-
-      {/* <Pagination /> */}
     </div>
   )
 }

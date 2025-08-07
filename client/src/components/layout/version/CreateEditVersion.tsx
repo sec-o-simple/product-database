@@ -30,7 +30,7 @@ interface CreateEditVersionProps {
 export type VersionProps = {
   id?: string
   name: string
-  releaseDate?: DateValue | null
+  releaseDate?: DateValue | null | undefined
 }
 
 export function useVersionMutation({
@@ -227,7 +227,7 @@ export default function CreateEditVersion() {
                 <DatePicker
                   label="Release Date"
                   variant="bordered"
-                  value={version.releaseDate}
+                  value={version.releaseDate ?? null}
                   onChange={(date) =>
                     setVersion({ ...version, releaseDate: date })
                   }

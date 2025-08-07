@@ -1,3 +1,5 @@
+import { ProductProps } from '@/components/layout/product/CreateEditProduct'
+import { VersionProps } from '@/components/layout/version/CreateEditVersion'
 import {
   faArrowDown,
   faArrowUp,
@@ -12,17 +14,17 @@ import {
   TreeItem,
   TreeViewBaseItem,
 } from '@mui/x-tree-view'
-import { useRef, useState } from 'react'
+import { SyntheticEvent, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Product from './Product'
 import { DashboardTabs, useProductListQuery } from './Products'
 import Vendor from './Vendor'
-import { useVendorListQuery } from './Vendors'
+import { useVendorListQuery, VendorProps } from './Vendors'
 import Version from './Version'
 
 interface SelectedNode {
   type: 'vendor' | 'product' | 'version'
-  item: any
+  item: ProductProps | VendorProps | VersionProps
 }
 
 export function HydrateFallback() {
@@ -160,7 +162,10 @@ export default function TreeView() {
       .sort((a, b) => a.name.localeCompare(b.name)),
   }))
 
-  const handleSelectedItemsChange = (_event: any, itemIds: string[] | null) => {
+  const handleSelectedItemsChange = (
+    _event: SyntheticEvent | null,
+    itemIds: string[] | null,
+  ) => {
     if (itemIds === null) {
       setSelectedIds([])
       return
@@ -176,15 +181,14 @@ export default function TreeView() {
         vendors?.map((vendor) => ({
           id: String(vendor.id),
           label: vendor.name,
-          children: products
-            ?.filter((product) => product.vendor_id === vendor.id)
-            .map((product) => ({
-              ...product,
-              versions: product.versions?.sort((a, b) =>
-                a.name.localeCompare(b.name),
-              ),
-            }))
-            .sort((a, b) => a.name.localeCompare(b.name)),
+          children: vendor.products?.map((product) => ({
+            id: String(product.id),
+            label: product.name,
+            children: product.versions?.map((version: VersionProps) => ({
+              id: String(version.id),
+              label: version.name,
+            })),
+          })),
         })),
         itemIds,
         selectedIds,
@@ -193,7 +197,7 @@ export default function TreeView() {
   }
 
   const navigate = useNavigate()
-  const apiRef = useRef<any>(null)
+  const apiRef = useRef(null)
 
   return (
     <div className="flex grow flex-col items-center gap-4">
@@ -235,7 +239,7 @@ export default function TreeView() {
                         newItems.push(String(vendor.id))
                         vendor.products?.forEach((product) => {
                           newItems.push(vendor.id + '_' + product.id)
-                          product.versions?.forEach((version) => {
+                          product.versions?.forEach((version: VersionProps) => {
                             newItems.push(
                               vendor.id + '_' + product.id + '_' + version.id,
                             )
@@ -293,7 +297,7 @@ export default function TreeView() {
                         })
                       }}
                     >
-                      {product.versions?.map((version) => (
+                      {product.versions?.map((version: VersionProps) => (
                         <TreeItem
                           key={vendor.id + '_' + product.id + '_' + version.id}
                           itemId={

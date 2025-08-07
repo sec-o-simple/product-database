@@ -393,7 +393,7 @@ func (s *Service) DeleteProduct(ctx context.Context, id string) error {
 }
 
 func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
-	nodes, err := s.repo.GetNodesByCategory(ctx, ProductName, WithParent())
+	nodes, err := s.repo.GetNodesByCategory(ctx, ProductName, WithParent(), WithChildren())
 	if err != nil {
 		return nil, err
 	}
