@@ -120,7 +120,6 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 
 	ctx := c.Request().Context()
 
-	// vendorName → vendorNode map
 	vendorMap := make(map[string]map[string]interface{})
 
 	for _, raw := range rawIDs {
@@ -129,7 +128,6 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 			continue
 		}
 
-		// fetch product, vendor, versions
 		p, err := h.svc.GetProductByID(ctx, id)
 		if err != nil {
 			return nil, err
@@ -143,7 +141,6 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 			return nil, err
 		}
 
-		// build versionNodes as before
 		var versionNodes []interface{}
 		for _, ver := range vers {
 			helpers, err := h.svc.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
@@ -170,7 +167,6 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 			})
 		}
 
-		// build productNode
 		productNode := map[string]interface{}{
 			"category": "product_name",
 			"name":     p.Name,
@@ -183,12 +179,9 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 			productNode["branches"] = versionNodes
 		}
 
-		// upsert into vendorMap
 		if vn, exists := vendorMap[v.Name]; exists {
-			// append to existing vendor's branches
 			vn["branches"] = append(vn["branches"].([]interface{}), productNode)
 		} else {
-			// create new vendor entry
 			vendorMap[v.Name] = map[string]interface{}{
 				"category": "vendor",
 				"name":     v.Name,
@@ -197,7 +190,6 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 		}
 	}
 
-	// flatten map → slice
 	var vendorNodes []interface{}
 	for _, vn := range vendorMap {
 		vendorNodes = append(vendorNodes, vn)
