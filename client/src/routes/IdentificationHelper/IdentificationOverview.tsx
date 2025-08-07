@@ -196,8 +196,8 @@ function IdentificationItem({
               variant="light"
               color="danger"
               size="sm"
-              title={t('identificationHelper.deleteConfirmTitle')}
-              text={t('identificationHelper.deleteConfirmText', {
+              confirmTitle={t('identificationHelper.deleteConfirmTitle')}
+              confirmText={t('identificationHelper.deleteConfirmText', {
                 label: t(`${helperType.translationKey}.label`).toLowerCase(),
               })}
               onConfirm={onDelete}
