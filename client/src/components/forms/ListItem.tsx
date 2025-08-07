@@ -1,7 +1,9 @@
 import { cn } from '@heroui/theme'
 import React from 'react'
+import { SelectableContext } from './DataGrid'
 
 interface ListItemProps {
+  id?: string
   title?: string | React.ReactNode
   description?: string
   chips?: React.ReactNode
@@ -43,17 +45,45 @@ export default function ListItem({
   onClick,
   classNames,
   actions,
+  ...props
 }: Readonly<ListItemProps>) {
+  const { selectable, selected, setSelected } =
+    React.useContext(SelectableContext)
+
+  const baseClassnames =
+    'group flex w-full flex-col gap-1 justify-between rounded-lg bg-white px-4 py-2 border-1 border-default-200 transition-all'
+  const hoverClassnames =
+    'hover:bg-gray-50 group-hover:transition-background hover:cursor-pointer'
+  const selectableClassnames =
+    'selectable group hover:bg-gray-100 group-hover:transition-background hover:cursor-pointer'
+  const isSelectedClassnames = selected.includes(props.id || '')
+    ? 'bg-gray-50 border-primary-500'
+    : ''
+
+  const className = cn(
+    baseClassnames,
+    hoverClassnames,
+    classNames?.base,
+    selectable ? selectableClassnames : '',
+    isSelectedClassnames,
+  )
+
   return (
     <div
       onClick={(e) => {
         e.stopPropagation()
+        if (selectable && props.id) {
+          const itemId = props.id
+          if (selected.includes(itemId)) {
+            setSelected(selected.filter((id) => id !== itemId))
+          } else {
+            setSelected([...selected, itemId])
+          }
+          return
+        }
         onClick?.()
       }}
-      className={cn(
-        'group flex w-full flex-col gap-1 justify-between rounded-lg bg-white px-4 py-2 border-1 border-default-200 hover:bg-gray-50 group-hover:transition-background hover:cursor-pointer',
-        classNames?.base,
-      )}
+      className={className}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -70,7 +100,11 @@ export default function ListItem({
           )}
         </div>
 
-        <div className="invisible group-hover:visible">{actions}</div>
+        <div
+          className={cn('invisible', selectable ? '' : 'group-hover:visible')}
+        >
+          {actions}
+        </div>
       </div>
 
       {chips && <div className="pb-1">{chips}</div>}

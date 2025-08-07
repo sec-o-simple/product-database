@@ -7,9 +7,9 @@ import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
 import { Chip } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { DashboardTabs } from './Products'
 import { DeleteVendor } from './Vendor'
-import { useTranslation } from 'react-i18next'
 
 export type VendorProps = {
   id?: string
@@ -37,6 +37,7 @@ export function VendorItem({
   return (
     <ListItem
       key={vendor.id}
+      id={vendor.id || ''}
       onClick={() => navigate(`/vendors/${vendor.id}`)}
       title={vendor.name}
       description={vendor.description || t('common.noDescription')}

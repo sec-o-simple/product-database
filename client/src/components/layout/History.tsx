@@ -41,6 +41,7 @@ export default function History({
       {updates.map((update) => (
         <ListItem
           key={update.id}
+          id={update.id}
           title={update.title}
           chips={
             <Chip color="primary" variant="flat">

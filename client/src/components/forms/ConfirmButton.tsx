@@ -10,14 +10,16 @@ import {
 import { useTranslation } from 'react-i18next'
 
 type ConfirmButtonProps = {
-  confirmText: string
   confirmTitle: string
+  confirmText?: string
+  confirmContent?: React.ReactNode
   onConfirm: () => void
 } & ButtonProps
 
 export default function ConfirmButton({
-  confirmText,
   confirmTitle,
+  confirmText,
+  confirmContent,
   onConfirm,
   ...props
 }: ConfirmButtonProps) {
@@ -38,6 +40,7 @@ export default function ConfirmButton({
               </ModalHeader>
               <ModalBody className="gap-4">
                 <p>{confirmText}</p>
+                {confirmContent}
               </ModalBody>
               <ModalFooter>
                 <Button variant="light" onPress={onClose}>

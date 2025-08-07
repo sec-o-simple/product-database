@@ -1,6 +1,9 @@
 {
 	"components": {
 		"schemas": {
+			"": {
+				"description": " schema"
+			},
 			"CreateIdentificationHelperDTO": {
 				"description": "CreateIdentificationHelperDTO schema",
 				"properties": {
@@ -1953,6 +1956,85 @@
 				]
 			}
 		},
+		"/api/v1/products/export": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ExportProductsTree`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nExports the tree structure of a product in CSAF format",
+				"operationId": "GET_/api/v1/products/export",
+				"parameters": [
+					{
+						"description": "comma-separated list of product IDs to export",
+						"in": "query",
+						"name": "ids",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Export products in CSAF format",
+				"tags": [
+					"api/v1",
+					"products"
+				]
+			}
+		},
 		"/api/v1/products/{id}": {
 			"delete": {
 				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteProduct`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a product and its associated versions from the system",
@@ -3000,7 +3082,7 @@
 	"servers": [
 		{
 			"description": "local server",
-			"url": "http://127.0.0.1:5000"
+			"url": "http://127.0.0.1:9999"
 		}
 	],
 	"tags": [

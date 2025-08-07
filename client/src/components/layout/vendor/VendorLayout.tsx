@@ -1,14 +1,18 @@
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
 import { DeleteVendor, useVendorQuery } from '@/routes/Vendor'
 import useRouter from '@/utils/useRouter'
+import { faFileExport } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
+import { Checkbox } from '@heroui/react'
 import { cn } from '@heroui/theme'
+import { useTranslation } from 'react-i18next'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { AddProductButton } from '../product/CreateEditProduct'
-import { useTranslation } from 'react-i18next'
 
 export function Attribute({
   label,
@@ -67,6 +71,23 @@ export default function VendorLayout() {
         title={`${t('vendor.label')}: ${vendor.name}`}
         backLink="/vendors"
         historyLink={`/vendors/${vendorId}/history`}
+        exportButton={
+          <ConfirmButton
+            confirmText="Are you sure you want to export this vendor?"
+            confirmContent={
+              <div>
+                <Checkbox>Include all products</Checkbox>
+              </div>
+            }
+            variant="light"
+            color="primary"
+            confirmTitle="Export Vendor"
+            onConfirm={() => navigate(`/vendors/${vendor.id}/export`)}
+          >
+            <FontAwesomeIcon icon={faFileExport} />
+            Export
+          </ConfirmButton>
+        }
       >
         <AddProductButton vendorId={vendor.id?.toString()} />
       </TopBar>

@@ -1,149 +1,155 @@
 {
-    "translation": {
-        "goHome": "Zur Startseite",
-        "title": "Produktdatenbank",
-        "common": {
-            "createObject": "{{label}} erstellen",
-            "editObject": "{{label}} bearbeiten",
-            "addObject": "{{label}} hinzufügen",
-            "create": "Erstellen",
-            "save": "Speichern",
-            "noDescription": "Keine Beschreibung",
-            "notImplemented": "Noch nicht implementiert",
-            "delete": "Löschen",
-            "edit": "Bearbeiten",
-            "cancel": "Abbrechen",
-            "emptyState": {
-                "title": "Keine Einträge",
-                "description": "Es gibt noch keine Einträge, die angezeigt werden können."
-            },
-            "confirm": "Bestätigen",
-            "confirmDeleteTitle": "Sind Sie sicher?",
-            "confirmDeleteText": "Sie sind dabei, {{resource}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
-            "actions": "Aktionen"
+  "translation": {
+    "goHome": "Zur Startseite",
+    "title": "Produktdatenbank",
+    "error": {
+      "export": {
+        "title": "Exportfehler",
+        "text": "Ein Fehler ist beim Exportieren der Daten aufgetreten. Bitte versuchen Sie es später erneut."
+      }
+    },
+    "common": {
+      "createObject": "{{label}} erstellen",
+      "editObject": "{{label}} bearbeiten",
+      "addObject": "{{label}} hinzufügen",
+      "create": "Erstellen",
+      "save": "Speichern",
+      "noDescription": "Keine Beschreibung",
+      "notImplemented": "Noch nicht implementiert",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "cancel": "Abbrechen",
+      "emptyState": {
+        "title": "Keine Einträge",
+        "description": "Es gibt noch keine Einträge, die angezeigt werden können."
+      },
+      "confirm": "Bestätigen",
+      "confirmDeleteTitle": "Sind Sie sicher?",
+      "confirmDeleteText": "Sie sind dabei, {{resource}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+      "actions": "Aktionen"
+    },
+    "vendor": {
+      "label": "Anbieter"
+    },
+    "product": {
+      "label": "Produkt",
+      "label_other": "Produkte"
+    },
+    "version": {
+      "label": "Version",
+      "label_other": "Versionen"
+    },
+    "relationship": {
+      "label": "Beziehung",
+      "label_other": "Beziehungen",
+      "targetProduct": {
+        "empty": "Noch keine Zielprodukte hinzugefügt.",
+        "label": "Zielprodukt",
+        "label_other": "Zielprodukte"
+      },
+      "sourceProduct": {
+        "label": "Quellprodukt",
+        "label_other": "Quellprodukte"
+      },
+      "confirmDeleteResource": "die \"{{category}}\"-Beziehung zu {{totalVersions}} Version(en)",
+      "category": {
+        "default_component_of": "Standard-Komponente von",
+        "external_component_of": "Externe Komponente von",
+        "installed_on": "Installiert auf",
+        "installed_with": "Installiert mit",
+        "optional_component_of": "Optionale Komponente von"
+      }
+    },
+    "treeView": {
+      "label": "Baumansicht"
+    },
+    "identificationHelper": {
+      "label": "Identifikationshilfe",
+      "label_other": "Identifikationshilfen",
+      "notConfigured": "Nicht konfiguriert",
+      "addHelper": "{{label}} hinzufügen",
+      "editHelper": "Bearbeiten",
+      "deleteHelper": "Löschen",
+      "deleteConfirmTitle": "ID-Hilfe löschen",
+      "deleteConfirmText": "Sind Sie sicher, dass Sie diese {{label}}-Konfiguration löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "createTitle": "{{label}} erstellen",
+      "editTitle": "{{label}} bearbeiten",
+      "andMore": "und {{count}} weitere",
+      "addFile": "Datei hinzufügen",
+      "addHash": "Hash hinzufügen",
+      "addURI": "URI hinzufügen",
+      "filename": "Dateiname",
+      "algorithm": "Algorithmus",
+      "hashValue": "Hash-Wert",
+      "hashValues": "Hash-Werte",
+      "namespace": "Namespace",
+      "noDataYet": "Noch keine {{type}} hinzugefügt. Klicken Sie auf \"{{buttonText}}\", um zu beginnen.",
+      "fields": {
+        "cpeString": "CPE-String",
+        "purlString": "PURL-String",
+        "models": "Modelle",
+        "serialNumbers": "Seriennummern",
+        "sbomUrls": "SBOM-URLs",
+        "skus": "SKUs",
+        "genericUris": "Generische URIs"
+      },
+      "types": {
+        "cpe": {
+          "label": "CPE",
+          "entryTitle": "CPE",
+          "description": "Common Platform Enumeration (CPE) ist ein strukturiertes Namensschema für Informationssysteme, Software und Pakete."
         },
-        "vendor": {
-            "label": "Anbieter"
+        "hashes": {
+          "label": "Hashes",
+          "entryTitle": "Hash",
+          "description": "Datei-Hashes mit Algorithmen und Werten zur Integritätsprüfung."
         },
-        "product": {
-            "label": "Produkt",
-            "label_other": "Produkte"
+        "models": {
+          "label": "Modellnummern",
+          "entryTitle": "Modell",
+          "description": "Modellnummern sind spezifische Identifikatoren für Produktvarianten."
         },
-        "version": {
-            "label": "Version",
-            "label_other": "Versionen"
+        "purl": {
+          "label": "PURL",
+          "entryTitle": "PURL",
+          "description": "Package URL (PURL) ist ein Schema zur Identifizierung von Softwarepaketen."
         },
-        "relationship": {
-            "label": "Beziehung",
-            "label_other": "Beziehungen",
-            "targetProduct": {
-                "empty": "Noch keine Zielprodukte hinzugefügt.",
-                "label": "Zielprodukt",
-                "label_other": "Zielprodukte"
-            },
-            "sourceProduct": {
-                "label": "Quellprodukt",
-                "label_other": "Quellprodukte"
-            },
-            "confirmDeleteResource": "die \"{{category}}\"-Beziehung zu {{totalVersions}} Version(en)",
-            "category": {
-                "default_component_of": "Standard-Komponente von",
-                "external_component_of": "Externe Komponente von",
-                "installed_on": "Installiert auf",
-                "installed_with": "Installiert mit",
-                "optional_component_of": "Optionale Komponente von"
-            }
+        "sbom": {
+          "label": "SBOM URLs",
+          "entryTitle": "SBOM URL",
+          "description": "Software Bill of Materials (SBOM) URLs mit Links zu Komponentenlisten."
         },
-        "treeView": {
-            "label" : "Baumansicht"
+        "serial": {
+          "label": "Seriennummern",
+          "entryTitle": "Seriennummer",
+          "description": "Eindeutige Seriennummern zur Verfolgung einzelner Produktinstanzen."
         },
-        "identificationHelper": {
-            "label": "Identifikationshilfe",
-            "label_other": "Identifikationshilfen",
-            "notConfigured": "Nicht konfiguriert",
-            "addHelper": "{{label}} hinzufügen",
-            "editHelper": "Bearbeiten",
-            "deleteHelper": "Löschen",
-            "deleteConfirmTitle": "ID-Hilfe löschen",
-            "deleteConfirmText": "Sind Sie sicher, dass Sie diese {{label}}-Konfiguration löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-            "createTitle": "{{label}} erstellen",
-            "editTitle": "{{label}} bearbeiten",
-            "andMore": "und {{count}} weitere",
-            "addFile": "Datei hinzufügen",
-            "addHash": "Hash hinzufügen",
-            "addURI": "URI hinzufügen",
-            "filename": "Dateiname",
-            "algorithm": "Algorithmus",
-            "hashValue": "Hash-Wert",
-            "hashValues": "Hash-Werte",
-            "namespace": "Namespace",
-            "noDataYet": "Noch keine {{type}} hinzugefügt. Klicken Sie auf \"{{buttonText}}\", um zu beginnen.",
-            "fields": {
-                "cpeString": "CPE-String",
-                "purlString": "PURL-String",
-                "models": "Modelle",
-                "serialNumbers": "Seriennummern",
-                "sbomUrls": "SBOM-URLs",
-                "skus": "SKUs",
-                "genericUris": "Generische URIs"
-            },
-            "types": {
-                "cpe": {
-                    "label": "CPE",
-                    "entryTitle": "CPE",
-                    "description": "Common Platform Enumeration (CPE) ist ein strukturiertes Namensschema für Informationssysteme, Software und Pakete."
-                },
-                "hashes": {
-                    "label": "Hashes",
-                    "entryTitle": "Hash",
-                    "description": "Datei-Hashes mit Algorithmen und Werten zur Integritätsprüfung."
-                },
-                "models": {
-                    "label": "Modellnummern",
-                    "entryTitle": "Modell",
-                    "description": "Modellnummern sind spezifische Identifikatoren für Produktvarianten."
-                },
-                "purl": {
-                    "label": "PURL",
-                    "entryTitle": "PURL",
-                    "description": "Package URL (PURL) ist ein Schema zur Identifizierung von Softwarepaketen."
-                },
-                "sbom": {
-                    "label": "SBOM URLs",
-                    "entryTitle": "SBOM URL",
-                    "description": "Software Bill of Materials (SBOM) URLs mit Links zu Komponentenlisten."
-                },
-                "serial": {
-                    "label": "Seriennummern",
-                    "entryTitle": "Seriennummer",
-                    "description": "Eindeutige Seriennummern zur Verfolgung einzelner Produktinstanzen."
-                },
-                "sku": {
-                    "label": "SKUs",
-                    "entryTitle": "SKU",
-                    "description": "Stock Keeping Units (SKUs) für Lagerverwaltung und Identifikation."
-                },
-                "uri": {
-                    "label": "Generische URIs",
-                    "entryTitle": "URI",
-                    "description": "Generische Uniform Resource Identifiers mit Namespace- und URI-Paaren."
-                }
-            }
+        "sku": {
+          "label": "SKUs",
+          "entryTitle": "SKU",
+          "description": "Stock Keeping Units (SKUs) für Lagerverwaltung und Identifikation."
         },
-        "form": {
-            "errors": "Bitte überprüfen Sie das Formular auf Fehler.",
-            "select": "Bitte wählen Sie eine Option aus",
-            "fields": {
-                "name": "Name",
-                "description": "Beschreibung",
-                "vendor": "Anbieter",
-                "product": "Produkt",
-                "version": "Version",
-                "relationshipCategory": "Beziehungs-Kategorie",
-                "relationshipType": "Beziehungs-Typ",
-                "helperType": "Hilfsmittel-Typ",
-                "selectHelperType": "Hilfsmittel-Typ auswählen"
-            }
+        "uri": {
+          "label": "Generische URIs",
+          "entryTitle": "URI",
+          "description": "Generische Uniform Resource Identifiers mit Namespace- und URI-Paaren."
         }
+      }
+    },
+    "form": {
+      "errors": "Bitte überprüfen Sie das Formular auf Fehler.",
+      "select": "Bitte wählen Sie eine Option aus",
+      "fields": {
+        "name": "Name",
+        "description": "Beschreibung",
+        "vendor": "Anbieter",
+        "product": "Produkt",
+        "version": "Version",
+        "relationshipCategory": "Beziehungs-Kategorie",
+        "relationshipType": "Beziehungs-Typ",
+        "helperType": "Hilfsmittel-Typ",
+        "selectHelperType": "Hilfsmittel-Typ auswählen"
+      }
     }
+  }
 }

@@ -3,6 +3,7 @@ package internal
 import (
 	"github.com/go-fuego/fuego"
 	"github.com/go-fuego/fuego/option"
+	"github.com/go-fuego/fuego/param"
 )
 
 func RegisterRoutes(s *fuego.Server, svc *Service) {
@@ -56,6 +57,15 @@ func RegisterRoutes(s *fuego.Server, svc *Service) {
 	fuego.Get(products, "/{id}", h.GetProduct,
 		option.Summary("Get product by ID"),
 		option.Description("Returns details for a specific product"))
+
+	fuego.Get(products, "/export", h.ExportProductsTree,
+		option.Summary("Export products in CSAF format"),
+		option.Description("Exports the tree structure of a product in CSAF format"),
+		option.Query(
+			"ids",
+			"comma-separated list of product IDs to export",
+			param.Required(), // or param.Default("") if you want it optional
+		))
 
 	fuego.Put(products, "/{id}", h.UpdateProduct,
 		option.Summary("Update product"),

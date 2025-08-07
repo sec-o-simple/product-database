@@ -344,6 +344,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export products in CSAF format
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ExportProductsTree`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Exports the tree structure of a product in CSAF format
+         */
+        get: operations["GET_/api/v1/products/export"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products/{id}": {
         parameters: {
             query?: never;
@@ -642,6 +672,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description  schema */
+        "": unknown;
         /** @description CreateIdentificationHelperDTO schema */
         CreateIdentificationHelperDTO: {
             /** @example hashes */
@@ -1761,6 +1793,58 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ProductDTO"];
                     "application/xml": components["schemas"]["ProductDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/products/export": {
+        parameters: {
+            query: {
+                /** @description comma-separated list of product IDs to export */
+                ids: string;
+            };
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"];
+                    "application/xml": components["schemas"];
                 };
             };
             /** @description Bad Request _(validation or deserialization error)_ */
