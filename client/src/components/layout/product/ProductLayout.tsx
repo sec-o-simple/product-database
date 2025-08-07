@@ -18,11 +18,11 @@ import {
   DropdownSection,
   DropdownTrigger,
 } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { AddVersionButton } from '../version/CreateEditVersion'
-import { useTranslation } from 'react-i18next'
 
 export function AddIdHelper({
   onAdd,

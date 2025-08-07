@@ -19,6 +19,10 @@ type VendorDTO struct {
 }
 
 // Products
+type ExportRequestDTO struct {
+	ProductIDs []string `json:"product_ids" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,dive,uuid"`
+}
+
 type CreateProductDTO struct {
 	Name        string `json:"name" example:"Product Name" validate:"required"`
 	Description string `json:"description" example:"Product Description"`

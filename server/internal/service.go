@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -178,6 +179,91 @@ func (s *Service) DeleteVendor(ctx context.Context, id string) error {
 }
 
 // Products
+
+func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string) (map[string]interface{}, error) {
+	vendorMap := make(map[string]map[string]interface{})
+
+	for _, id := range productIDs {
+		p, err := s.GetProductByID(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+
+		if p.VendorID == nil {
+			return nil, fuego.NotFoundError{
+				Title: "Vendor not found",
+				Err:   nil,
+			}
+		}
+
+		v, err := s.GetVendorByID(ctx, *p.VendorID)
+		if err != nil {
+			return nil, err
+		}
+
+		vers, err := s.ListProductVersions(ctx, p.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		var versionNodes []interface{}
+		for _, ver := range vers {
+			helpers, err := s.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
+			if err != nil {
+				return nil, err
+			}
+
+			prodMap := map[string]interface{}{
+				"name":       v.Name + " " + p.Name + " " + ver.Name,
+				"product_id": ver.ID,
+			}
+
+			csafHelpers := s.convertIdentificationHelpersToCSAF(helpers)
+			if len(csafHelpers) > 0 {
+				prodMap["product_identification_helper"] = csafHelpers
+			}
+
+			versionNodes = append(versionNodes, map[string]interface{}{
+				"category": "product_version",
+				"name":     ver.Name,
+				"product":  prodMap,
+			})
+		}
+
+		productNode := map[string]interface{}{
+			"category": "product_name",
+			"name":     p.Name,
+			"product": map[string]interface{}{
+				"name":       v.Name + " " + p.Name,
+				"product_id": p.ID,
+			},
+		}
+		if len(versionNodes) > 0 {
+			productNode["branches"] = versionNodes
+		}
+
+		if vn, exists := vendorMap[v.Name]; exists {
+			vn["branches"] = append(vn["branches"].([]interface{}), productNode)
+		} else {
+			vendorMap[v.Name] = map[string]interface{}{
+				"category": "vendor",
+				"name":     v.Name,
+				"branches": []interface{}{productNode},
+			}
+		}
+	}
+
+	var vendorNodes []interface{}
+	for _, vn := range vendorMap {
+		vendorNodes = append(vendorNodes, vn)
+	}
+
+	return map[string]interface{}{
+		"product_tree": map[string]interface{}{
+			"branches": vendorNodes,
+		},
+	}, nil
+}
 
 func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (ProductDTO, error) {
 	vendorNode, err := s.repo.GetNodeByID(ctx, product.VendorID)
@@ -1001,6 +1087,74 @@ func (s *Service) CreateIdentificationHelper(ctx context.Context, create CreateI
 	}
 
 	return IdentificationHelperToDTO(createdHelper), nil
+}
+
+// Converts a slice of IdentificationHelperListItemDTO to a merged product_identification_helper object for export
+func (s *Service) convertIdentificationHelpersToCSAF(helpers []IdentificationHelperListItemDTO) map[string]interface{} {
+	result := make(map[string]interface{})
+
+	for _, helper := range helpers {
+		if helper.Metadata == "" {
+			continue
+		}
+
+		var metadata map[string]interface{}
+		if err := json.Unmarshal([]byte(helper.Metadata), &metadata); err != nil {
+			continue
+		}
+
+		switch helper.Category {
+		case "cpe":
+			if cpe, ok := metadata["cpe"]; ok {
+				result["cpe"] = cpe
+			}
+		case "models":
+			if models, ok := metadata["models"]; ok {
+				result["model_numbers"] = models
+			}
+		case "sbom":
+			if sbomUrls, ok := metadata["sbom_urls"]; ok {
+				result["sbom_urls"] = sbomUrls
+			}
+		case "sku":
+			if skus, ok := metadata["skus"]; ok {
+				result["skus"] = skus
+			}
+		case "uri":
+			if uris, ok := metadata["uris"]; ok {
+				result["x_generic_uris"] = uris
+			}
+		case "hashes":
+			if fileHashes, ok := metadata["file_hashes"].([]interface{}); ok {
+				var hashes []map[string]interface{}
+				for _, fileHash := range fileHashes {
+					if hashMap, ok := fileHash.(map[string]interface{}); ok {
+						if items, hasItems := hashMap["items"].([]interface{}); hasItems {
+							if filename, hasFilename := hashMap["filename"].(string); hasFilename {
+								hashes = append(hashes, map[string]interface{}{
+									"file_hashes": items,
+									"filename":    filename,
+								})
+							}
+						}
+					}
+				}
+				if len(hashes) > 0 {
+					result["hashes"] = hashes
+				}
+			}
+		case "purl":
+			if purl, ok := metadata["purl"]; ok {
+				result["purl"] = purl
+			}
+		case "serial":
+			if serialNumbers, ok := metadata["serial_numbers"]; ok {
+				result["serial_numbers"] = serialNumbers
+			}
+		}
+	}
+
+	return result
 }
 
 func (s *Service) GetIdentificationHelperByID(ctx context.Context, id string) (IdentificationHelperDTO, error) {

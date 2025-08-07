@@ -9,10 +9,10 @@ import useRouter from '@/utils/useRouter'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { BreadcrumbItem } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { ProductItem, useVendorProductListQuery } from './Products'
 import { VendorProps } from './Vendors'
-import { useTranslation } from 'react-i18next'
 
 export function useVendorQuery(vendorId?: string) {
   const request = client.useQuery(

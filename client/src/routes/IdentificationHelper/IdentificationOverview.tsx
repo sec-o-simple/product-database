@@ -7,13 +7,13 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { BreadcrumbItem, Tooltip } from '@heroui/react'
-import { useState, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import CreateEditIDHelper from './CreateIDHelper'
+import { useParams } from 'react-router-dom'
+import { useProductQuery } from '../Product'
 import { useVendorQuery } from '../Vendor'
 import { useVersionQuery } from '../Version'
-import { useProductQuery } from '../Product'
+import CreateEditIDHelper from './CreateIDHelper'
 
 interface IdentificationHelperListItemDTO {
   id: string
