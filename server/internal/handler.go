@@ -119,7 +119,9 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 	rawIDs := strings.Split(idsCSV, ",")
 
 	ctx := c.Request().Context()
-	var vendorNodes []interface{}
+
+	// vendorName → vendorNode map
+	vendorMap := make(map[string]map[string]interface{})
 
 	for _, raw := range rawIDs {
 		id := strings.TrimSpace(raw)
@@ -141,23 +143,22 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 			return nil, err
 		}
 
+		// build versionNodes as before
 		var versionNodes []interface{}
 		for _, ver := range vers {
 			helpers, err := h.svc.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
 			if err != nil {
 				return nil, err
 			}
-
 			var rawHelpers []json.RawMessage
 			for _, helper := range helpers {
-				rawHelpers = append(rawHelpers, json.RawMessage([]byte(helper.Metadata)))
+				rawHelpers = append(rawHelpers, json.RawMessage(helper.Metadata))
 			}
 
 			prodMap := map[string]interface{}{
 				"name":       v.Name + " " + p.Name + " " + ver.Name,
 				"product_id": ver.ID,
 			}
-
 			if len(rawHelpers) > 0 {
 				prodMap["product_identification_helper"] = rawHelpers
 			}
@@ -169,6 +170,7 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 			})
 		}
 
+		// build productNode
 		productNode := map[string]interface{}{
 			"category": "product_name",
 			"name":     p.Name,
@@ -177,16 +179,28 @@ func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]i
 				"product_id": p.ID,
 			},
 		}
-
 		if len(versionNodes) > 0 {
 			productNode["branches"] = versionNodes
 		}
 
-		vendorNodes = append(vendorNodes, map[string]interface{}{
-			"category": "vendor",
-			"name":     v.Name,
-			"branches": []interface{}{productNode},
-		})
+		// upsert into vendorMap
+		if vn, exists := vendorMap[v.Name]; exists {
+			// append to existing vendor's branches
+			vn["branches"] = append(vn["branches"].([]interface{}), productNode)
+		} else {
+			// create new vendor entry
+			vendorMap[v.Name] = map[string]interface{}{
+				"category": "vendor",
+				"name":     v.Name,
+				"branches": []interface{}{productNode},
+			}
+		}
+	}
+
+	// flatten map → slice
+	var vendorNodes []interface{}
+	for _, vn := range vendorMap {
+		vendorNodes = append(vendorNodes, vn)
 	}
 
 	return map[string]interface{}{

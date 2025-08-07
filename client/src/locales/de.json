@@ -2,8 +2,11 @@
   "translation": {
     "goHome": "Zur Startseite",
     "title": "Produktdatenbank",
-    "error": {
-      "export": {
+    "export": {
+      "label": "Exportieren",
+      "exportSelected": "Einträge exportieren ({{count}})",
+      "stopSelection": "Auswahl beenden",
+      "error": {
         "title": "Exportfehler",
         "text": "Ein Fehler ist beim Exportieren der Daten aufgetreten. Bitte versuchen Sie es später erneut."
       }

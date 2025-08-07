@@ -2,8 +2,11 @@
   "translation": {
     "goHome": "Go to Home",
     "title": "Product Database",
-    "error": {
-      "export": {
+    "export": {
+      "label": "Export",
+      "exportSelected": "Export Selected ({{count}})",
+      "stopSelection": "Stop Selection",
+      "error": {
         "title": "Export Error",
         "text": "An error occurred while exporting the data. Please try again later."
       }

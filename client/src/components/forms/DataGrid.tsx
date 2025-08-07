@@ -64,12 +64,11 @@ function useExportProductTree() {
       a.click()
       a.remove()
       URL.revokeObjectURL(url)
-      console.log('Export successful')
     },
     onError: (error) => {
       addToast({
-        title: t('error.export.title'),
-        description: error?.title || t('error.export.text'),
+        title: t('export.error.title'),
+        description: error?.title || t('export.error.text'),
         color: 'danger',
       })
     },
@@ -89,6 +88,7 @@ export default function DataGrid({
   addButton?: React.ReactNode
   children: React.ReactNode[] | React.ReactNode | undefined
 }) {
+  const { t } = useTranslation()
   const [selected, setSelected] = React.useState<string[]>([])
   const [selectable, setSelectable] = React.useState<boolean>(false)
   const toggleSelectable = () => {
@@ -121,7 +121,7 @@ export default function DataGrid({
           {selectable ? (
             <>
               <Button variant="light" color="danger" onPress={toggleSelectable}>
-                Stop Selection
+                {t('export.stopSelection')}
               </Button>
 
               <Button
@@ -130,12 +130,12 @@ export default function DataGrid({
                 isDisabled={selected.length === 0}
               >
                 <FontAwesomeIcon icon={faFileExport} />
-                Export Selected ({selected.length})
+                {t('export.exportSelected', { count: selected.length })}
               </Button>
             </>
           ) : (
             <Button variant="light" color="primary" onPress={toggleSelectable}>
-              Select for Export
+              {t('export.label')}
             </Button>
           )}
         </div>
