@@ -1,9 +1,6 @@
 package internal
 
 import (
-	"encoding/json"
-	"strings"
-
 	"github.com/go-fuego/fuego"
 )
 
@@ -117,90 +114,7 @@ func (h *Handler) ExportProductTree(c fuego.ContextWithBody[[]string]) (map[stri
 		return nil, err
 	}
 
-	rawIDs := body
-
-	ctx := c.Request().Context()
-
-	vendorMap := make(map[string]map[string]interface{})
-
-	for _, raw := range rawIDs {
-		id := strings.TrimSpace(raw)
-		if id == "" {
-			continue
-		}
-
-		p, err := h.svc.GetProductByID(ctx, id)
-		if err != nil {
-			return nil, err
-		}
-		v, err := h.svc.GetVendorByID(ctx, *p.VendorID)
-		if err != nil {
-			return nil, err
-		}
-		vers, err := h.svc.ListProductVersions(ctx, id)
-		if err != nil {
-			return nil, err
-		}
-
-		var versionNodes []interface{}
-		for _, ver := range vers {
-			helpers, err := h.svc.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
-			if err != nil {
-				return nil, err
-			}
-			var rawHelpers []json.RawMessage
-			for _, helper := range helpers {
-				rawHelpers = append(rawHelpers, json.RawMessage(helper.Metadata))
-			}
-
-			prodMap := map[string]interface{}{
-				"name":       v.Name + " " + p.Name + " " + ver.Name,
-				"product_id": ver.ID,
-			}
-			if len(rawHelpers) > 0 {
-				prodMap["product_identification_helper"] = rawHelpers
-			}
-
-			versionNodes = append(versionNodes, map[string]interface{}{
-				"category": "product_version",
-				"name":     ver.Name,
-				"product":  prodMap,
-			})
-		}
-
-		productNode := map[string]interface{}{
-			"category": "product_name",
-			"name":     p.Name,
-			"product": map[string]interface{}{
-				"name":       v.Name + " " + p.Name,
-				"product_id": p.ID,
-			},
-		}
-		if len(versionNodes) > 0 {
-			productNode["branches"] = versionNodes
-		}
-
-		if vn, exists := vendorMap[v.Name]; exists {
-			vn["branches"] = append(vn["branches"].([]interface{}), productNode)
-		} else {
-			vendorMap[v.Name] = map[string]interface{}{
-				"category": "vendor",
-				"name":     v.Name,
-				"branches": []interface{}{productNode},
-			}
-		}
-	}
-
-	var vendorNodes []interface{}
-	for _, vn := range vendorMap {
-		vendorNodes = append(vendorNodes, vn)
-	}
-
-	return map[string]interface{}{
-		"product_tree": map[string]interface{}{
-			"branches": vendorNodes,
-		},
-	}, nil
+	return h.svc.ExportProducts(c.Request().Context(), body)
 }
 
 func (h *Handler) ListProductVersions(c fuego.ContextNoBody) ([]ProductVersionDTO, error) {

@@ -3,8 +3,10 @@ package internal
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-fuego/fuego"
@@ -178,6 +180,90 @@ func (s *Service) DeleteVendor(ctx context.Context, id string) error {
 }
 
 // Products
+
+func (s *Service) ExportProducts(ctx context.Context, ids []string) (map[string]interface{}, error) {
+	vendorMap := make(map[string]map[string]interface{})
+
+	for _, raw := range ids {
+		id := strings.TrimSpace(raw)
+		if id == "" {
+			continue
+		}
+
+		p, err := s.repo.GetNodeByID(ctx, id, WithParent())
+		if err != nil {
+			return nil, err
+		}
+		v, err := s.repo.GetNodeByID(ctx, *p.ParentID)
+		if err != nil {
+			return nil, err
+		}
+
+		vers, err := s.repo.GetNodeByID(ctx, *&p.ID, WithChildren())
+		if err != nil {
+			return nil, err
+		}
+
+		var versionNodes []interface{}
+		for _, ver := range vers.Children {
+			helpers, err := s.repo.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
+			if err != nil {
+				return nil, err
+			}
+			var rawHelpers []json.RawMessage
+			for _, helper := range helpers {
+				rawHelpers = append(rawHelpers, json.RawMessage(helper.Metadata))
+			}
+
+			prodMap := map[string]interface{}{
+				"name":       v.Name + " " + p.Name + " " + ver.Name,
+				"product_id": ver.ID,
+			}
+			if len(rawHelpers) > 0 {
+				prodMap["product_identification_helper"] = rawHelpers
+			}
+
+			versionNodes = append(versionNodes, map[string]interface{}{
+				"category": "product_version",
+				"name":     ver.Name,
+				"product":  prodMap,
+			})
+		}
+
+		productNode := map[string]interface{}{
+			"category": "product_name",
+			"name":     p.Name,
+			"product": map[string]interface{}{
+				"name":       v.Name + " " + p.Name,
+				"product_id": p.ID,
+			},
+		}
+		if len(versionNodes) > 0 {
+			productNode["branches"] = versionNodes
+		}
+
+		if vn, exists := vendorMap[v.Name]; exists {
+			vn["branches"] = append(vn["branches"].([]interface{}), productNode)
+		} else {
+			vendorMap[v.Name] = map[string]interface{}{
+				"category": "vendor",
+				"name":     v.Name,
+				"branches": []interface{}{productNode},
+			}
+		}
+	}
+
+	var vendorNodes []interface{}
+	for _, vn := range vendorMap {
+		vendorNodes = append(vendorNodes, vn)
+	}
+
+	return map[string]interface{}{
+		"product_tree": map[string]interface{}{
+			"branches": vendorNodes,
+		},
+	}, nil
+}
 
 func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (ProductDTO, error) {
 	vendorNode, err := s.repo.GetNodeByID(ctx, product.VendorID)
