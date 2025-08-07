@@ -1957,19 +1957,10 @@
 			}
 		},
 		"/api/v1/products/export": {
-			"get": {
-				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ExportProductsTree`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nExports the tree structure of a product in CSAF format",
-				"operationId": "GET_/api/v1/products/export",
+			"post": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ExportProductTree`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nExports the tree structure of a product in CSAF format",
+				"operationId": "POST_/api/v1/products/export",
 				"parameters": [
-					{
-						"description": "comma-separated list of product IDs to export",
-						"in": "query",
-						"name": "ids",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					},
 					{
 						"in": "header",
 						"name": "Accept",
@@ -1978,6 +1969,20 @@
 						}
 					}
 				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"items": {
+									"$ref": "#/components/schemas/string"
+								},
+								"type": "array"
+							}
+						}
+					},
+					"description": "Request body for []string",
+					"required": true
+				},
 				"responses": {
 					"200": {
 						"content": {

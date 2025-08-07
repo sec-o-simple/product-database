@@ -148,7 +148,7 @@ export const SelectableContext = createContext<{
 function useExportProductTree() {
   const { t } = useTranslation()
 
-  return client.useMutation('get', '/api/v1/products/export', {
+  return client.useMutation('post', '/api/v1/products/export', {
     onSuccess: (response) => {
       const blob = new Blob([JSON.stringify(response, null, 2)], {
         type: 'application/json',
@@ -187,9 +187,7 @@ export default function Products() {
 
   const onExportClick = useCallback(() => {
     exportMutation.mutate({
-      params: {
-        query: { ids: selected.join(',') },
-      },
+      body: selected.length > 0 ? selected : [],
     })
   }, [exportMutation, selected])
 

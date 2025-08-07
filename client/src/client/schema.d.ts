@@ -351,11 +351,13 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        get?: never;
+        put?: never;
         /**
          * Export products in CSAF format
          * @description #### Controller:
          *
-         *     `product-database-api/internal.(*Handler).ExportProductsTree`
+         *     `product-database-api/internal.(*Handler).ExportProductTree`
          *
          *     #### Middlewares:
          *
@@ -365,9 +367,7 @@ export interface paths {
          *
          *     Exports the tree structure of a product in CSAF format
          */
-        get: operations["GET_/api/v1/products/export"];
-        put?: never;
-        post?: never;
+        post: operations["POST_/api/v1/products/export"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1823,19 +1823,21 @@ export interface operations {
             };
         };
     };
-    "GET_/api/v1/products/export": {
+    "POST_/api/v1/products/export": {
         parameters: {
-            query: {
-                /** @description comma-separated list of product IDs to export */
-                ids: string;
-            };
+            query?: never;
             header?: {
                 Accept?: string;
             };
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        /** @description Request body for []string */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["string"][];
+            };
+        };
         responses: {
             /** @description OK */
             200: {

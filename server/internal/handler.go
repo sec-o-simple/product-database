@@ -111,12 +111,13 @@ func (h *Handler) GetProduct(c fuego.ContextNoBody) (ProductDTO, error) {
 	return product, nil
 }
 
-func (h *Handler) ExportProductsTree(c fuego.ContextWithBody[any]) (map[string]interface{}, error) {
-	idsCSV := c.Request().URL.Query().Get("ids")
-	if strings.TrimSpace(idsCSV) == "" {
-		return nil, nil
+func (h *Handler) ExportProductTree(c fuego.ContextWithBody[[]string]) (map[string]interface{}, error) {
+	body, err := c.Body()
+	if err != nil {
+		return nil, err
 	}
-	rawIDs := strings.Split(idsCSV, ",")
+
+	rawIDs := body
 
 	ctx := c.Request().Context()
 
