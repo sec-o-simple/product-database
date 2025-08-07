@@ -184,23 +184,31 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 	vendorMap := make(map[string]map[string]interface{})
 
 	for _, id := range productIDs {
-		p, err := s.repo.GetNodeByID(ctx, id, WithParent())
-		if err != nil {
-			return nil, err
-		}
-		v, err := s.repo.GetNodeByID(ctx, *p.ParentID)
+		p, err := s.GetProductByID(ctx, id)
 		if err != nil {
 			return nil, err
 		}
 
-		vers, err := s.repo.GetNodeByID(ctx, p.ID, WithChildren())
+		if p.VendorID == nil {
+			return nil, fuego.NotFoundError{
+				Title: "Vendor not found",
+				Err:   nil,
+			}
+		}
+
+		v, err := s.GetVendorByID(ctx, *p.VendorID)
+		if err != nil {
+			return nil, err
+		}
+
+		vers, err := s.ListProductVersions(ctx, p.ID)
 		if err != nil {
 			return nil, err
 		}
 
 		var versionNodes []interface{}
-		for _, ver := range vers.Children {
-			helpers, err := s.repo.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
+		for _, ver := range vers {
+			helpers, err := s.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
 			if err != nil {
 				return nil, err
 			}
