@@ -3,6 +3,8 @@ name: SBOM per Release (client & server)
 on:
   release:
     types: [published]
+  push:
+    branches: ["feat/sbom-generation"]
 
 jobs:
   sbom:
