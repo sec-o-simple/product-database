@@ -1,10 +1,8 @@
-name: SBOM per Release (client & server)
+name: SBOM (client & server)
 
 on:
   release:
     types: [published]
-  push:
-    branches: ["feat/sbom-generation"]
 
 jobs:
   sbom:
