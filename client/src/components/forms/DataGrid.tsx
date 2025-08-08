@@ -57,8 +57,6 @@ export default function DataGrid({
       ) : null}
 
       <div className="flex w-full flex-col gap-2">{children}</div>
-
-      {/* <Pagination /> */}
     </div>
   )
 }

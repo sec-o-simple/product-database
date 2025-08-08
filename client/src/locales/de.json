@@ -36,11 +36,18 @@
     },
     "product": {
       "label": "Produkt",
-      "label_other": "Produkte"
+      "label_other": "Produkte",
+      "type": {
+        "software": "Software",
+        "hardware": "Hardware",
+        "firmware": "Firmware"
+      }
     },
     "version": {
       "label": "Version",
-      "label_other": "Versionen"
+      "label_other": "Versionen",
+      "label_count": "{{count}} Version",
+      "label_count_other": "{{count}} Versionen"
     },
     "relationship": {
       "label": "Beziehung",

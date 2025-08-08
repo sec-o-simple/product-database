@@ -821,6 +821,33 @@ export interface components {
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             vendor_id?: string;
+            versions?: {
+                /** @example Version Description */
+                description?: string;
+                /** @example Product Name - Version Name */
+                full_name: string;
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                id: string;
+                /** @example true */
+                is_latest: boolean;
+                /** @example Version Name */
+                name: string;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                predecessor_id?: string | null;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                product_id?: string;
+                /**
+                 * @description string schema
+                 * @example 2023-10-01
+                 */
+                released_at?: string | null;
+            }[];
         };
         /** @description ProductVersionDTO schema */
         ProductVersionDTO: {
@@ -959,6 +986,33 @@ export interface components {
                      * @example 123e4567-e89b-12d3-a456-426614174000
                      */
                     vendor_id?: string;
+                    versions?: {
+                        /** @example Version Description */
+                        description?: string;
+                        /** @example Product Name - Version Name */
+                        full_name: string;
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                        id: string;
+                        /** @example true */
+                        is_latest: boolean;
+                        /** @example Version Name */
+                        name: string;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        predecessor_id?: string | null;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        product_id?: string;
+                        /**
+                         * @description string schema
+                         * @example 2023-10-01
+                         */
+                        released_at?: string | null;
+                    }[];
                 };
                 version_relationships: {
                     /** @example 123e4567-e89b-12d3-a456-426614174000 */

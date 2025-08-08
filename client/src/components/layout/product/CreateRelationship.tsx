@@ -8,14 +8,12 @@ import useRouter from '@/utils/useRouter'
 import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  Button,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from '@heroui/modal'
-import {
-  Button,
   Table,
   TableBody,
   TableCell,

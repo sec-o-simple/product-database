@@ -358,7 +358,9 @@ export default function IdentificationOverview({
           <BreadcrumbItem isDisabled>
             {t('version.label', { count: 2 })}
           </BreadcrumbItem>
-          <BreadcrumbItem isDisabled>{version?.name}</BreadcrumbItem>
+          <BreadcrumbItem href={`/product-versions/${version?.id}`}>
+            {version?.name}
+          </BreadcrumbItem>
           <BreadcrumbItem>
             {t('identificationHelper.label', { count: 2 })}
           </BreadcrumbItem>

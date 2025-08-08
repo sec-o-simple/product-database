@@ -332,6 +332,57 @@
 						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"type": "string"
+					},
+					"versions": {
+						"items": {
+							"properties": {
+								"description": {
+									"example": "Version Description",
+									"type": "string"
+								},
+								"full_name": {
+									"example": "Product Name - Version Name",
+									"type": "string"
+								},
+								"id": {
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"type": "string"
+								},
+								"is_latest": {
+									"example": true,
+									"type": "boolean"
+								},
+								"name": {
+									"example": "Version Name",
+									"type": "string"
+								},
+								"predecessor_id": {
+									"description": "string schema",
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"nullable": true,
+									"type": "string"
+								},
+								"product_id": {
+									"description": "string schema",
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"type": "string"
+								},
+								"released_at": {
+									"description": "string schema",
+									"example": "2023-10-01",
+									"nullable": true,
+									"type": "string"
+								}
+							},
+							"required": [
+								"id",
+								"name",
+								"full_name",
+								"is_latest"
+							],
+							"type": "object"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -594,6 +645,57 @@
 											"description": "string schema",
 											"example": "123e4567-e89b-12d3-a456-426614174000",
 											"type": "string"
+										},
+										"versions": {
+											"items": {
+												"properties": {
+													"description": {
+														"example": "Version Description",
+														"type": "string"
+													},
+													"full_name": {
+														"example": "Product Name - Version Name",
+														"type": "string"
+													},
+													"id": {
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"type": "string"
+													},
+													"is_latest": {
+														"example": true,
+														"type": "boolean"
+													},
+													"name": {
+														"example": "Version Name",
+														"type": "string"
+													},
+													"predecessor_id": {
+														"description": "string schema",
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"nullable": true,
+														"type": "string"
+													},
+													"product_id": {
+														"description": "string schema",
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"type": "string"
+													},
+													"released_at": {
+														"description": "string schema",
+														"example": "2023-10-01",
+														"nullable": true,
+														"type": "string"
+													}
+												},
+												"required": [
+													"id",
+													"name",
+													"full_name",
+													"is_latest"
+												],
+												"type": "object"
+											},
+											"type": "array"
 										}
 									},
 									"required": [

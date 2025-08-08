@@ -5,16 +5,16 @@ import useRefetchQuery from '@/utils/useRefetchQuery'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  Button,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
   useDisclosure,
-} from '@heroui/modal'
-import { Button } from '@heroui/react'
+} from '@heroui/react'
 import { SelectItem } from '@heroui/select'
-import { useState, useMemo, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { HelperTypeProps, idHelperTypes } from './IdentificationOverview'
