@@ -103,6 +103,6 @@ The following environment variables can be configured:
 | `HOST`          | No       | `0.0.0.0`     | The host address for the server to bind to                   |
 | `PORT`          | No       | `9999`        | The port number for the server to listen on                  |
 | `ENV`           | No       | `development` | The environment mode. Set to `production` to hide the Swagger UI |
-| `CORS_ORIGIN`   | Yes      |               | Allowed CORS origins. Single origin: `http://localhost:3000` or multiple separated by commas: `http://localhost:3000,https://app.example.com,http://localhost:8081`. Use `*` to allow all origins (not recommended for production) |
+| `CORS_ORIGIN`   | No       |               | Allowed CORS origins. Single origin: `http://localhost:3000` or multiple separated by commas: `http://localhost:3000,https://app.example.com,http://localhost:8081`. Use `*` to allow all origins (not recommended for production) |
 | `DATABASE_PATH` | Yes      |               | Path to the SQLite database file                             |
 
