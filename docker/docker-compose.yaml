@@ -1,14 +1,9 @@
 services:
-
-  product-database-server:
+  api:
     container_name: product-database-server
     build:
-      context: ./
-      dockerfile: Dockerfile.server
-    env_file:
-      - ./config/product-database.server.env
-    ports:
-      - 9999:9999
+      context: ../
+      dockerfile: docker/Dockerfile.server
     volumes:
       - ./data:/data
     healthcheck:
@@ -17,21 +12,19 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-  product-database-client:
+  client:
     container_name: product-database-client
     build:
-      context: ./
-      dockerfile: Dockerfile.client
-    env_file:
-      - ./config/product-database/product-database.client.env
+      context: ../
+      dockerfile: docker/Dockerfile.client
     ports:
-      - 3000:3000
+      - 8081:80
     healthcheck:
-      test: ["CMD-SHELL", "wget -O /dev/null http://localhost:3000 || exit 1"]
+      test: ["CMD-SHELL", "wget -O /dev/null http://localhost:80 || exit 1"]
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
     depends_on:
-      product-database-api:
+      api:
         condition: service_healthy

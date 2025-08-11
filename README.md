@@ -10,7 +10,26 @@ _Placeholder for BSI Description_
 product-database/
 ├── server/     # Go server API (GORM, Fuego)
 ├── client/     # Vite + React frontend
-├── docs/        # Documentation (OpenAPI, Database)
+├── docker/     # Docker configuration and compose files
+├── docs/       # Documentation (OpenAPI, Database)
+```
+
+---
+
+## Quick Start with Docker
+
+The easiest way to run the entire application is using Docker (Compose). This sets up both the React client and Go server with a reverse proxy configuration where the client automatically forwards API requests to the server.
+
+```sh
+# Clone repository
+git clone git@github.com:sec-o-simple/product-database.git
+cd product-database
+
+# Start the application
+docker compose -f docker/docker-compose.yaml up --build
+
+# Access the application on http://localhost:8081
+curl -X GET http://localhost:8081/api/v1/health
 ```
 
 ---

@@ -2,21 +2,23 @@ ARG GO_VERSION=1.24.3
 ARG ALPINE_VERSION=3.22
 
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS base-server
-RUN apk add --no-cache make gcc musl-dev git
+RUN apk add --no-cache make gcc musl-dev
 
-WORKDIR /server
+WORKDIR /app
 
-RUN git clone https://github.com/sec-o-simple/product-database.git; \ 
- cd product-database/server; \
- go mod tidy; \
- export CGO_ENABLED=1; \
- make build
+COPY server/go.mod server/go.sum ./
+RUN go mod download
+
+COPY server/ ./
+RUN export CGO_ENABLED=1 && make build
 
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS product-database-api
-COPY --from=base-server /server/product-database/server/bin/server /server
+COPY --from=base-server /app/bin/server /server
 WORKDIR /
 ENTRYPOINT [ "/server" ]
 
+ENV DATABASE_PATH=/data/products.db
+ENV ENV=production
+
 EXPOSE 9999
-VOLUME /config
 VOLUME /data
