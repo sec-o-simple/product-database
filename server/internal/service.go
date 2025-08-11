@@ -398,8 +398,6 @@ func (s *Service) ListProducts(ctx context.Context) ([]ProductDTO, error) {
 		return nil, err
 	}
 
-	println(nodes[0].Parent)
-
 	products := make([]ProductDTO, len(nodes))
 	for i, node := range nodes {
 		products[i] = NodeToProductDTO(node)
