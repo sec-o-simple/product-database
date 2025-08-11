@@ -21,12 +21,13 @@ product-database/
 The easiest way to run the entire application is using Docker (Compose). This sets up both the React client and Go server with a reverse proxy configuration where the client automatically forwards API requests to the server.
 
 ```sh
-# Clone repository
-git clone git@github.com:sec-o-simple/product-database.git
-cd product-database
+# Download the docker-compose file for registry images
+wget https://raw.githubusercontent.com/sec-o-simple/product-database/main/docker/docker-compose.yml
+# or if you prefer curl:
+# curl -O https://raw.githubusercontent.com/sec-o-simple/product-database/main/docker/docker-compose.yml
 
 # Start the application
-docker compose -f docker/docker-compose.yaml up --build
+docker compose up
 
 # Access the application on http://localhost:8081
 curl -X GET http://localhost:8081/api/v1/health

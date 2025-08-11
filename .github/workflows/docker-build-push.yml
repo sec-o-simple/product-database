@@ -73,8 +73,6 @@ jobs:
           labels: ${{ steps.meta-client.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: |
-            VITE_API_BASE_URL=/api
 
       - name: Build and push server image
         uses: docker/build-push-action@v5

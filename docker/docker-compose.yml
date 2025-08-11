@@ -1,9 +1,7 @@
 services:
   api:
+    image: ghcr.io/sec-o-simple/product-database-server:latest
     container_name: product-database-server
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile.server
     volumes:
       - ./data:/data
     healthcheck:
@@ -12,11 +10,10 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+
   client:
+    image: ghcr.io/sec-o-simple/product-database-client:latest
     container_name: product-database-client
-    build:
-      context: ../
-      dockerfile: docker/Dockerfile.client
     ports:
       - 8081:80
     healthcheck:
