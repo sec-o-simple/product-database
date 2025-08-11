@@ -5,10 +5,10 @@ import { DeleteVendor, useVendorQuery } from '@/routes/Vendor'
 import useRouter from '@/utils/useRouter'
 import { Button } from '@heroui/button'
 import { cn } from '@heroui/theme'
+import { useTranslation } from 'react-i18next'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { AddProductButton } from '../product/CreateEditProduct'
-import { useTranslation } from 'react-i18next'
 
 export function Attribute({
   label,

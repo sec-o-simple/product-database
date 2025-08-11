@@ -10,7 +10,7 @@ import tailwind from 'eslint-plugin-tailwindcss'
 export default [
   {
     // Flat config: ignore patterns
-    ignores: ['node_modules/', '.DS_Store', 'dist/'],
+    ignores: ['node_modules/', '.DS_Store', 'dist/', 'src/client/schema.d.ts'],
   },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],

@@ -108,6 +108,15 @@ func (h *Handler) GetProduct(c fuego.ContextNoBody) (ProductDTO, error) {
 	return product, nil
 }
 
+func (h *Handler) ExportProductTree(c fuego.ContextWithBody[ExportRequestDTO]) (map[string]interface{}, error) {
+	body, err := c.Body()
+	if err != nil {
+		return nil, err
+	}
+
+	return h.svc.ExportCSAFProductTree(c.Request().Context(), body.ProductIDs)
+}
+
 func (h *Handler) ListProductVersions(c fuego.ContextNoBody) ([]ProductVersionDTO, error) {
 	productID := c.PathParam("id")
 	versions, err := h.svc.ListProductVersions(c.Request().Context(), productID)
@@ -183,9 +192,14 @@ func (h *Handler) ListRelationshipsByProductVersion(c fuego.ContextNoBody) ([]Re
 }
 
 func (h *Handler) ListIdentificationHelpersByProductVersion(c fuego.ContextNoBody) ([]IdentificationHelperListItemDTO, error) {
-	return nil, fuego.InternalServerError{
-		Title: "Not implemented",
+	productVersionID := c.PathParam("id")
+	helpers, err := h.svc.GetIdentificationHelpersByProductVersion(c.Request().Context(), productVersionID)
+
+	if err != nil {
+		return nil, err
 	}
+
+	return helpers, nil
 }
 
 func (h *Handler) UpdateProductVersion(c fuego.ContextWithBody[UpdateProductVersionDTO]) (ProductVersionDTO, error) {

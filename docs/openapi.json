@@ -1,6 +1,9 @@
 {
 	"components": {
 		"schemas": {
+			"": {
+				"description": " schema"
+			},
 			"CreateIdentificationHelperDTO": {
 				"description": "CreateIdentificationHelperDTO schema",
 				"properties": {
@@ -125,6 +128,22 @@
 				],
 				"type": "object"
 			},
+			"ExportRequestDTO": {
+				"description": "ExportRequestDTO schema",
+				"properties": {
+					"product_ids": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"product_ids"
+				],
+				"type": "object"
+			},
 			"HTTPError": {
 				"description": "HTTPError schema",
 				"properties": {
@@ -218,6 +237,10 @@
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"type": "string"
 					},
+					"metadata": {
+						"example": "{\"hash\":\"abc123\"}",
+						"type": "string"
+					},
 					"product_version_id": {
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"type": "string"
@@ -226,7 +249,8 @@
 				"required": [
 					"id",
 					"category",
-					"product_version_id"
+					"product_version_id",
+					"metadata"
 				],
 				"type": "object"
 			},
@@ -308,6 +332,57 @@
 						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"type": "string"
+					},
+					"versions": {
+						"items": {
+							"properties": {
+								"description": {
+									"example": "Version Description",
+									"type": "string"
+								},
+								"full_name": {
+									"example": "Product Name - Version Name",
+									"type": "string"
+								},
+								"id": {
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"type": "string"
+								},
+								"is_latest": {
+									"example": true,
+									"type": "boolean"
+								},
+								"name": {
+									"example": "Version Name",
+									"type": "string"
+								},
+								"predecessor_id": {
+									"description": "string schema",
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"nullable": true,
+									"type": "string"
+								},
+								"product_id": {
+									"description": "string schema",
+									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"type": "string"
+								},
+								"released_at": {
+									"description": "string schema",
+									"example": "2023-10-01",
+									"nullable": true,
+									"type": "string"
+								}
+							},
+							"required": [
+								"id",
+								"name",
+								"full_name",
+								"is_latest"
+							],
+							"type": "object"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
@@ -570,6 +645,57 @@
 											"description": "string schema",
 											"example": "123e4567-e89b-12d3-a456-426614174000",
 											"type": "string"
+										},
+										"versions": {
+											"items": {
+												"properties": {
+													"description": {
+														"example": "Version Description",
+														"type": "string"
+													},
+													"full_name": {
+														"example": "Product Name - Version Name",
+														"type": "string"
+													},
+													"id": {
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"type": "string"
+													},
+													"is_latest": {
+														"example": true,
+														"type": "boolean"
+													},
+													"name": {
+														"example": "Version Name",
+														"type": "string"
+													},
+													"predecessor_id": {
+														"description": "string schema",
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"nullable": true,
+														"type": "string"
+													},
+													"product_id": {
+														"description": "string schema",
+														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"type": "string"
+													},
+													"released_at": {
+														"description": "string schema",
+														"example": "2023-10-01",
+														"nullable": true,
+														"type": "string"
+													}
+												},
+												"required": [
+													"id",
+													"name",
+													"full_name",
+													"is_latest"
+												],
+												"type": "object"
+											},
+											"type": "array"
 										}
 									},
 									"required": [
@@ -1948,6 +2074,87 @@
 				]
 			}
 		},
+		"/api/v1/products/export": {
+			"post": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ExportProductTree`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nExports the tree structure of a product in CSAF format",
+				"operationId": "POST_/api/v1/products/export",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/ExportRequestDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.ExportRequestDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Export products in CSAF format",
+				"tags": [
+					"api/v1",
+					"products"
+				]
+			}
+		},
 		"/api/v1/products/{id}": {
 			"delete": {
 				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteProduct`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a product and its associated versions from the system",
@@ -2995,7 +3202,7 @@
 	"servers": [
 		{
 			"description": "local server",
-			"url": "http://127.0.0.1:5000"
+			"url": "http://127.0.0.1:9999"
 		}
 	],
 	"tags": [

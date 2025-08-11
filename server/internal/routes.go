@@ -57,6 +57,10 @@ func RegisterRoutes(s *fuego.Server, svc *Service) {
 		option.Summary("Get product by ID"),
 		option.Description("Returns details for a specific product"))
 
+	fuego.Post(products, "/export", h.ExportProductTree,
+		option.Summary("Export products in CSAF format"),
+		option.Description("Exports the tree structure of a product in CSAF format"))
+
 	fuego.Put(products, "/{id}", h.UpdateProduct,
 		option.Summary("Update product"),
 		option.Description("Updates an existing product's information"))

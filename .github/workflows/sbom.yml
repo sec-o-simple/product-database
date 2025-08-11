@@ -1,0 +1,51 @@
+name: SBOM (client & server)
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: SBOM client (SPDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./client
+          format: spdx-json
+          artifact-name: product-database-client.spdx.json
+
+      - name: SBOM client (CycloneDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./client
+          format: cyclonedx-json
+          artifact-name: product-database-client.cdx.json
+
+      - name: Ensure go.sum exists
+        working-directory: server
+        run: |
+          if [ ! -f go.sum ]; then
+            go mod download
+          fi
+
+      - name: SBOM server (SPDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./server
+          format: spdx-json
+          artifact-name: product-database-server.spdx.json
+          upload-release-assets: true
+
+      - name: SBOM server (CycloneDX)
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./server
+          format: cyclonedx-json
+          artifact-name: product-database-server.cdx.json
+          upload-release-assets: true

@@ -1,75 +1,166 @@
 {
-    "translation": {
-        "goHome": "Go to Home",
-        "title": "Product Database",
-        "common": {
-            "createObject": "Create {{label}}",
-            "editObject": "Edit {{label}}",
-            "addObject": "Add {{label}}",
-            "create": "Create",
-            "save": "Save",
-            "noDescription": "No description",
-            "notImplemented": "Not implemented yet",
-            "delete": "Delete",
-            "edit": "Edit",
-            "cancel": "Cancel",
-            "emptyState": {
-                "title": "No Data Available",
-                "description": "There are no items to display at this moment."
-            },
-            "confirm": "Confirm",
-            "confirmDeleteTitle": "Are you sure?",
-            "confirmDeleteText": "You are about to delete {{resource}}. This action cannot be undone.",
-            "actions": "Actions"
+  "translation": {
+    "goHome": "Go to Home",
+    "title": "Product Database",
+    "export": {
+      "label": "Export CSAF Product Tree",
+      "exportSelected": "Export Selected ({{count}})",
+      "stopSelection": "Stop Selection",
+      "error": {
+        "title": "Export Error",
+        "text": "An error occurred while exporting the data. Please try again later."
+      }
+    },
+    "common": {
+      "createObject": "Create {{label}}",
+      "editObject": "Edit {{label}}",
+      "addObject": "Add {{label}}",
+      "create": "Create",
+      "save": "Save",
+      "noDescription": "No description",
+      "notImplemented": "Not implemented yet",
+      "delete": "Delete",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "emptyState": {
+        "title": "No Data Available",
+        "description": "There are no items to display at this moment."
+      },
+      "confirm": "Confirm",
+      "confirmDeleteTitle": "Are you sure?",
+      "confirmDeleteText": "You are about to delete {{resource}}. This action cannot be undone.",
+      "actions": "Actions"
+    },
+    "vendor": {
+      "label": "Vendor",
+      "label_other": "Vendors"
+    },
+    "product": {
+      "label": "Product",
+      "label_other": "Products",
+      "type": {
+        "software": "Software",
+        "hardware": "Hardware",
+        "firmware": "Firmware"
+      }
+    },
+    "version": {
+      "label": "Version",
+      "label_other": "Versions",
+      "label_count": "{{count}} Version",
+      "label_count_other": "{{count}} Versions"
+    },
+    "relationship": {
+      "label": "Relationship",
+      "label_other": "Relationships",
+      "targetProduct": {
+        "empty": "No target added yet.",
+        "label": "Target Product",
+        "label_other": "Target Products"
+      },
+      "sourceProduct": {
+        "label": "Source Product",
+        "label_other": "Source Products"
+      },
+      "category": {
+        "default_component_of": "Default Component Of",
+        "external_component_of": "External Component Of",
+        "installed_on": "Installed On",
+        "installed_with": "Installed With",
+        "optional_component_of": "Optional Component Of"
+      },
+      "confirmDeleteResource": "the \"{{category}}\" relationship to {{totalVersions}} version(s)"
+    },
+    "treeView": {
+      "label": "Tree-View"
+    },
+    "identificationHelper": {
+      "label": "Identification Helper",
+      "label_other": "Identification Helpers",
+      "notConfigured": "Not configured",
+      "addHelper": "Add {{label}}",
+      "editHelper": "Edit",
+      "deleteHelper": "Delete",
+      "deleteConfirmTitle": "Delete ID Helper",
+      "deleteConfirmText": "Are you sure you want to delete this {{label}} configuration? This action cannot be undone.",
+      "createTitle": "Create {{label}}",
+      "editTitle": "Edit {{label}}",
+      "andMore": "and {{count}} more",
+      "addFile": "Add File",
+      "addHash": "Add Hash",
+      "addURI": "Add URI",
+      "filename": "Filename",
+      "algorithm": "Algorithm",
+      "hashValue": "Hash Value",
+      "hashValues": "Hash Values",
+      "namespace": "Namespace",
+      "noDataYet": "No {{type}} added yet. Click \"{{buttonText}}\" to get started.",
+      "fields": {
+        "cpeString": "CPE String",
+        "purlString": "PURL String",
+        "models": "Models",
+        "serialNumbers": "Serial Numbers",
+        "sbomUrls": "SBOM URLs",
+        "skus": "SKUs",
+        "genericUris": "Generic URIs"
+      },
+      "types": {
+        "cpe": {
+          "label": "CPE",
+          "entryTitle": "CPE",
+          "description": "Common Platform Enumeration (CPE) is a structured naming scheme for information technology systems, software, and packages."
         },
-        "vendor": {
-            "label": "Vendor",
-            "label_other": "Vendors"
+        "hashes": {
+          "label": "Hashes",
+          "entryTitle": "Hash",
+          "description": "File hashes with algorithms and values for integrity verification."
         },
-        "product": {
-            "label": "Product",
-            "label_other": "Products"
+        "models": {
+          "label": "Model Numbers",
+          "entryTitle": "Model",
+          "description": "Model numbers are specific identifiers for product variants."
         },
-        "version": {
-            "label": "Version",
-            "label_other": "Versions"
+        "purl": {
+          "label": "PURL",
+          "entryTitle": "PURL",
+          "description": "Package URL (PURL) is a scheme for identifying software packages."
         },
-        "relationship": {
-            "label": "Relationship",
-            "label_other": "Relationships",
-            "targetProduct": {
-                "empty": "No target added yet.",
-                "label": "Target Product",
-                "label_other": "Target Products"
-            },
-            "sourceProduct": {
-                "label": "Source Product",
-                "label_other": "Source Products"
-            },
-            "category": {
-                "default_component_of": "Default Component Of",
-                "external_component_of": "External Component Of",
-                "installed_on": "Installed On",
-                "installed_with": "Installed With",
-                "optional_component_of": "Optional Component Of"
-            },
-            "confirmDeleteResource": "the \"{{category}}\" relationship to {{totalVersions}} version(s)"
+        "sbom": {
+          "label": "SBOM URLs",
+          "entryTitle": "SBOM URL",
+          "description": "Software Bill of Materials (SBOM) URLs linking to component listings."
         },
-        "treeView": {
-            "label" : "Tree-View"
+        "serial": {
+          "label": "Serial Numbers",
+          "entryTitle": "Serial Number",
+          "description": "Unique serial numbers for tracking individual product instances."
         },
-        "form": {
-            "errors": "Please check the form for errors.",
-            "select": "Please select an option",
-            "fields": {
-                "name": "Name",
-                "description": "Description",
-                "vendor": "Vendor",
-                "product": "Product",
-                "version": "Version",
-                "relationshipCategory": "Relationship Category",
-                "relationshipType": "Relationship Type"
-            }
+        "sku": {
+          "label": "SKUs",
+          "entryTitle": "SKU",
+          "description": "Stock Keeping Units (SKUs) for inventory management and identification."
+        },
+        "uri": {
+          "label": "Generic URIs",
+          "entryTitle": "URI",
+          "description": "Generic Uniform Resource Identifiers with namespace and URI pairs."
         }
+      }
+    },
+    "form": {
+      "errors": "Please check the form for errors.",
+      "select": "Please select an option",
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "vendor": "Vendor",
+        "product": "Product",
+        "version": "Version",
+        "relationshipCategory": "Relationship Category",
+        "relationshipType": "Relationship Type",
+        "helperType": "Helper Type",
+        "selectHelperType": "Select a helper type"
+      }
     }
+  }
 }
