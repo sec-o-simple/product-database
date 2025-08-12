@@ -1,11 +1,15 @@
 name: Server Tests
 
 on:
-  - pull_request
+  pull_request:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
   actions: read
+  pull-requests: write
 
 jobs:
   test:
@@ -30,7 +34,27 @@ jobs:
         run: go mod download
 
       - name: Run tests
+        if: github.event_name == 'push'
         run: go test -v ./...
+
+      - name: Run tests with coverage
+        if: github.event_name == 'pull_request'
+        run: |
+          go test ./internal -race -coverprofile=coverage.out -covermode=atomic ./...
+          go tool cover -func=coverage.out > coverage.txt
+          
+      - name: Check coverage threshold
+        if: github.event_name == 'pull_request'
+        run: |
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "Current coverage: ${COVERAGE}%"
+          # Check if coverage is below 95% using shell arithmetic
+          if [ $(echo "$COVERAGE" | cut -d. -f1) -lt 95 ]; then
+            echo "❌ Coverage ${COVERAGE}% is below required 95%"
+            exit 1
+          else
+            echo "✅ Coverage ${COVERAGE}% meets the 95% requirement"
+          fi
 
       - name: Run linter
         uses: golangci/golangci-lint-action@v3
@@ -38,8 +62,3 @@ jobs:
           version: latest
           working-directory: ./server
           args: --timeout=5m
-
-      - name: Run coverage
-        run: |
-          go test -race -coverprofile=coverage.txt -covermode=atomic ./...
-          go tool cover -func=coverage.txt

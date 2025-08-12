@@ -14,10 +14,10 @@ import (
 )
 
 type Service struct {
-	repo *repository
+	repo Repository
 }
 
-func NewService(repository *repository) *Service {
+func NewService(repository Repository) *Service {
 	return &Service{repo: repository}
 }
 
@@ -310,6 +310,7 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 		VendorID:    createdNode.ParentID,
 		Name:        createdNode.Name,
 		Description: createdNode.Description,
+		Type:        string(createdNode.ProductType),
 	}, nil
 }
 

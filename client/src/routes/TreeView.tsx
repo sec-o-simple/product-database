@@ -37,7 +37,7 @@ enum TypeLabels {
   version = 'Version',
 }
 
-function getParentNode(
+export function getParentNode(
   items: TreeViewBaseItem[],
   id: string,
 ): TreeViewBaseItem | undefined {
@@ -60,7 +60,7 @@ function getParentNode(
   return undefined
 }
 
-function getAllParentIds(items: TreeViewBaseItem[], id: string) {
+export function getAllParentIds(items: TreeViewBaseItem[], id: string) {
   const parentIds: string[] = []
   let parent = getParentNode(items, id)
   while (parent) {
@@ -70,7 +70,7 @@ function getAllParentIds(items: TreeViewBaseItem[], id: string) {
   return parentIds
 }
 
-function getSelectedIdsAndChildrenIds(
+export function getSelectedIdsAndChildrenIds(
   items: TreeViewBaseItem[],
   selectedIds: string[],
 ) {
@@ -107,7 +107,7 @@ function getSelectedIdsAndChildrenIds(
   return [...Array.from(selectedIdIncludingChildrenIds)]
 }
 
-function determineIdsToSet(
+export function determineIdsToSet(
   items: TreeViewBaseItem[],
   newIds: string[],
   currentIds: string[],
@@ -125,19 +125,27 @@ function determineIdsToSet(
     return newIdsWithParentsAndChildrenRemoved
   }
 
-  const added = newIds.filter((id) => !currentIds.includes(id))[0]
   const idsToSet = getSelectedIdsAndChildrenIds(items, newIds)
-  let parent = getParentNode(items, added)
-  while (parent) {
-    const childIds = parent.children?.map((node) => node.id) ?? []
-    const allChildrenSelected = childIds.every((id) => idsToSet.includes(id))
-    if (allChildrenSelected) {
-      idsToSet.push(parent.id)
-      parent = getParentNode(items, parent.id)
-    } else {
-      break
+  
+  // For each selected item, check if all siblings are also selected
+  // and add parent if so, recursively up the tree
+  const checkAndAddParents = (nodeId: string) => {
+    let parent = getParentNode(items, nodeId)
+    while (parent) {
+      const childIds = parent.children?.map((node) => node.id) ?? []
+      const allChildrenSelected = childIds.every((id) => idsToSet.includes(id))
+      if (allChildrenSelected && !idsToSet.includes(parent.id)) {
+        idsToSet.push(parent.id)
+        parent = getParentNode(items, parent.id)
+      } else {
+        break
+      }
     }
   }
+  
+  // Check parents for all newly selected items
+  const addedIds = newIds.filter((id) => !currentIds.includes(id))
+  addedIds.forEach(checkAndAddParents)
   return idsToSet
 }
 
@@ -161,6 +169,33 @@ export default function TreeView() {
       }))
       .sort((a, b) => a.name.localeCompare(b.name)),
   }))
+
+  const handleExpandCollapseAll = () => {
+    setExpandedItems((prev) => {
+      const newItems = [...prev]
+      if (newItems.length === 0) {
+        vendors?.forEach((vendor) => {
+          newItems.push(String(vendor.id))
+          vendor.products?.forEach((product) => {
+            newItems.push(vendor.id + '_' + product.id)
+            product.versions?.forEach((version: VersionProps) => {
+              newItems.push(vendor.id + '_' + product.id + '_' + version.id)
+            })
+          })
+        })
+      } else {
+        newItems.length = 0
+      }
+      return newItems
+    })
+  }
+
+  const handleExpandedItemsChange = (
+    _event: SyntheticEvent | null,
+    expandedItems: string[],
+  ) => {
+    setExpandedItems(expandedItems)
+  }
 
   const handleSelectedItemsChange = (
     _event: SyntheticEvent | null,
@@ -231,27 +266,7 @@ export default function TreeView() {
                 isIconOnly
                 color="primary"
                 variant="flat"
-                onPress={() => {
-                  setExpandedItems((prev) => {
-                    const newItems = [...prev]
-                    if (newItems.length === 0) {
-                      vendors?.forEach((vendor) => {
-                        newItems.push(String(vendor.id))
-                        vendor.products?.forEach((product) => {
-                          newItems.push(vendor.id + '_' + product.id)
-                          product.versions?.forEach((version: VersionProps) => {
-                            newItems.push(
-                              vendor.id + '_' + product.id + '_' + version.id,
-                            )
-                          })
-                        })
-                      })
-                    } else {
-                      newItems.length = 0
-                    }
-                    return newItems
-                  })
-                }}
+                onPress={handleExpandCollapseAll}
               >
                 <FontAwesomeIcon icon={faArrowDown} className="text-primary" />
               </Button>
@@ -265,9 +280,7 @@ export default function TreeView() {
               multiSelect
               selectedItems={selectedIds}
               expandedItems={expandedItems}
-              onExpandedItemsChange={(_, expandedItems) =>
-                setExpandedItems(expandedItems)
-              }
+              onExpandedItemsChange={handleExpandedItemsChange}
               onSelectedItemsChange={handleSelectedItemsChange}
             >
               {vendors?.map((vendor) => (
