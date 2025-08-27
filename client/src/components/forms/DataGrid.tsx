@@ -6,14 +6,6 @@ import { Button, ButtonProps } from '@heroui/button'
 import React from 'react'
 import { EmptyState } from '../table/EmptyState'
 
-export function Titlebar({ title }: { title: string }) {
-  return (
-    <div className="flex w-full items-center justify-between rounded-md border-1 border-gray bg-white p-4">
-      <p className="text-xl font-semibold text-primary">{title}</p>
-    </div>
-  )
-}
-
 type FilterButtonProps = {
   icon: FontAwesomeIconProps['icon']
   title: string
