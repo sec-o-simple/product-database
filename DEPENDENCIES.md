@@ -18,6 +18,7 @@ This project is split into [frontend](./client/README.md) and [backend](./server
 | `i18next`, `react-i18next` | Internationalization and localization. |
 | `@internationalized/date`, `@react-aria/visually-hidden`, `@react-types/shared` | Accessibility and localized date handling. |
 | `@mui/x-tree-view` | Hierarchical tree view UI component. |
+| `@emotion/react`, `@emotion/styled` | CSS-in-JS runtime and styled components for React (used by MUI and custom styles). |
 
 #### Development / Tooling Dependencies
 
@@ -31,7 +32,8 @@ This project is split into [frontend](./client/README.md) and [backend](./server
 | `openapi-typescript` | Generation of TypeScript types from OpenAPI schemas. |
 | `vite-tsconfig-paths` | Path alias resolution in Vite from tsconfig. |
 | `@vitejs/plugin-react` | React integration for Vite. |
-| `postcss`, `autoprefixer` | CSS processing for Tailwind. |
+| `@tailwindcss/vite` | Tailwind CSS v4 Vite plugin for native integration with Vite. |
+| `postcss`,  `@tailwindcss/postcss` | CSS processing for Tailwind; Tailwind’s PostCSS plugin for v4. |
 | `@types/*` | Type definitions for third-party libraries. |
 
 ### Backend (Go)

@@ -2,11 +2,11 @@ import { faArrowLeft, faDatabase } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
 import { Tooltip } from '@heroui/react'
+import { useTranslation } from 'react-i18next'
 import { Outlet, useNavigate } from 'react-router-dom'
 import IconButton from '../forms/IconButton'
 import { PageOutlet } from '../forms/PageContent'
 import { LanguageSwitcher } from '../LanguageSwitcher'
-import { useTranslation } from 'react-i18next'
 
 interface TopBarProps {
   title?: string | React.ReactNode
@@ -26,7 +26,7 @@ export function TopBar({
   const { t } = useTranslation()
 
   return (
-    <div className="flex w-full items-center justify-between gap-8 border-b bg-white px-6 py-4">
+    <div className="border-b-gray-200 flex w-full items-center justify-between gap-8 border-b bg-white px-6 py-4">
       <span className="flex items-center gap-2 text-2xl font-bold">
         <Tooltip content={t('goHome')} placement="bottom" showArrow>
           <Button

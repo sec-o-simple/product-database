@@ -197,7 +197,7 @@ export default function TreeView() {
   }
 
   const navigate = useNavigate()
-  const apiRef = useRef(null)
+  const apiRef = useRef(undefined)
 
   return (
     <div className="flex grow flex-col items-center gap-4">
