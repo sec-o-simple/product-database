@@ -45,9 +45,9 @@ jobs:
         uses: davelosert/vitest-coverage-report-action@v2
         if: github.event_name == 'pull_request'
         with:
-          json-summary-path: './coverage/coverage-summary.json'
-          json-final-path: './coverage/coverage-final.json'
-          vite-config-path: './vite.config.ts'
+          json-summary-path: './client/coverage/coverage-summary.json'
+          json-final-path: './client/coverage/coverage-final.json'
+          vite-config-path: './client/vite.config.ts'
       
       - name: Upload coverage artifacts
         uses: actions/upload-artifact@v4
