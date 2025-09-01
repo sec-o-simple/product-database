@@ -1,4 +1,4 @@
-name: Tests
+name: Client Tests
 
 on:
   pull_request:
@@ -28,6 +28,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
       
       - name: Install dependencies
         run: npm ci
