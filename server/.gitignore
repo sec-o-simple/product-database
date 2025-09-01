@@ -11,3 +11,4 @@ go.work.sum
 tmp
 .env
 coverage.txt
+coverage.html

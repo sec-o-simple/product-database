@@ -197,7 +197,12 @@ export default function CreateEditVersion() {
   }
 
   return (
-    <Modal isOpen onOpenChange={onClose} size="xl" isDismissable={false}>
+    <Modal
+      isOpen
+      onOpenChange={() => onClose()}
+      size="xl"
+      isDismissable={false}
+    >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           {t(versionId ? 'common.editObject' : 'common.createObject', {

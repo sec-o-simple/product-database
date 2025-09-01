@@ -155,24 +155,40 @@ export const SelectableContext = createContext<{
   setSelected: () => {},
 })
 
+// Helper function to handle file download - extracted for better testability
+export function downloadExportFile(response: unknown) {
+  const blob = new Blob([JSON.stringify(response, null, 2)], {
+    type: 'application/json',
+  })
+
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `csaf_product_tree_export_${Date.now()}.json`
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
+// Helper function to handle export errors - extracted for better testability
+export function handleExportError(
+  error: { title?: string | null } | null | undefined,
+  t: (key: string) => string,
+  addToast: (options: unknown) => void,
+) {
+  addToast({
+    title: t('export.error.title'),
+    description: error?.title || t('export.error.text'),
+    color: 'danger',
+  })
+}
+
 function useExportProductTree() {
   const { t } = useTranslation()
 
   return client.useMutation('post', '/api/v1/products/export', {
-    onSuccess: (response) => {
-      const blob = new Blob([JSON.stringify(response, null, 2)], {
-        type: 'application/json',
-      })
-
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `csaf_product_tree_export_${Date.now()}.json`
-      document.body.appendChild(a)
-      a.click()
-      a.remove()
-      URL.revokeObjectURL(url)
-    },
+    onSuccess: downloadExportFile,
     onError: (error) => {
       addToast({
         title: t('export.error.title'),

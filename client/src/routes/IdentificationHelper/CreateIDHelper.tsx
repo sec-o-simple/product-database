@@ -72,11 +72,61 @@ export type HelperData =
 
 interface CreateIDHelperProps {
   availableTypes?: HelperTypeProps[]
-  editData: {
+  editData?: {
     type: HelperTypeProps
     helperId: string // The API ID for updates
   }
   onClose?: () => void
+}
+
+// Extracted testable utility functions
+export function getCreateModeTitle(
+  selectedType: HelperTypeProps | null,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string {
+  return selectedType
+    ? t('identificationHelper.createTitle', {
+        label: t(`${selectedType.translationKey}.label`),
+      })
+    : t('identificationHelper.createTitle', { label: 'ID Helper' })
+}
+
+export function getEditModeTitle(
+  editData: { type: HelperTypeProps },
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string {
+  return t('identificationHelper.editTitle', {
+    label: t(`${editData.type.translationKey}.label`),
+  })
+}
+
+export function shouldShowCreateModeDescription(
+  selectedType: HelperTypeProps | null,
+  editData: CreateIDHelperProps['editData'],
+): boolean {
+  return !!(selectedType && !editData)
+}
+
+export function getCreateModeDescription(
+  selectedType: HelperTypeProps,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string {
+  return t(`${selectedType.translationKey}.description`)
+}
+
+export function handleTypeSelection(
+  typeId: string,
+  typesToShow: readonly HelperTypeProps[] | HelperTypeProps[],
+  setSelectedType: (type: HelperTypeProps | null) => void,
+  setHelperData: (data: HelperData | null) => void,
+): void {
+  const type = typesToShow.find((t) => String(t.id) === typeId)
+  setSelectedType(type || null)
+  if (type) {
+    setHelperData(getInitialData(type.component))
+  } else {
+    setHelperData(null)
+  }
 }
 
 // Component for CPE input
@@ -464,6 +514,9 @@ function getInitialData(component: HelperTypeProps['component']): HelperData {
   }
 }
 
+// Export the function for testing
+export { getInitialData }
+
 function DynamicHelperComponent({
   type,
   data,
@@ -549,6 +602,38 @@ function DynamicHelperComponent({
     default:
       return <div>Unknown component type</div>
   }
+}
+
+// Export the handleSubmit logic for testing
+export function executeCreateMutation(
+  createMutation: ReturnType<typeof client.useMutation>,
+  selectedType: HelperTypeProps | null,
+  helperData: HelperData | null,
+  versionId: string | undefined,
+  canSubmit: boolean,
+) {
+  if (!selectedType || !helperData || !canSubmit || !versionId) return false
+
+  // Create mode: add new helper via API (this covers the original lines 778-785)
+  createMutation.mutate({
+    body: {
+      product_version_id: versionId,
+      category: selectedType.id as string,
+      metadata: JSON.stringify(helperData),
+    },
+  })
+  return true
+}
+
+// Export function for testing description rendering logic
+export function renderCreateModeDescription(
+  selectedType: HelperTypeProps | null,
+  editData: CreateIDHelperProps['editData'],
+  t: (key: string, options?: Record<string, unknown>) => string,
+): { shouldRender: boolean; description: string | null } {
+  const shouldRender = shouldShowCreateModeDescription(selectedType, editData)
+  const description = shouldRender && selectedType ? getCreateModeDescription(selectedType, t) : null
+  return { shouldRender, description }
 }
 
 export default function CreateEditIDHelper({
@@ -721,14 +806,14 @@ export default function CreateEditIDHelper({
         },
       })
     } else {
-      // Create mode: add new helper via API
-      createMutation.mutate({
-        body: {
-          product_version_id: versionId,
-          category: selectedType.id as string,
-          metadata: JSON.stringify(helperData),
-        },
-      })
+      // Create mode: use extracted function for testability
+      executeCreateMutation(
+        createMutation,
+        selectedType,
+        helperData,
+        versionId,
+        canSubmit,
+      )
     }
 
     // Reset form will be handled by the mutation success callback
@@ -742,13 +827,7 @@ export default function CreateEditIDHelper({
   }
 
   const handleTypeChange = (typeId: string) => {
-    const type = typesToShow.find((t) => String(t.id) === typeId)
-    setSelectedType(type || null)
-    if (type) {
-      setHelperData(getInitialData(type.component))
-    } else {
-      setHelperData(null)
-    }
+    handleTypeSelection(typeId, typesToShow, setSelectedType, setHelperData)
   }
 
   return (
@@ -763,14 +842,8 @@ export default function CreateEditIDHelper({
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
             {editData
-              ? t('identificationHelper.editTitle', {
-                  label: t(`${editData.type.translationKey}.label`),
-                })
-              : selectedType
-                ? t('identificationHelper.createTitle', {
-                    label: t(`${selectedType.translationKey}.label`),
-                  })
-                : t('identificationHelper.createTitle', { label: 'ID Helper' })}
+              ? getEditModeTitle(editData, t)
+              : getCreateModeTitle(selectedType, t)}
           </ModalHeader>
           <ModalBody className="gap-4">
             {!editData && (
@@ -807,10 +880,13 @@ export default function CreateEditIDHelper({
 
             {selectedType && (
               <div className="flex flex-col gap-2">
-                {!editData && (
-                  <div className="rounded-md bg-gray-50 p-3">
+                {shouldShowCreateModeDescription(selectedType, editData) && (
+                  <div
+                    className="rounded-md bg-gray-50 p-3"
+                    data-testid="create-mode-description"
+                  >
                     <p className="text-sm text-zinc-500">
-                      {t(`${selectedType.translationKey}.description`)}
+                      {getCreateModeDescription(selectedType, t)}
                     </p>
                   </div>
                 )}
