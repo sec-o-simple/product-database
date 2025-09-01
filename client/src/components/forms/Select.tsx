@@ -1,4 +1,4 @@
-import { Select as HeroUISelect, SelectProps } from '@heroui/select'
+import { Select as HeroUISelect, SelectProps } from '@heroui/react'
 
 export default function Select(props: SelectProps) {
   const { placeholder, labelPlacement, variant, ...rest } = props

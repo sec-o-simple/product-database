@@ -28,7 +28,7 @@ export function Attribute({
       </div>
       <div
         className={cn(
-          'group bg-gray-50 border rounded-lg p-2 space-y-2',
+          'group bg-gray-50 border border-default-200 rounded-lg p-2 space-y-2',
           href ? 'cursor-pointer hover:bg-gray-200 hover:transition-all' : '',
         )}
         onClick={() => {

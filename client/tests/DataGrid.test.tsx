@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import DataGrid, {
-  Titlebar,
   FilterButton,
 } from '../src/components/forms/DataGrid'
 
@@ -36,9 +35,9 @@ vi.mock('../src/components/table/EmptyState', () => ({
   ),
 }))
 
-describe('Titlebar', () => {
+describe('DataGrid with title', () => {
   it('should render title', () => {
-    render(<Titlebar title="Test Title" />)
+    render(<DataGrid title="Test Title">{[]}</DataGrid>)
     expect(screen.getByText('Test Title')).toBeInTheDocument()
   })
 })
