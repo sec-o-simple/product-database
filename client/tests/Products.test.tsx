@@ -161,7 +161,6 @@ import Products, {
   handleExportError
 } from '../src/routes/Products'
 import client from '../src/client'
-import useRouter from '../src/utils/useRouter'
 import React from 'react'
 
 function TestWrapper({ children }: { children: React.ReactNode }) {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import ListItem, { ListGroup } from '../src/components/forms/ListItem'
+import ListItem from '../src/components/forms/ListItem'
 import { SelectableContext } from '../src/routes/Products'
 
 const mockSelectableContext = {

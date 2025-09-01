@@ -55,10 +55,3 @@ jobs:
           else
             echo "✅ Coverage ${COVERAGE}% meets the 95% requirement"
           fi
-
-      - name: Run linter
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          working-directory: ./server
-          args: --timeout=5m

@@ -11,25 +11,6 @@ const mockVendor = {
   description: 'Test vendor description'
 }
 
-const mockProducts = [
-  { 
-    id: '1', 
-    name: 'Product 1', 
-    vendor: 'Test Vendor',
-    full_name: 'Product 1',
-    type: 'software',
-    description: 'Test product'
-  },
-  { 
-    id: '2', 
-    name: 'Product 2', 
-    vendor: 'Test Vendor',
-    full_name: 'Product 2',
-    type: 'software',
-    description: 'Test product 2'
-  }
-]
-
 // Mock all the complex dependencies first
 vi.mock('../src/client', () => ({
   default: {

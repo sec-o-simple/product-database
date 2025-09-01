@@ -10,13 +10,6 @@ beforeAll(() => {
     disconnect() {}
   }
 
-  // Mock IntersectionObserver
-  global.IntersectionObserver = class IntersectionObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  }
-
   // Mock URL.createObjectURL
   global.URL.createObjectURL = vi.fn(() => 'mock-object-url')
 
