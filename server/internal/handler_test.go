@@ -774,6 +774,15 @@ func testProductHandlers(t *testing.T, app *fuego.Server) {
 		t.Errorf("Expected status 200, got %d", w.Code)
 	}
 
+	// Test ListVendorProducts - Not Found
+	req = httptest.NewRequest("GET", "/api/v1/vendors/xxyyy/products", nil)
+	w = httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Errorf("Expected status 404, got %d", w.Code)
+	}
+
 	// Test UpdateProduct
 	updateData := UpdateProductDTO{
 		Name: stringPtr("Updated Product"),
