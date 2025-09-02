@@ -83,6 +83,7 @@ jobs:
         with:
           context: .
           file: ./docker/Dockerfile.server
+          platforms: linux/amd64,linux/arm64
           # Only push if not a pull request
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-server.outputs.tags }}
