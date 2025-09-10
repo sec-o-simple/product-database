@@ -1,0 +1,285 @@
+import { render, screen } from '@testing-library/react'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter } from 'react-router-dom'
+import Vendor, { useVendorQuery, DeleteVendor } from '../src/routes/Vendor'
+
+// Mock data
+const mockVendor = {
+  id: '1',
+  name: 'Test Vendor',
+  description: 'Test vendor description'
+}
+
+const mockProducts = [
+  { id: '1', name: 'Product 1', vendor: 'Test Vendor' },
+  { id: '2', name: 'Product 2', vendor: 'Test Vendor' }
+]
+
+// Create mock function that can be controlled
+const mockUseVendorProductListQuery = vi.fn(() => ({
+  data: mockProducts,
+  isLoading: false,
+  error: null,
+}))
+
+// Mock all the complex dependencies first
+vi.mock('../src/client', () => ({
+  default: {
+    useQuery: vi.fn(() => ({
+      data: mockVendor,
+      isLoading: false,
+      error: null,
+    })),
+    useMutation: vi.fn(() => ({
+      mutate: vi.fn(),
+      isLoading: false,
+      error: null,
+    })),
+  },
+}))
+
+vi.mock('../src/utils/useRefetchQuery', () => ({
+  default: vi.fn()
+}))
+
+vi.mock('../src/utils/useRouter', () => ({
+  default: vi.fn(() => ({
+    navigate: vi.fn(),
+    navigateToModal: vi.fn()
+  }))
+}))
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, opts?: any) => {
+      if (key === 'vendor.label') return 'Vendors';
+      if (key === 'product.label') return 'Products';
+      if (key === 'common.delete') return 'Delete';
+      if (opts && opts.count !== undefined) return \`\${key} (\${opts.count})\`;
+      return key;
+    }
+  })
+}))
+
+vi.mock('../src/routes/Products', () => ({
+  ...vi.importActual('../src/routes/Products'),
+  ProductItem: ({ product }: { product: any }) => <div data-testid="product-item">{product.name}</div>,
+  useVendorProductListQuery: mockUseVendorProductListQuery
+}))
+
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom')
+  return {
+    ...actual,
+    useParams: () => ({ vendorId: '1' }),
+  }
+})
+
+// Mock FontAwesome
+vi.mock('@fortawesome/react-fontawesome', () => ({
+  FontAwesomeIcon: ({ icon }: { icon: any }) => <div data-testid="fa-icon">{icon.iconName || 'icon'}</div>
+}))
+
+// Mock HeroUI components
+vi.mock('@heroui/react', () => ({
+  BreadcrumbItem: ({ children }: { children: React.ReactNode }) => (
+    <span data-testid="breadcrumb-item">{children}</span>
+  ),
+}))
+
+// Mock form components
+vi.mock('../src/components/forms/Breadcrumbs', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <nav data-testid="breadcrumbs">{children}</nav>
+  )
+}))
+
+vi.mock('../src/components/forms/ConfirmButton', () => ({
+  default: ({ children, onConfirm, ...props }: any) => (
+    <button data-testid="confirm-button" onClick={onConfirm} {...props}>
+      {children}
+    </button>
+  )
+}))
+
+vi.mock('../src/components/forms/DataGrid', () => ({
+  default: ({ children, addButton, title }: { children: React.ReactNode, addButton?: React.ReactNode, title?: string }) => (
+    <div data-testid="data-grid">
+      {title && <p data-testid="data-grid-title">{title}</p>}
+      {addButton && <div data-testid="add-button">{addButton}</div>}
+      {children}
+    </div>
+  )
+}))
+
+vi.mock('../src/components/forms/PageContent', () => ({
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="page-content">{children}</div>
+  )
+}))
+
+vi.mock('../src/components/layout/product/CreateEditProduct', () => ({
+  AddProductButton: ({ vendorId }: { vendorId: string }) => (
+    <button data-testid="add-product-button">Add Product to {vendorId}</button>
+  )
+}))
+
+// Test wrapper component
+function TestWrapper({ children }: { children: React.ReactNode }) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  })
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    </QueryClientProvider>
+  )
+}
+
+describe('useVendorQuery', () => {
+  beforeEach(() => {
+    // Reset mock to return products for each test
+    mockUseVendorProductListQuery.mockReturnValue({
+      data: mockProducts,
+      isLoading: false,
+      error: null,
+    })
+  })
+
+  it('should return vendor query with data', () => {
+    const result = useVendorQuery('1')
+    expect(result).toBeDefined()
+    expect(result.data).toEqual(mockVendor)
+  })
+
+  it('renders with vendorId from props', () => {
+    render(
+      <TestWrapper>
+        <Vendor vendorId="1" />
+      </TestWrapper>
+    )
+    expect(screen.getByText('Test Vendor')).toBeInTheDocument()
+  })
+
+  it('renders with vendorId from params', () => {
+    // useParams already mocked globally above
+    render(
+      <TestWrapper>
+        <Vendor />
+      </TestWrapper>
+    )
+    expect(screen.getByText('Test Vendor')).toBeInTheDocument()
+  })
+
+  it('renders without breadcrumbs', () => {
+    render(
+      <TestWrapper>
+        <Vendor vendorId="1" hideBreadcrumbs={true} />
+      </TestWrapper>
+    )
+    expect(screen.queryByText('Test Vendor')).not.toBeInTheDocument()
+    expect(screen.queryByText('vendor.label')).not.toBeInTheDocument()
+  })
+
+  it('renders DataGrid with products', () => {
+    render(
+      <TestWrapper>
+        <Vendor vendorId="1" />
+      </TestWrapper>
+    )
+    expect(screen.getByTestId('product-item')).toBeInTheDocument()
+    expect(screen.getByText('Product 1')).toBeInTheDocument()
+    expect(screen.getByText('Product 2')).toBeInTheDocument()
+  })
+
+  it('handles no products', () => {
+    // Override mock for this specific test
+    mockUseVendorProductListQuery.mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: null,
+    })
+    
+    render(
+      <TestWrapper>
+        <Vendor vendorId="1" />
+      </TestWrapper>
+    )
+    expect(screen.getByText(/Products/)).toBeInTheDocument()
+  })
+
+  it('should handle empty vendorId', () => {
+    const result = useVendorQuery()
+    expect(result).toBeDefined()
+  })
+
+  it('should handle undefined vendorId', () => {
+    const result = useVendorQuery(undefined)
+    expect(result).toBeDefined()
+  })
+})
+
+describe('DeleteVendor', () => {
+  const mockDeleteFn = vi.fn()
+
+  beforeEach(() => {
+    mockDeleteFn.mockClear()
+  })
+
+  it('should render as icon button by default', () => {
+    render(
+      <TestWrapper>
+        <DeleteVendor vendor={mockVendor} />
+      </TestWrapper>
+    )
+
+    const confirmButton = screen.getByTestId('confirm-button')
+    expect(confirmButton).toBeInTheDocument()
+    
+    const icon = screen.getByTestId('fa-icon')
+    expect(icon).toBeInTheDocument()
+    expect(icon).toHaveTextContent('trash')
+  })
+
+  it('should render as regular button when isIconButton is false', () => {
+    render(
+      <TestWrapper>
+        <DeleteVendor vendor={mockVendor} isIconButton={false} />
+      </TestWrapper>
+    )
+
+    const confirmButton = screen.getByTestId('confirm-button')
+    expect(confirmButton).toBeInTheDocument()
+  })
+
+  it('should handle vendor without id', () => {
+    const vendorWithoutId = { ...mockVendor, id: undefined }
+    
+    render(
+      <TestWrapper>
+        <DeleteVendor vendor={vendorWithoutId} />
+      </TestWrapper>
+    )
+
+    const confirmButton = screen.getByTestId('confirm-button')
+    expect(confirmButton).toBeInTheDocument()
+  })
+
+  it('should render with proper structure', () => {
+    render(
+      <TestWrapper>
+        <DeleteVendor vendor={mockVendor} />
+      </TestWrapper>
+    )
+
+    const confirmButton = screen.getByTestId('confirm-button')
+    expect(confirmButton).toBeInTheDocument()
+  })
+})

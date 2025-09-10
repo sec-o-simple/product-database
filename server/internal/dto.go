@@ -19,6 +19,10 @@ type VendorDTO struct {
 }
 
 // Products
+type ExportRequestDTO struct {
+	ProductIDs []string `json:"product_ids" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,dive,uuid"`
+}
+
 type CreateProductDTO struct {
 	Name        string `json:"name" example:"Product Name" validate:"required"`
 	Description string `json:"description" example:"Product Description"`
@@ -40,6 +44,7 @@ type ProductDTO struct {
 	FullName       string              `json:"full_name" example:"Vendor Name - Product Name" validate:"required"`
 	Description    string              `json:"description" example:"Product Description"`
 	Type           string              `json:"type" example:"software" validate:"required,oneof=software hardware firmware"`
+	Versions       []ProductVersionDTO `json:"versions" validate:"dive"`
 	LatestVersions []ProductVersionDTO `json:"latest_versions" validate:"dive"`
 }
 
@@ -50,6 +55,16 @@ func NodeToProductDTO(node Node) ProductDTO {
 	} else {
 		fullName = node.Name
 	}
+
+	versions := make([]ProductVersionDTO, 0, len(node.Children))
+	for _, child := range node.Children {
+		versions = append(versions, ProductVersionDTO{
+			ID:          child.ID,
+			Name:        child.Name,
+			Description: child.Description,
+		})
+	}
+
 	return ProductDTO{
 		ID:          node.ID,
 		VendorID:    node.ParentID,
@@ -57,6 +72,7 @@ func NodeToProductDTO(node Node) ProductDTO {
 		FullName:    fullName,
 		Description: node.Description,
 		Type:        string(node.ProductType),
+		Versions:    versions,
 	}
 }
 

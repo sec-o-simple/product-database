@@ -2,6 +2,15 @@
   "translation": {
     "goHome": "Zur Startseite",
     "title": "Produktdatenbank",
+    "export": {
+      "label": "CSAF Produktbaum exportieren",
+      "exportSelected": "Einträge exportieren ({{count}})",
+      "stopSelection": "Auswahl beenden",
+      "error": {
+        "title": "Exportfehler",
+        "text": "Ein Fehler ist beim Exportieren der Daten aufgetreten. Bitte versuchen Sie es später erneut."
+      }
+    },
     "common": {
       "createObject": "{{label}} erstellen",
       "editObject": "{{label}} bearbeiten",
@@ -27,11 +36,18 @@
     },
     "product": {
       "label": "Produkt",
-      "label_other": "Produkte"
+      "label_other": "Produkte",
+      "type": {
+        "software": "Software",
+        "hardware": "Hardware",
+        "firmware": "Firmware"
+      }
     },
     "version": {
-      "label": "Version",
-      "label_other": "Versionen"
+      "label": "Version", 
+      "label_other": "Versionen",
+      "label_count": "{{count}} Version",
+      "label_count_other": "{{count}} Versionen"
     },
     "productFamily": {
       "label": "Produktfamilie",
@@ -144,10 +160,10 @@
         "description": "Beschreibung",
         "type": "Typ",
         "productFamily": "Produktfamilie",
+        "parent": "Übergeordnete Produktfamilie",
         "vendor": "Anbieter",
         "product": "Produkt",
         "version": "Version",
-        "parent": "Übergeordnete Produktfamilie",
         "relationshipCategory": "Beziehungs-Kategorie",
         "relationshipType": "Beziehungs-Typ",
         "helperType": "Hilfsmittel-Typ",

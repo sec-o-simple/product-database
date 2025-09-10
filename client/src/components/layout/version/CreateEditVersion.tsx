@@ -15,10 +15,15 @@ import {
   ModalFooter,
   ModalHeader,
   Spinner,
+  type DateValue,
 } from '@heroui/react'
-import { parseDate, type DateValue } from '@internationalized/date'
+import { parseDate } from '@internationalized/date'
 import { I18nProvider } from '@react-aria/i18n'
 import { useCallback, useEffect, useState } from 'react'
+
+// Type alias to resolve DateValue conflict between packages
+type HeroUIDateValue = React.ComponentProps<typeof DatePicker>['value']
+
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
@@ -30,7 +35,7 @@ interface CreateEditVersionProps {
 export type VersionProps = {
   id?: string
   name: string
-  releaseDate?: DateValue | null
+  releaseDate?: DateValue | null | undefined
 }
 
 export function useVersionMutation({
@@ -192,7 +197,12 @@ export default function CreateEditVersion() {
   }
 
   return (
-    <Modal isOpen onOpenChange={onClose} size="xl" isDismissable={false}>
+    <Modal
+      isOpen
+      onOpenChange={() => onClose()}
+      size="xl"
+      isDismissable={false}
+    >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">
           {t(versionId ? 'common.editObject' : 'common.createObject', {
@@ -227,7 +237,7 @@ export default function CreateEditVersion() {
                 <DatePicker
                   label="Release Date"
                   variant="bordered"
-                  value={version.releaseDate}
+                  value={version.releaseDate as HeroUIDateValue}
                   onChange={(date) =>
                     setVersion({ ...version, releaseDate: date })
                   }

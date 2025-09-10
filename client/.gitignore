@@ -29,3 +29,5 @@ pnpm-lock.yaml
 yarn.lock
 bun.lockb
 .env
+
+coverage/

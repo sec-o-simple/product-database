@@ -2,6 +2,15 @@
   "translation": {
     "goHome": "Go to Home",
     "title": "Product Database",
+    "export": {
+      "label": "Export CSAF Product Tree",
+      "exportSelected": "Export Selected ({{count}})",
+      "stopSelection": "Stop Selection",
+      "error": {
+        "title": "Export Error",
+        "text": "An error occurred while exporting the data. Please try again later."
+      }
+    },
     "common": {
       "createObject": "Create {{label}}",
       "editObject": "Edit {{label}}",
@@ -28,15 +37,24 @@
     },
     "product": {
       "label": "Product",
-      "label_other": "Products"
-    },
-    "productFamily": {
-      "label": "Product Family",
-      "label_other": "Product Families"
+      "label_other": "Products",
+      "type": {
+          "software": "Software",
+          "hardware": "Hardware",
+          "firmware": "Firmware"
+      }
     },
     "version": {
-      "label": "Version",
-      "label_other": "Versions"
+        "label": "Version",
+        "label_other": "Versions",
+        "label_count": "{{count}} Version",
+        "label_count_other": "{{count}} Versions"
+    },
+    "productFamily": {
+        "label": "Product Family",
+        "label_other": "Product Families",
+        "products": "{{ count }} Product",
+        "products_other": "{{ count }} Products"
     },
     "relationship": {
       "label": "Relationship",

@@ -3,7 +3,7 @@ import {
   Textarea as HeroUITextarea,
   InputProps,
   TextAreaProps,
-} from '@heroui/input'
+} from '@heroui/react'
 
 export function Input(props: InputProps) {
   const { placeholder, labelPlacement, variant, ...rest } = props

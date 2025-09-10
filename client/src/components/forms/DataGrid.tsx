@@ -6,14 +6,6 @@ import { Button, ButtonProps } from '@heroui/button'
 import React from 'react'
 import { EmptyState } from '../table/EmptyState'
 
-export function Titlebar({ title }: { title: string }) {
-  return (
-    <div className="flex w-full items-center justify-between rounded-md border-1 border-gray bg-white p-4">
-      <p className="text-xl font-semibold text-primary">{title}</p>
-    </div>
-  )
-}
-
 type FilterButtonProps = {
   icon: FontAwesomeIconProps['icon']
   title: string
@@ -33,10 +25,12 @@ export function FilterButton({ icon, title, ...props }: FilterButtonProps) {
 
 export default function DataGrid({
   title,
+  actions,
   addButton,
   children,
 }: {
   title?: string
+  actions?: React.ReactNode
   addButton?: React.ReactNode
   children: React.ReactNode[] | React.ReactNode | undefined
 }) {
@@ -45,6 +39,8 @@ export default function DataGrid({
       {title && (
         <div className="flex w-full items-center justify-between rounded-lg border-1 border-default-200 bg-white p-4">
           <p className="text-xl font-semibold text-primary">{title}</p>
+
+          {actions && <div className="flex items-center">{actions}</div>}
         </div>
       )}
 
@@ -53,8 +49,6 @@ export default function DataGrid({
       ) : null}
 
       <div className="flex w-full flex-col gap-2">{children}</div>
-
-      {/* <Pagination /> */}
     </div>
   )
 }

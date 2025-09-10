@@ -8,14 +8,12 @@ import useRouter from '@/utils/useRouter'
 import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  Button,
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from '@heroui/modal'
-import {
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -34,6 +32,65 @@ const relationshipTypes = [
   'installed_with',
   'optional_component_of',
 ]
+
+// Utility function for processing version selection values
+export function processVersionSelectionValue(value: string): string[] {
+  const splitValues = value
+    .split(',')
+    .filter((v) => v !== 'all' && v.length > 0)
+  return splitValues
+}
+
+// Utility function for filtering valid products
+export function filterValidProducts(
+  products: {
+    product: { id: string; full_name: string }
+    versionIds: string[]
+  }[],
+): {
+  product: { id: string; full_name: string }
+  versionIds: string[]
+}[] {
+  return products.filter(
+    (item) => item.product.id && item.versionIds.length > 0,
+  )
+}
+
+// Utility function for creating relationship payload
+export function createRelationshipPayload(
+  relationshipType: string,
+  sourceProducts: {
+    product: { id: string; full_name: string }
+    versionIds: string[]
+  }[],
+  targetProducts: {
+    product: { id: string; full_name: string }
+    versionIds: string[]
+  }[],
+  isCreateForm: boolean,
+  category?: string,
+) {
+  const filteredSourceProducts = filterValidProducts(sourceProducts)
+  const filteredTargetProducts = filterValidProducts(targetProducts)
+
+  const sourceVersions = filteredSourceProducts.flatMap((p) => p.versionIds)
+  const targetVersions = filteredTargetProducts.flatMap((p) => p.versionIds)
+
+  if (isCreateForm) {
+    return {
+      category: relationshipType,
+      source_node_ids: sourceVersions,
+      target_node_ids: targetVersions,
+    }
+  } else {
+    return {
+      category: relationshipType,
+      source_node_id: sourceVersions[0],
+      target_node_ids: targetVersions,
+      previous_category: category,
+    }
+  }
+}
 
 export function AddRelationshipButton({
   versionId,
@@ -92,8 +149,8 @@ function ProductVersionSelect({
   )
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value.split(',').filter((v) => v !== 'all')
-    onChange?.(!value[0].length ? [] : value)
+    const value = processVersionSelectionValue(e.target.value)
+    onChange?.(value)
   }
 
   return (
@@ -325,32 +382,29 @@ export default function CreateRelationship() {
       return
     }
 
-    // Filter out products without versions
-    const filteredSourceProducts = sourceProducts.filter(
-      (item) => item.product.id && item.versionIds.length > 0,
+    const payload = createRelationshipPayload(
+      relationshipType,
+      sourceProducts,
+      targetProducts,
+      isCreateForm,
+      category,
     )
-    const filteredTargetProducts = targetProducts.filter(
-      (item) => item.product.id && item.versionIds.length > 0,
-    )
-
-    const sourceVersions = filteredSourceProducts.flatMap((p) => p.versionIds)
-    const targetVersions = filteredTargetProducts.flatMap((p) => p.versionIds)
 
     if (isCreateForm) {
       createMutation.mutate({
-        body: {
-          category: relationshipType,
-          source_node_ids: sourceVersions,
-          target_node_ids: targetVersions,
+        body: payload as {
+          category: string
+          source_node_ids: string[]
+          target_node_ids: string[]
         },
       })
     } else {
       updateMutation.mutate({
-        body: {
-          category: relationshipType,
-          source_node_id: sourceVersions[0],
-          target_node_ids: targetVersions,
-          previous_category: category,
+        body: payload as {
+          category: string
+          previous_category: string
+          source_node_id: string
+          target_node_ids: string[]
         },
       })
     }

@@ -344,6 +344,36 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/products/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Export products in CSAF format
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ExportProductTree`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Exports the tree structure of a product in CSAF format
+         */
+        post: operations["POST_/api/v1/products/export"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/products/{id}": {
         parameters: {
             query?: never;
@@ -642,6 +672,8 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description  schema */
+        "": unknown;
         /** @description CreateIdentificationHelperDTO schema */
         CreateIdentificationHelperDTO: {
             /** @example hashes */
@@ -692,6 +724,11 @@ export interface components {
             description?: string;
             /** @example Vendor Name */
             name: string;
+        };
+        /** @description ExportRequestDTO schema */
+        ExportRequestDTO: {
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_ids: string[];
         };
         /** @description HTTPError schema */
         HTTPError: {
@@ -784,6 +821,33 @@ export interface components {
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             vendor_id?: string;
+            versions?: {
+                /** @example Version Description */
+                description?: string;
+                /** @example Product Name - Version Name */
+                full_name: string;
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                id: string;
+                /** @example true */
+                is_latest: boolean;
+                /** @example Version Name */
+                name: string;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                predecessor_id?: string | null;
+                /**
+                 * @description string schema
+                 * @example 123e4567-e89b-12d3-a456-426614174000
+                 */
+                product_id?: string;
+                /**
+                 * @description string schema
+                 * @example 2023-10-01
+                 */
+                released_at?: string | null;
+            }[];
         };
         /** @description ProductVersionDTO schema */
         ProductVersionDTO: {
@@ -922,6 +986,33 @@ export interface components {
                      * @example 123e4567-e89b-12d3-a456-426614174000
                      */
                     vendor_id?: string;
+                    versions?: {
+                        /** @example Version Description */
+                        description?: string;
+                        /** @example Product Name - Version Name */
+                        full_name: string;
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                        id: string;
+                        /** @example true */
+                        is_latest: boolean;
+                        /** @example Version Name */
+                        name: string;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        predecessor_id?: string | null;
+                        /**
+                         * @description string schema
+                         * @example 123e4567-e89b-12d3-a456-426614174000
+                         */
+                        product_id?: string;
+                        /**
+                         * @description string schema
+                         * @example 2023-10-01
+                         */
+                        released_at?: string | null;
+                    }[];
                 };
                 version_relationships: {
                     /** @example 123e4567-e89b-12d3-a456-426614174000 */
@@ -1761,6 +1852,60 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ProductDTO"];
                     "application/xml": components["schemas"]["ProductDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/products/export": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.ExportRequestDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["ExportRequestDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"];
+                    "application/xml": components["schemas"];
                 };
             };
             /** @description Bad Request _(validation or deserialization error)_ */

@@ -6,9 +6,28 @@ import (
 	"gorm.io/gorm"
 )
 
+type Repository interface {
+	GetNodeByID(ctx context.Context, id string, opts ...LoadOption) (Node, error)
+	CreateNode(ctx context.Context, node Node) (Node, error)
+	GetNodesByCategory(ctx context.Context, category NodeCategory, opts ...LoadOption) ([]Node, error)
+	UpdateNode(ctx context.Context, node Node) error
+	DeleteNode(ctx context.Context, id string) error
+	CreateRelationship(ctx context.Context, rel Relationship) (Relationship, error)
+	GetRelationshipByID(ctx context.Context, id string) (Relationship, error)
+	UpdateRelationship(ctx context.Context, rel Relationship) error
+	DeleteRelationship(ctx context.Context, id string) error
+	DeleteRelationshipsBySourceAndCategory(ctx context.Context, sourceNodeID, category string) error
+	CreateIdentificationHelper(ctx context.Context, helper IdentificationHelper) (IdentificationHelper, error)
+	GetIdentificationHelperByID(ctx context.Context, id string) (IdentificationHelper, error)
+	UpdateIdentificationHelper(ctx context.Context, helper IdentificationHelper) error
+	DeleteIdentificationHelper(ctx context.Context, id string) error
+	GetIdentificationHelpersByProductVersion(ctx context.Context, productVersionID string) ([]IdentificationHelper, error)
+	GetRelationshipsBySourceAndCategory(ctx context.Context, sourceNodeID, category string) ([]Relationship, error)
+}
+
 type repository struct{ db *gorm.DB }
 
-func NewRepository(db *gorm.DB) *repository {
+func NewRepository(db *gorm.DB) Repository {
 	return &repository{db: db}
 }
 
