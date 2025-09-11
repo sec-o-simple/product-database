@@ -6756,3 +6756,178 @@ func TestServiceDatabaseErrorScenarios(t *testing.T) {
 		testutils.AssertError(t, err, "DeleteIdentificationHelper should error on closed database")
 	})
 }
+
+func TestExportCSAFProductTreeWithProductFamilies(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+	repo := NewRepository(db)
+	service := NewService(repo)
+	ctx := context.Background()
+
+	// Create vendors
+	vendorA := testutils.CreateTestVendor(t, db, "Vendor A", "Vendor A")
+	vendorB := testutils.CreateTestVendor(t, db, "Vendor B", "Vendor B")
+
+	// Create product families with hierarchy: FamilyB -> FamilyA
+	familyBDTO := CreateProductFamilyDTO{
+		Name:     "FamilyB",
+		ParentID: nil, // Root family
+	}
+	familyB, err := service.CreateProductFamily(ctx, familyBDTO)
+	testutils.AssertNoError(t, err, "Should create FamilyB")
+
+	familyADTO := CreateProductFamilyDTO{
+		Name:     "FamilyA",
+		ParentID: &familyB.ID, // Child of FamilyB
+	}
+	familyA, err := service.CreateProductFamily(ctx, familyADTO)
+	testutils.AssertNoError(t, err, "Should create FamilyA")
+
+	// Create products
+	product1DTO := CreateProductDTO{
+		Name:        "Product1",
+		Description: "First product",
+		VendorID:    vendorA.ID,
+		Type:        "software",
+		FamilyID:    &familyA.ID, // Belongs to FamilyA
+	}
+	product1, err := service.CreateProduct(ctx, product1DTO)
+	testutils.AssertNoError(t, err, "Should create product 1")
+
+	product2DTO := CreateProductDTO{
+		Name:        "Product2",
+		Description: "Second product",
+		VendorID:    vendorB.ID,
+		Type:        "software",
+		FamilyID:    &familyA.ID, // Also belongs to FamilyA
+	}
+	product2, err := service.CreateProduct(ctx, product2DTO)
+	testutils.AssertNoError(t, err, "Should create product 2")
+
+	// Create a product without family for comparison
+	product3DTO := CreateProductDTO{
+		Name:        "Product3",
+		Description: "Third product",
+		VendorID:    vendorA.ID,
+		Type:        "software",
+		FamilyID:    nil, // No family
+	}
+	product3, err := service.CreateProduct(ctx, product3DTO)
+	testutils.AssertNoError(t, err, "Should create product 3")
+
+	// Create versions for each product
+	version1DTO := CreateProductVersionDTO{
+		Version:   "1.0.0",
+		ProductID: product1.ID,
+	}
+	_, err = service.CreateProductVersion(ctx, version1DTO)
+	testutils.AssertNoError(t, err, "Should create version 1")
+
+	version2DTO := CreateProductVersionDTO{
+		Version:   "2.0.0",
+		ProductID: product2.ID,
+	}
+	_, err = service.CreateProductVersion(ctx, version2DTO)
+	testutils.AssertNoError(t, err, "Should create version 2")
+
+	version3DTO := CreateProductVersionDTO{
+		Version:   "3.0.0",
+		ProductID: product3.ID,
+	}
+	_, err = service.CreateProductVersion(ctx, version3DTO)
+	testutils.AssertNoError(t, err, "Should create version 3")
+
+	// Export CSAF product tree
+	productIDs := []string{product1.ID, product2.ID, product3.ID}
+	result, err := service.ExportCSAFProductTree(ctx, productIDs)
+	testutils.AssertNoError(t, err, "Should export CSAF product tree successfully")
+
+	// Validate the structure
+	if len(result) == 0 {
+		t.Fatal("Should have results")
+	}
+
+	// Check product_tree structure exists
+	productTree, ok := result["product_tree"]
+	if !ok {
+		t.Fatal("Should have product_tree")
+	}
+
+	tree, ok := productTree.(map[string]interface{})
+	if !ok {
+		t.Fatal("product_tree should be a map")
+	}
+
+	branches, ok := tree["branches"]
+	if !ok {
+		t.Fatal("Should have branches")
+	}
+
+	branchArray, ok := branches.([]interface{})
+	if !ok {
+		t.Fatal("branches should be an array")
+	}
+
+	if len(branchArray) != 2 {
+		t.Fatalf("Should have 2 vendor branches, got %d", len(branchArray))
+	}
+
+	// We expect the structure to be:
+	// vendorA -> familyB -> familyA -> product1 + product3 (direct under vendor)
+	// vendorB -> familyB -> familyA -> product2
+
+	t.Logf("CSAF Export Result: %+v", result)
+
+	// Check that both vendors are present
+	vendorNames := make(map[string]bool)
+	for _, branch := range branchArray {
+		vendorBranch, ok := branch.(map[string]interface{})
+		if !ok {
+			t.Fatal("Vendor branch should be a map")
+		}
+
+		name, ok := vendorBranch["name"].(string)
+		if !ok {
+			t.Fatal("Vendor should have a name")
+		}
+		vendorNames[name] = true
+
+		category, ok := vendorBranch["category"].(string)
+		if !ok || category != "vendor" {
+			t.Fatal("Should have vendor category")
+		}
+
+		// Check if this vendor has branches (family structure or direct products)
+		if branches, ok := vendorBranch["branches"]; ok {
+			branchesArray, ok := branches.([]interface{})
+			if !ok {
+				t.Fatal("Vendor branches should be an array")
+			}
+
+			if len(branchesArray) == 0 {
+				t.Fatal("Vendor should have at least one branch")
+			}
+
+			// Log the structure for debugging
+			t.Logf("Vendor %s has %d branches", name, len(branchesArray))
+			for i, subBranch := range branchesArray {
+				if subMap, ok := subBranch.(map[string]interface{}); ok {
+					if subCategory, ok := subMap["category"].(string); ok {
+						if subName, ok := subMap["name"].(string); ok {
+							t.Logf("  Branch %d: %s (%s)", i, subName, subCategory)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if !vendorNames["Vendor A"] {
+		t.Error("Should have Vendor A")
+	}
+	if !vendorNames["Vendor B"] {
+		t.Error("Should have Vendor B")
+	}
+
+	t.Log("✅ CSAF export with product families test completed successfully")
+}

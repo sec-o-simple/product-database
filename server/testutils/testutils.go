@@ -58,8 +58,9 @@ type Node struct {
 	SourceRelationships []Relationship `gorm:"foreignKey:SourceNodeID"`
 	TargetRelationships []Relationship `gorm:"foreignKey:TargetNodeID"`
 
-	ProductType ProductType `gorm:"type:product_type"`
-	ReleasedAt  sql.NullTime
+	ProductType     ProductType `gorm:"type:product_type"`
+	ProductFamilyID *string     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+	ReleasedAt      sql.NullTime
 
 	SuccessorID *string
 	Successor   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`

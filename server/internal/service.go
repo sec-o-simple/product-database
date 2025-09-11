@@ -181,7 +181,22 @@ func (s *Service) DeleteVendor(ctx context.Context, id string) error {
 // Products
 
 func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string) (map[string]interface{}, error) {
-	vendorMap := make(map[string]map[string]interface{})
+	// Get all families upfront for path resolution
+	allFamilies, err := s.repo.GetNodesByCategory(ctx, ProductFamily)
+	if err != nil {
+		return nil, fuego.InternalServerError{
+			Title: "Failed to list product families",
+			Err:   err,
+		}
+	}
+
+	// Group products by vendor first, then by family path
+	type ProductGroup struct {
+		FamilyPath []string // Actual family names in order, nil/empty for no family
+		Products   []interface{}
+	}
+
+	vendorGroups := make(map[string][]ProductGroup) // vendorName -> ProductGroups
 
 	for _, id := range productIDs {
 		p, err := s.GetProductByID(ctx, id)
@@ -206,6 +221,7 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			return nil, err
 		}
 
+		// Build version nodes
 		var versionNodes []interface{}
 		for _, ver := range vers {
 			helpers, err := s.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
@@ -230,6 +246,7 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			})
 		}
 
+		// Create the product node
 		productNode := map[string]interface{}{
 			"category": "product_name",
 			"name":     p.Name,
@@ -242,20 +259,62 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			productNode["branches"] = versionNodes
 		}
 
-		if vn, exists := vendorMap[v.Name]; exists {
-			vn["branches"] = append(vn["branches"].([]interface{}), productNode)
-		} else {
-			vendorMap[v.Name] = map[string]interface{}{
-				"category": "vendor",
-				"name":     v.Name,
-				"branches": []interface{}{productNode},
+		// Determine family path
+		var familyPath []string
+		if p.FamilyID != nil {
+			familyPath = s.getNodePath(*p.FamilyID, allFamilies)
+		}
+
+		// Find or create group for this vendor and family path
+		vendorName := v.Name
+		groups := vendorGroups[vendorName]
+
+		// Look for existing group with same family path
+		var foundGroup *ProductGroup
+		for i := range groups {
+			if s.familyPathsEqual(groups[i].FamilyPath, familyPath) {
+				foundGroup = &groups[i]
+				break
 			}
+		}
+
+		if foundGroup != nil {
+			// Add to existing group
+			foundGroup.Products = append(foundGroup.Products, productNode)
+		} else {
+			// Create new group
+			newGroup := ProductGroup{
+				FamilyPath: familyPath,
+				Products:   []interface{}{productNode},
+			}
+			vendorGroups[vendorName] = append(vendorGroups[vendorName], newGroup)
 		}
 	}
 
+	// Build the final tree structure
 	var vendorNodes []interface{}
-	for _, vn := range vendorMap {
-		vendorNodes = append(vendorNodes, vn)
+	for vendorName, groups := range vendorGroups {
+		vendorNode := map[string]interface{}{
+			"category": "vendor",
+			"name":     vendorName,
+		}
+
+		var vendorBranches []interface{}
+		for _, group := range groups {
+			if len(group.FamilyPath) == 0 {
+				// Direct products (no family)
+				vendorBranches = append(vendorBranches, group.Products...)
+			} else {
+				// Products with families - build nested structure
+				familyBranch := s.buildNestedFamilyStructure(group.FamilyPath, group.Products)
+				vendorBranches = append(vendorBranches, familyBranch)
+			}
+		}
+
+		if len(vendorBranches) > 0 {
+			vendorNode["branches"] = vendorBranches
+		}
+		vendorNodes = append(vendorNodes, vendorNode)
 	}
 
 	return map[string]interface{}{
@@ -263,6 +322,43 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			"branches": vendorNodes,
 		},
 	}, nil
+}
+
+// Helper function to compare two family paths for equality
+func (s *Service) familyPathsEqual(path1, path2 []string) bool {
+	if len(path1) != len(path2) {
+		return false
+	}
+	for i, name := range path1 {
+		if name != path2[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// Helper function to build nested family structure recursively
+func (s *Service) buildNestedFamilyStructure(familyNames []string, products []interface{}) interface{} {
+	if len(familyNames) == 0 {
+		return nil
+	}
+
+	if len(familyNames) == 1 {
+		// This is the deepest family level, add products here
+		return map[string]interface{}{
+			"category": "product_family",
+			"name":     familyNames[0],
+			"branches": products,
+		}
+	}
+
+	// Recursively build nested family structure
+	childBranch := s.buildNestedFamilyStructure(familyNames[1:], products)
+	return map[string]interface{}{
+		"category": "product_family",
+		"name":     familyNames[0],
+		"branches": []interface{}{childBranch},
+	}
 }
 
 func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (ProductDTO, error) {
