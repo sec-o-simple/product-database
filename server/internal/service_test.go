@@ -7,12 +7,15 @@ import (
 	"testing"
 
 	"github.com/go-fuego/fuego"
+	"gorm.io/gorm"
 )
 
 type mockRepository struct {
-	getNodeByIDFunc func(ctx context.Context, id string, opts ...LoadOption) (Node, error)
-	createNodeFunc  func(ctx context.Context, node Node) (Node, error)
-	deleteNodeFunc  func(ctx context.Context, id string) error
+	getNodeByIDFunc        func(ctx context.Context, id string, opts ...LoadOption) (Node, error)
+	createNodeFunc         func(ctx context.Context, node Node) (Node, error)
+	deleteNodeFunc         func(ctx context.Context, id string) error
+	getNodesByCategoryFunc func(ctx context.Context, category NodeCategory, opts ...LoadOption) ([]Node, error)
+	updateNodeFunc         func(ctx context.Context, node Node) error
 }
 
 func (m *mockRepository) GetNodeByID(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
@@ -37,9 +40,15 @@ func (m *mockRepository) CreateNode(ctx context.Context, node Node) (Node, error
 	return Node{}, nil
 }
 func (m *mockRepository) GetNodesByCategory(ctx context.Context, category NodeCategory, opts ...LoadOption) ([]Node, error) {
+	if m.getNodesByCategoryFunc != nil {
+		return m.getNodesByCategoryFunc(ctx, category, opts...)
+	}
 	return nil, nil
 }
 func (m *mockRepository) UpdateNode(ctx context.Context, node Node) error {
+	if m.updateNodeFunc != nil {
+		return m.updateNodeFunc(ctx, node)
+	}
 	return nil
 }
 func (m *mockRepository) CreateRelationship(ctx context.Context, rel Relationship) (Relationship, error) {
@@ -6930,4 +6939,441 @@ func TestExportCSAFProductTreeWithProductFamilies(t *testing.T) {
 	}
 
 	t.Log("✅ CSAF export with product families test completed successfully")
+}
+
+func TestFamilyPathsEqual(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+	repo := NewRepository(db)
+	service := NewService(repo)
+
+	tests := []struct {
+		path1, path2 []string
+		expected     bool
+	}{
+		{[]string{"a", "b", "c"}, []string{"a", "b", "c"}, true},
+		{[]string{"a", "b"}, []string{"a", "b", "c"}, false},
+		{[]string{"a", "b", "c"}, []string{"a", "b"}, false},
+		{[]string{"a", "b", "c"}, []string{"a", "x", "c"}, false},
+		{[]string{}, []string{}, true},
+		{[]string{}, []string{"a"}, false},
+		{[]string{"a"}, []string{}, false},
+	}
+
+	for _, tt := range tests {
+		result := service.familyPathsEqual(tt.path1, tt.path2)
+		if result != tt.expected {
+			t.Errorf("familyPathsEqual(%v, %v) = %v, expected %v", tt.path1, tt.path2, result, tt.expected)
+		}
+	}
+}
+
+func TestBuildNestedFamilyStructure(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+	repo := NewRepository(db)
+	service := NewService(repo)
+
+	products := []interface{}{
+		map[string]interface{}{"name": "Product1"},
+		map[string]interface{}{"name": "Product2"},
+	}
+
+	t.Run("empty family names", func(t *testing.T) {
+		result := service.buildNestedFamilyStructure([]string{}, products)
+		if result != nil {
+			t.Errorf("Expected nil for empty family names, got %v", result)
+		}
+	})
+
+	t.Run("single family name", func(t *testing.T) {
+		result := service.buildNestedFamilyStructure([]string{"Family1"}, products)
+		resultMap, ok := result.(map[string]interface{})
+		if !ok {
+			t.Fatal("Expected map result")
+		}
+		if resultMap["category"] != "product_family" {
+			t.Errorf("Expected category 'product_family', got %v", resultMap["category"])
+		}
+		if resultMap["name"] != "Family1" {
+			t.Errorf("Expected name 'Family1', got %v", resultMap["name"])
+		}
+	})
+
+	t.Run("nested family names", func(t *testing.T) {
+		result := service.buildNestedFamilyStructure([]string{"Family1", "Family2"}, products)
+		resultMap, ok := result.(map[string]interface{})
+		if !ok {
+			t.Fatal("Expected map result")
+		}
+		if resultMap["category"] != "product_family" {
+			t.Errorf("Expected category 'product_family', got %v", resultMap["category"])
+		}
+		if resultMap["name"] != "Family1" {
+			t.Errorf("Expected name 'Family1', got %v", resultMap["name"])
+		}
+	})
+}
+
+func TestGetProductFamilyByIDErrorCases(t *testing.T) {
+	t.Run("database error", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{}, errors.New("database connection failed")
+			},
+		}
+		service := NewService(mockRepo)
+
+		_, err := service.GetProductFamilyByID(context.Background(), "test-id")
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var internalErr fuego.InternalServerError
+		if !errors.As(err, &internalErr) {
+			t.Error("Expected InternalServerError")
+		}
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{}, gorm.ErrRecordNotFound
+			},
+		}
+		service := NewService(mockRepo)
+
+		_, err := service.GetProductFamilyByID(context.Background(), "test-id")
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var notFoundErr fuego.NotFoundError
+		if !errors.As(err, &notFoundErr) {
+			t.Error("Expected NotFoundError")
+		}
+	})
+
+	t.Run("wrong category", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{ID: "test-id", Name: "Test", Category: Vendor}, nil
+			},
+		}
+		service := NewService(mockRepo)
+
+		_, err := service.GetProductFamilyByID(context.Background(), "test-id")
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var notFoundErr fuego.NotFoundError
+		if !errors.As(err, &notFoundErr) {
+			t.Error("Expected NotFoundError")
+		}
+	})
+}
+
+func TestCreateProductFamilyErrorCases(t *testing.T) {
+	t.Run("invalid parent ID", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{}, gorm.ErrRecordNotFound
+			},
+		}
+		service := NewService(mockRepo)
+
+		parentID := "invalid-id"
+		dto := CreateProductFamilyDTO{
+			Name:     "Test Family",
+			ParentID: &parentID,
+		}
+
+		_, err := service.CreateProductFamily(context.Background(), dto)
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var badReqErr fuego.BadRequestError
+		if !errors.As(err, &badReqErr) {
+			t.Error("Expected BadRequestError")
+		}
+	})
+
+	t.Run("parent wrong category", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{ID: "test-id", Name: "Test", Category: Vendor}, nil
+			},
+		}
+		service := NewService(mockRepo)
+
+		parentID := "test-id"
+		dto := CreateProductFamilyDTO{
+			Name:     "Test Family",
+			ParentID: &parentID,
+		}
+
+		_, err := service.CreateProductFamily(context.Background(), dto)
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var badReqErr fuego.BadRequestError
+		if !errors.As(err, &badReqErr) {
+			t.Error("Expected BadRequestError")
+		}
+	})
+
+	t.Run("create node error", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			createNodeFunc: func(ctx context.Context, node Node) (Node, error) {
+				return Node{}, errors.New("database error")
+			},
+		}
+		service := NewService(mockRepo)
+
+		dto := CreateProductFamilyDTO{
+			Name: "Test Family",
+		}
+
+		_, err := service.CreateProductFamily(context.Background(), dto)
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var internalErr fuego.InternalServerError
+		if !errors.As(err, &internalErr) {
+			t.Error("Expected InternalServerError")
+		}
+	})
+}
+
+func TestDeleteProductFamilyErrorCases(t *testing.T) {
+	t.Run("database error on fetch", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{}, errors.New("database connection failed")
+			},
+		}
+		service := NewService(mockRepo)
+
+		err := service.DeleteProductFamily(context.Background(), "test-id")
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var internalErr fuego.InternalServerError
+		if !errors.As(err, &internalErr) {
+			t.Error("Expected InternalServerError")
+		}
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{}, gorm.ErrRecordNotFound
+			},
+		}
+		service := NewService(mockRepo)
+
+		err := service.DeleteProductFamily(context.Background(), "test-id")
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var notFoundErr fuego.NotFoundError
+		if !errors.As(err, &notFoundErr) {
+			t.Error("Expected NotFoundError")
+		}
+	})
+
+	t.Run("wrong category", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{ID: "test-id", Name: "Test", Category: Vendor}, nil
+			},
+		}
+		service := NewService(mockRepo)
+
+		err := service.DeleteProductFamily(context.Background(), "test-id")
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var notFoundErr fuego.NotFoundError
+		if !errors.As(err, &notFoundErr) {
+			t.Error("Expected NotFoundError")
+		}
+	})
+
+	t.Run("delete node error", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{ID: "test-id", Name: "Test", Category: ProductFamily}, nil
+			},
+			deleteNodeFunc: func(ctx context.Context, id string) error {
+				return errors.New("delete failed")
+			},
+		}
+		service := NewService(mockRepo)
+
+		err := service.DeleteProductFamily(context.Background(), "test-id")
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var internalErr fuego.InternalServerError
+		if !errors.As(err, &internalErr) {
+			t.Error("Expected InternalServerError")
+		}
+	})
+}
+
+func TestListProductFamiliesErrorCase(t *testing.T) {
+	mockRepo := &mockRepository{
+		getNodesByCategoryFunc: func(ctx context.Context, category NodeCategory, opts ...LoadOption) ([]Node, error) {
+			return nil, errors.New("database connection failed")
+		},
+	}
+	service := NewService(mockRepo)
+
+	_, err := service.ListProductFamilies(context.Background())
+	if err == nil {
+		t.Error("Expected error, got nil")
+	}
+	var internalErr fuego.InternalServerError
+	if !errors.As(err, &internalErr) {
+		t.Error("Expected InternalServerError")
+	}
+}
+
+func TestFillPathOfFamiliesErrorCase(t *testing.T) {
+	mockRepo := &mockRepository{
+		getNodesByCategoryFunc: func(ctx context.Context, category NodeCategory, opts ...LoadOption) ([]Node, error) {
+			return nil, errors.New("database connection failed")
+		},
+	}
+	service := NewService(mockRepo)
+
+	families := []*ProductFamilyDTO{{ID: "test-id", Name: "Test"}}
+	err := service.fillPathOfFamilies(context.Background(), families)
+	if err == nil {
+		t.Error("Expected error, got nil")
+	}
+	var internalErr fuego.InternalServerError
+	if !errors.As(err, &internalErr) {
+		t.Error("Expected InternalServerError")
+	}
+}
+
+func TestGetNodePath(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+	repo := NewRepository(db)
+	service := NewService(repo)
+
+	parent1ID := "parent1"
+	parent2ID := "parent2"
+	families := []Node{
+		{ID: "root", Name: "Root", Category: ProductFamily, ParentID: nil},
+		{ID: parent1ID, Name: "Parent1", Category: ProductFamily, ParentID: nil},
+		{ID: parent2ID, Name: "Parent2", Category: ProductFamily, ParentID: &parent1ID},
+		{ID: "child", Name: "Child", Category: ProductFamily, ParentID: &parent2ID},
+	}
+
+	tests := []struct {
+		name     string
+		id       string
+		expected []string
+	}{
+		{"root node", "root", []string{"Root"}},
+		{"child node", "child", []string{"Parent1", "Parent2", "Child"}},
+		{"parent node", parent2ID, []string{"Parent1", "Parent2"}},
+		{"non-existent node", "nonexistent", []string{}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := service.getNodePath(tt.id, families)
+			if len(result) != len(tt.expected) {
+				t.Errorf("Expected path length %d, got %d", len(tt.expected), len(result))
+				return
+			}
+			for i, expected := range tt.expected {
+				if result[i] != expected {
+					t.Errorf("Expected path[%d] = %s, got %s", i, expected, result[i])
+				}
+			}
+		})
+	}
+}
+
+func TestUpdateProductFamilyErrorCases(t *testing.T) {
+	t.Run("self parent error", func(t *testing.T) {
+		familyID := "same-id"
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				if id == familyID {
+					return Node{ID: familyID, Name: "Test", Category: ProductFamily}, nil
+				}
+				return Node{}, gorm.ErrRecordNotFound
+			},
+		}
+		service := NewService(mockRepo)
+
+		update := UpdateProductFamilyDTO{
+			Name:     "Updated Name",
+			ParentID: &familyID,
+		}
+
+		_, err := service.UpdateProductFamily(context.Background(), familyID, update)
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var badReqErr fuego.BadRequestError
+		if !errors.As(err, &badReqErr) {
+			t.Error("Expected BadRequestError")
+		}
+	})
+
+	t.Run("update node error", func(t *testing.T) {
+		// Test case where getNodeByID fails for parent check
+		mockRepoWithParentError := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				if id == "test-id" {
+					return Node{ID: "test-id", Name: "Test", Category: ProductFamily}, nil
+				}
+				return Node{}, errors.New("parent lookup failed")
+			},
+		}
+
+		service := NewService(mockRepoWithParentError)
+		parentID := "parent-id"
+		update := UpdateProductFamilyDTO{
+			Name:     "Updated Name",
+			ParentID: &parentID,
+		}
+
+		_, err := service.UpdateProductFamily(context.Background(), "test-id", update)
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var badReqErr fuego.BadRequestError
+		if !errors.As(err, &badReqErr) {
+			t.Error("Expected BadRequestError")
+		}
+	})
+
+	t.Run("database update error", func(t *testing.T) {
+		mockRepo := &mockRepository{
+			getNodeByIDFunc: func(ctx context.Context, id string, opts ...LoadOption) (Node, error) {
+				return Node{ID: "test-id", Name: "Test", Category: ProductFamily}, nil
+			},
+			updateNodeFunc: func(ctx context.Context, node Node) error {
+				return errors.New("database update failed")
+			},
+		}
+		service := NewService(mockRepo)
+
+		update := UpdateProductFamilyDTO{Name: "Updated Name"}
+		_, err := service.UpdateProductFamily(context.Background(), "test-id", update)
+		if err == nil {
+			t.Error("Expected error, got nil")
+		}
+		var internalErr fuego.InternalServerError
+		if !errors.As(err, &internalErr) {
+			t.Error("Expected InternalServerError")
+		}
+	})
 }
