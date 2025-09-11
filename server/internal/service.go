@@ -288,12 +288,13 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 	}
 
 	node := Node{
-		ID:          uuid.New().String(),
-		Name:        product.Name,
-		Description: product.Description,
-		Category:    ProductName,
-		ParentID:    &vendorNode.ID,
-		ProductType: ProductType(product.Type),
+		ID:              uuid.New().String(),
+		Name:            product.Name,
+		Description:     product.Description,
+		Category:        ProductName,
+		ParentID:        &vendorNode.ID,
+		ProductType:     ProductType(product.Type),
+		ProductFamilyID: product.FamilyID,
 	}
 
 	createdNode, err := s.repo.CreateNode(ctx, node)
@@ -311,6 +312,7 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 		Name:        createdNode.Name,
 		Description: createdNode.Description,
 		Type:        string(createdNode.ProductType),
+		FamilyID:    createdNode.ProductFamilyID,
 	}, nil
 }
 
@@ -345,6 +347,7 @@ func (s *Service) UpdateProduct(ctx context.Context, id string, update UpdatePro
 	if update.Type != nil {
 		product.ProductType = ProductType(*update.Type)
 	}
+	product.ProductFamilyID = update.FamilyID
 
 	if err := s.repo.UpdateNode(ctx, product); err != nil {
 		return ProductDTO{}, fuego.InternalServerError{
@@ -358,6 +361,8 @@ func (s *Service) UpdateProduct(ctx context.Context, id string, update UpdatePro
 		VendorID:    product.ParentID,
 		Name:        product.Name,
 		Description: product.Description,
+		FamilyID:    product.ProductFamilyID,
+		Type:        string(product.ProductType),
 	}, nil
 }
 
@@ -436,6 +441,7 @@ func (s *Service) ListVendorProducts(ctx context.Context, vendorID string) ([]Pr
 			VendorID:    product.ParentID,
 			Name:        product.Name,
 			Description: product.Description,
+			FamilyID:    product.ProductFamilyID,
 		}
 	}
 	return products, nil
@@ -1265,4 +1271,249 @@ func (s *Service) DeleteIdentificationHelper(ctx context.Context, id string) err
 	}
 
 	return nil
+}
+
+// Product Families
+
+// Helper to build the path of a node by traversing up its parents
+func (s *Service) getNodePath(id string, families []Node) []string {
+	var path []string
+	currentID := id
+
+	for {
+		found := false
+		for _, family := range families {
+			if family.ID == currentID {
+				path = append([]string{family.Name}, path...)
+				if family.ParentID == nil {
+					return path
+				}
+				currentID = *family.ParentID
+				found = true
+				break
+			}
+		}
+		if !found {
+			break
+		}
+	}
+
+	return path
+}
+
+func (s *Service) fillPathOfFamilies(ctx context.Context, families []*ProductFamilyDTO) error {
+	allFamilies, err := s.repo.GetNodesByCategory(ctx, ProductFamily)
+	if err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to list product families",
+			Err:   err,
+		}
+	}
+
+	for i, family := range families {
+		families[i].Path = s.getNodePath(family.ID, allFamilies)
+	}
+
+	return nil
+}
+
+func (s *Service) GetProductFamilyByID(ctx context.Context, id string) (ProductFamilyDTO, error) {
+	family, err := s.repo.GetNodeByID(ctx, id)
+	notFoundError := fuego.NotFoundError{
+		Title: "Product family not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductFamilyDTO{}, notFoundError
+		} else {
+			return ProductFamilyDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch product family",
+				Err:   err,
+			}
+		}
+	}
+
+	if family.Category != ProductFamily {
+		return ProductFamilyDTO{}, notFoundError
+	}
+
+	dto := ProductFamilyDTO{
+		ID:       family.ID,
+		Name:     family.Name,
+		ParentID: family.ParentID,
+	}
+	err = s.fillPathOfFamilies(ctx, []*ProductFamilyDTO{&dto})
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return dto, nil
+}
+
+func (s *Service) CreateProductFamily(ctx context.Context, family CreateProductFamilyDTO) (ProductFamilyDTO, error) {
+	if family.ParentID != nil {
+		parent, err := s.repo.GetNodeByID(ctx, *family.ParentID)
+		if err != nil || parent.Category != ProductFamily {
+			return ProductFamilyDTO{}, fuego.BadRequestError{
+				Title: "Invalid product version ID",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "CreateProductFamilyDTO.ParentID",
+						Reason: "Parent ID must be a valid product family ID",
+					},
+				},
+			}
+		}
+	}
+
+	node := Node{
+		ID:       uuid.New().String(),
+		Name:     family.Name,
+		Category: ProductFamily,
+		ParentID: family.ParentID,
+	}
+
+	createdNode, err := s.repo.CreateNode(ctx, node)
+
+	if err != nil {
+		return ProductFamilyDTO{}, fuego.InternalServerError{
+			Title: "Failed to create product family",
+			Err:   err,
+		}
+	}
+
+	dto := ProductFamilyDTO{
+		ID:       createdNode.ID,
+		Name:     createdNode.Name,
+		ParentID: createdNode.ParentID,
+	}
+	err = s.fillPathOfFamilies(ctx, []*ProductFamilyDTO{&dto})
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return dto, nil
+}
+
+func (s *Service) UpdateProductFamily(ctx context.Context, id string, update UpdateProductFamilyDTO) (ProductFamilyDTO, error) {
+	family, err := s.repo.GetNodeByID(ctx, id)
+	notFoundError := fuego.NotFoundError{
+		Title: "Product family not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductFamilyDTO{}, notFoundError
+		} else {
+			return ProductFamilyDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch product family",
+				Err:   err,
+			}
+		}
+	}
+
+	if family.Category != ProductFamily {
+		return ProductFamilyDTO{}, notFoundError
+	}
+
+	family.Name = update.Name
+
+	if update.ParentID != nil {
+		parent, err := s.repo.GetNodeByID(ctx, *update.ParentID)
+		if *update.ParentID == family.ID || err != nil || parent.Category != ProductFamily {
+			return ProductFamilyDTO{}, fuego.BadRequestError{
+				Title: "Invalid parent ID",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "UpdateProductFamilyDTO.ParentID",
+						Reason: "Parent ID must be a valid product family ID",
+					},
+				},
+			}
+		}
+	}
+
+	family.ParentID = update.ParentID
+
+	if err := s.repo.UpdateNode(ctx, family); err != nil {
+		return ProductFamilyDTO{}, fuego.InternalServerError{
+			Title: "Failed to update product family",
+			Err:   err,
+		}
+	}
+
+	dto := ProductFamilyDTO{
+		ID:       family.ID,
+		Name:     family.Name,
+		ParentID: family.ParentID,
+	}
+	err = s.fillPathOfFamilies(ctx, []*ProductFamilyDTO{&dto})
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return dto, nil
+}
+
+func (s *Service) DeleteProductFamily(ctx context.Context, id string) error {
+	family, err := s.repo.GetNodeByID(ctx, id)
+	notFoundError := fuego.NotFoundError{
+		Title: "Product family not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return notFoundError
+		} else {
+			return fuego.InternalServerError{
+				Title: "Failed to fetch product family",
+				Err:   err,
+			}
+		}
+	}
+
+	if family.Category != ProductFamily {
+		return notFoundError
+	}
+
+	if err := s.repo.DeleteNode(ctx, family.ID); err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to delete product family",
+			Err:   err,
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) ListProductFamilies(ctx context.Context) ([]ProductFamilyDTO, error) {
+	nodes, err := s.repo.GetNodesByCategory(ctx, ProductFamily, WithParent(), WithChildren())
+	if err != nil {
+		return nil, fuego.InternalServerError{
+			Title: "Failed to list product families",
+			Err:   err,
+		}
+	}
+
+	families := make([]*ProductFamilyDTO, len(nodes))
+	for i, node := range nodes {
+		families[i] = &ProductFamilyDTO{
+			ID:       node.ID,
+			Name:     node.Name,
+			ParentID: node.ParentID,
+		}
+	}
+	err = s.fillPathOfFamilies(ctx, families)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert []*ProductFamilyDTO to []ProductFamilyDTO
+	result := make([]ProductFamilyDTO, len(families))
+	for i, family := range families {
+		result[i] = *family
+	}
+
+	return result, nil
 }

@@ -1,17 +1,17 @@
 import client from '@/client'
 import { Input } from '@/components/forms/Input'
 import {
-  DBProductFamily,
+  ProductFamily,
   ProductFamilyChains,
-  ProductFamilyProps,
   useProductFamilyListQuery,
   useProductFamilyQuery,
 } from '@/routes/ProductFamilies'
-import { VendorProps } from '@/routes/Vendors'
+import { useErrorLocalization } from '@/utils/useErrorLocalization'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  Alert,
   Autocomplete,
   AutocompleteItem,
   Button,
@@ -20,58 +20,72 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Spinner,
 } from '@heroui/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 
-export function useVendorMutation({ vendor }: { vendor: VendorProps }) {
+export function useProductFamilyMutation({
+  productFamily,
+}: {
+  productFamily: ProductFamily
+}) {
   const { navigate } = useRouter()
 
-  const onSuccess = useCallback(
-    (id: string) => {
-      navigate(`/vendors/${id}`, {
-        replace: true,
-        state: {
-          shouldRefetch: true,
-        },
-      })
+  const onSuccess = useCallback(() => {
+    navigate('/product-families', {
+      replace: true,
+      state: {
+        shouldRefetch: true,
+      },
+    })
+  }, [navigate])
+
+  const isCreateForm = !productFamily.id
+
+  const createMutation = client.useMutation(
+    'post',
+    '/api/v1/product-families',
+    {
+      onSuccess: () => {
+        onSuccess()
+      },
     },
-    [navigate],
+  )
+  const updateMutation = client.useMutation(
+    'put',
+    '/api/v1/product-families/{id}',
+    {
+      onSuccess: () => {
+        onSuccess()
+      },
+      params: { path: { id: productFamily.id } },
+    },
   )
 
-  const isCreateForm = !vendor.id
-
-  const createMutation = client.useMutation('post', '/api/v1/vendors', {
-    onSuccess: (res) => {
-      onSuccess(res.id)
-    },
-  })
-  const updateMutation = client.useMutation('put', '/api/v1/vendors/{id}', {
-    onSuccess: (res) => {
-      onSuccess(res.id)
-    },
-    params: { path: { id: vendor.id } },
-  })
-
-  const mutateVendor = useCallback(() => {
+  const mutateProductFamily = useCallback(() => {
     const body = {
-      name: vendor.name,
-      description: vendor.description,
+      name: productFamily.name,
+      parent_id: productFamily.parent_id,
     }
     if (isCreateForm) {
       createMutation.mutate({ body })
     } else {
       updateMutation.mutate({
         body,
-        params: { path: { id: vendor.id || '' } },
+        params: { path: { id: productFamily.id || '' } },
       })
     }
-  }, [isCreateForm, createMutation, updateMutation, vendor])
+  }, [isCreateForm, createMutation, updateMutation, productFamily])
 
   const mutation = isCreateForm ? createMutation : updateMutation
 
-  return { mutateVendor, isPending: mutation.isPending, error: mutation.error }
+  return {
+    mutateProductFamily,
+    isPending: mutation.isPending,
+    error: mutation.error,
+  }
 }
 
 export function CreateProductGroupButton() {
@@ -95,14 +109,15 @@ export default function CreateEditProductFamily() {
   const { t } = useTranslation()
   const isCreateForm = !familyId
 
-  const { data: families } = useProductFamilyListQuery(true) as unknown as {
-    data: ProductFamilyProps[]
-  }
-  const { data: previousData } = useProductFamilyQuery(familyId || '')
-  const [family, setFamily] = useState<DBProductFamily>({
+  const { data: families } = useProductFamilyListQuery()
+  const { data: previousData, isLoading } = useProductFamilyQuery(
+    familyId || '',
+  )
+  const [family, setFamily] = useState<ProductFamily>({
     id: previousData?.id || '',
     name: previousData?.name || '',
-    parent: previousData?.parent || null,
+    parent_id: previousData?.parent_id,
+    path: previousData?.path || [],
   })
 
   useEffect(() => {
@@ -110,13 +125,14 @@ export default function CreateEditProductFamily() {
       setFamily({
         id: previousData.id,
         name: previousData.name,
-        parent: previousData.parent || null,
+        parent_id: previousData.parent_id,
+        path: previousData.path || [],
       })
     }
   }, [previousData])
 
   const onClose = () => {
-    setFamily({ name: '', parent: null, id: '' })
+    setFamily({ name: '', parent_id: undefined, id: '', path: [] })
 
     navigate('/product-families', {
       replace: true,
@@ -126,17 +142,21 @@ export default function CreateEditProductFamily() {
     })
   }
 
-  // const errorHelper = useErrorLocalization(error)
+  const { mutateProductFamily, isPending, error } = useProductFamilyMutation({
+    productFamily: family,
+  })
 
-  // if (!isCreateForm && isLoading) {
-  //   return (
-  //     <Modal isOpen>
-  //       <ModalBody>
-  //         <Spinner />
-  //       </ModalBody>
-  //     </Modal>
-  //   )
-  // }
+  const errorHelper = useErrorLocalization(error)
+
+  if (!isCreateForm && isLoading) {
+    return (
+      <Modal isOpen>
+        <ModalBody>
+          <Spinner />
+        </ModalBody>
+      </Modal>
+    )
+  }
 
   return (
     <Modal
@@ -153,11 +173,11 @@ export default function CreateEditProductFamily() {
           })}
         </ModalHeader>
         <ModalBody className="gap-4">
-          {/* {error ? (
+          {error ? (
             <Alert color="danger" className="mb-4">
               {t('form.errors')}
             </Alert>
-          ) : null} */}
+          ) : null}
 
           <Input
             label={t('form.fields.name')}
@@ -166,14 +186,14 @@ export default function CreateEditProductFamily() {
             onChange={(e) => setFamily({ ...family, name: e.target.value })}
             autoFocus
             type="text"
-            // isInvalid={errorHelper.isFieldInvalid('Name')}
-            // errorMessage={errorHelper.getFieldErrorMessage('Name')}
+            isInvalid={errorHelper.isFieldInvalid('Name')}
+            errorMessage={errorHelper.getFieldErrorMessage('Name')}
           />
 
           <Autocomplete
             labelPlacement="outside"
             label={t('form.fields.parent')}
-            selectedKey={family.parent || ''}
+            selectedKey={family.parent_id || ''}
             variant="bordered"
             inputProps={{
               classNames: {
@@ -182,13 +202,13 @@ export default function CreateEditProductFamily() {
             }}
             onSelectionChange={(key) => {
               if (key === null) {
-                setFamily({ ...family, parent: null })
+                setFamily({ ...family, parent_id: undefined })
                 return
               }
 
               setFamily({
                 ...family,
-                parent: key === '' ? null : key?.toString(),
+                parent_id: key === '' ? undefined : key?.toString(),
               })
             }}
           >
@@ -210,7 +230,8 @@ export default function CreateEditProductFamily() {
           </Button>
           <Button
             color="primary"
-            // onPress={mutateVendor} isLoading={isPending}
+            onPress={mutateProductFamily}
+            isLoading={isPending}
           >
             {isCreateForm ? t('common.create') : t('common.save')}
           </Button>

@@ -1,88 +1,30 @@
+import client from '@/client'
 import { DashboardTabs } from '@/components/DashboardTabs'
 import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
 import { CreateProductGroupButton } from '@/components/layout/productFamily/CreateEditProductFamily'
+import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
 import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { useMemo } from 'react'
 
-export interface DBProductFamily {
+export interface ProductFamily {
   id: string
   name: string
-  parent: string | null
+  parent_id?: string
+  path: string[]
 }
 
-export interface ProductFamilyProps {
-  id: string
-  name: string
-  parent: ProductFamilyProps | null
-}
+function sortProductFamiliesTree(families: ProductFamily[]): ProductFamily[] {
+  const result: ProductFamily[] = []
 
-const data = {
-  data: [
-    {
-      id: '1',
-      name: 'Hardware',
-      parent: null,
-    },
-    {
-      id: '2',
-      name: 'IPhone',
-      parent: '1',
-    },
-    {
-      id: '3',
-      name: 'MacBook',
-      parent: '1',
-    },
-    {
-      id: '4',
-      name: 'Software',
-      parent: null,
-    },
-    {
-      id: '5',
-      name: 'Operating System',
-      parent: '4',
-    },
-    {
-      id: '6',
-      name: 'Pro',
-      parent: '3',
-    },
-  ] as DBProductFamily[],
-}
-
-function mapWithParentObjects(items: DBProductFamily[]): ProductFamilyProps[] {
-  const byId = new Map<string, ProductFamilyProps>()
-
-  // Zuerst leere Objekte erstellen, ohne parents
-  items.forEach((item) => {
-    byId.set(item.id, { ...item, parent: null })
-  })
-
-  // Danach parent-Zeiger korrekt setzen
-  items.forEach((item) => {
-    const current = byId.get(item.id)!
-    if (item.parent) {
-      current.parent = byId.get(item.parent) || null
-    }
-  })
-
-  return Array.from(byId.values())
-}
-
-function sortProductFamiliesTree(
-  families: ProductFamilyProps[],
-): ProductFamilyProps[] {
-  const result: ProductFamilyProps[] = []
-
-  const byId = new Map<string, ProductFamilyProps>()
+  const byId = new Map<string, ProductFamily>()
   families.forEach((f) => byId.set(f.id, f))
 
-  const childrenMap = new Map<string | null, ProductFamilyProps[]>()
+  const childrenMap = new Map<string | null, ProductFamily[]>()
   families.forEach((f) => {
-    const key = f.parent?.id ?? null
+    const key = f.parent_id ?? null
     if (!childrenMap.has(key)) childrenMap.set(key, [])
     childrenMap.get(key)!.push(f)
   })
@@ -101,50 +43,55 @@ function sortProductFamiliesTree(
   return result
 }
 
-export function useProductFamilyListQuery(withParents = false) {
-  const request = data
+export function useProductFamilyListQuery() {
+  const request = client.useQuery('get', '/api/v1/product-families')
 
-  if (withParents) {
-    const productFamiliesWithParents = mapWithParentObjects(request.data)
-    return {
-      data: sortProductFamiliesTree(productFamiliesWithParents),
-    }
+  const sortedData = useMemo(() => {
+    if (!request.data) return []
+    return sortProductFamiliesTree(request.data)
+  }, [request.data])
+
+  useRefetchQuery(request)
+
+  return {
+    ...request,
+    data: sortedData,
   }
-  // useRefetchQuery(request)
-  return request
 }
 
 export function useProductFamilyQuery(id: string) {
-  const { data: productFamilies } = data as unknown as {
-    data: DBProductFamily[]
-  }
+  const request = client.useQuery(
+    'get',
+    '/api/v1/product-families/{id}',
+    {
+      params: {
+        path: {
+          id: id || '',
+        },
+      },
+    },
+    {
+      enabled: !!id,
+    },
+  )
 
-  const productFamily = productFamilies.find((pf) => pf.id === id) || null
-
-  return { data: productFamily }
+  useRefetchQuery(request)
+  return request
 }
 
-export const ProductFamilyChains: React.FC<{ item: ProductFamilyProps }> = ({
+export const ProductFamilyChains: React.FC<{ item: ProductFamily }> = ({
   item,
 }: {
-  item: ProductFamilyProps
+  item: ProductFamily
 }) => {
-  const getParentChain = (item: ProductFamilyProps) => {
-    const chain = []
-    let current = item.parent
-    while (current) {
-      chain.unshift(current)
-      current = current.parent
-    }
-    return chain
-  }
+  const pathWithoutSelf = item.path.slice(0, -1)
 
   return (
     <div>
       <div className="flex gap-1" key={item.id}>
-        {getParentChain(item).map((parent) => (
-          <p key={parent.id} className="text-default-400">
-            {parent.name} /
+        {pathWithoutSelf.map((parent, index) => (
+          <p key={`${item.id}-${index}`} className="text-default-400">
+            {parent} /
           </p>
         ))}
         <p className="font-bold">{item.name}</p>
@@ -156,7 +103,7 @@ export const ProductFamilyChains: React.FC<{ item: ProductFamilyProps }> = ({
 export function ProductFamilyItem({
   productFamily,
 }: {
-  productFamily: ProductFamilyProps
+  productFamily: ProductFamily
 }) {
   const { navigateToModal } = useRouter()
 
@@ -179,8 +126,6 @@ export function ProductFamilyItem({
               handleOnActionClick(`/product-families/${productFamily.id}/edit`)
             }
           />
-
-          {/* <DeleteProduct productGroup={productGroup} isIconButton /> */}
         </div>
       }
     />
@@ -188,11 +133,8 @@ export function ProductFamilyItem({
 }
 
 export default function ProductFamilies() {
-  const { data: productFamiliesWithParents } = useProductFamilyListQuery(
-    true,
-  ) as unknown as { data: ProductFamilyProps[] }
+  const { data: productFamiliesWithParents } = useProductFamilyListQuery()
 
-  // Modal, nur Name einstellbar machen und Parent, im Parent dann wieder Parent auswählbar machen
   return (
     <div className="flex grow flex-col items-center gap-4">
       <DashboardTabs selectedKey="productFamilies" />

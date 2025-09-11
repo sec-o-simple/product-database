@@ -166,7 +166,8 @@
         "relationshipCategory": "Relationship Category",
         "relationshipType": "Relationship Type",
         "helperType": "Helper Type",
-        "selectHelperType": "Select a helper type"
+        "selectHelperType": "Select a helper type",
+        "productFamily": "Product Family"
       }
     }
   }

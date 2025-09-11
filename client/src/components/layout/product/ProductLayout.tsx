@@ -10,6 +10,7 @@ import { Outlet } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { AddVersionButton } from '../version/CreateEditVersion'
+import { useProductFamilyQuery } from '@/routes/ProductFamilies'
 
 export default function ProductLayout() {
   const {
@@ -19,6 +20,7 @@ export default function ProductLayout() {
   const { t } = useTranslation()
   const { data: product } = useProductQuery(productId || '')
   const { data: vendor } = useVendorQuery(product?.vendor_id || '')
+  const { data: family } = useProductFamilyQuery(product?.family_id || '')
 
   if (!product) {
     return null
@@ -70,8 +72,7 @@ export default function ProductLayout() {
             <Attribute
               key="productFamily"
               label={t('form.fields.productFamily')}
-              value={product.product_family || '-/-'}
-              onClick={() => openEditModal()}
+              value={family?.path?.join('/') || '-/-'}
             />,
           ]}
           actions={

@@ -150,4 +150,30 @@ func RegisterRoutes(s *fuego.Server, svc *Service) {
 	fuego.Post(identificationHelpers, "", h.CreateIdentificationHelper,
 		option.Summary("Create identification helper"),
 		option.Description("Creates a new identification helper for a product version"))
+
+	productFamilies := fuego.Group(api, "/product-families",
+		option.Summary("Product family operations"),
+		option.Description("Operations for managing product families"),
+		option.Tags("product-families"),
+	)
+
+	fuego.Get(productFamilies, "/{id}", h.GetProductFamily,
+		option.Summary("Get product family by ID"),
+		option.Description("Returns details for a specific product family"))
+
+	fuego.Get(productFamilies, "", h.ListProductFamilies,
+		option.Summary("List all product families"),
+		option.Description("Returns a list of all product families in the system"))
+
+	fuego.Put(productFamilies, "/{id}", h.UpdateProductFamily,
+		option.Summary("Update product family"),
+		option.Description("Updates an existing product family's information"))
+
+	fuego.Delete(productFamilies, "/{id}", h.DeleteProductFamily,
+		option.Summary("Delete product family"),
+		option.Description("Removes a product family from the system"))
+
+	fuego.Post(productFamilies, "", h.CreateProductFamily,
+		option.Summary("Create product family"),
+		option.Description("Creates a new product family"))
 }

@@ -122,6 +122,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/product-families": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List all product families
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).ListProductFamilies`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Returns a list of all product families in the system
+         */
+        get: operations["GET_/api/v1/product-families"];
+        put?: never;
+        /**
+         * Create product family
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).CreateProductFamily`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Creates a new product family
+         */
+        post: operations["POST_/api/v1/product-families"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/product-families/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get product family by ID
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).GetProductFamily`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Returns details for a specific product family
+         */
+        get: operations["GET_/api/v1/product-families/:id"];
+        /**
+         * Update product family
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).UpdateProductFamily`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Updates an existing product family's information
+         */
+        put: operations["PUT_/api/v1/product-families/:id"];
+        post?: never;
+        /**
+         * Delete product family
+         * @description #### Controller:
+         *
+         *     `product-database-api/internal.(*Handler).DeleteProductFamily`
+         *
+         *     #### Middlewares:
+         *
+         *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
+         *
+         *     ---
+         *
+         *     Removes a product family from the system
+         */
+        delete: operations["DELETE_/api/v1/product-families/:id"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/product-versions": {
         parameters: {
             query?: never;
@@ -687,12 +789,27 @@ export interface components {
         CreateProductDTO: {
             /** @example Product Description */
             description?: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            family_id?: string | null;
             /** @example Product Name */
             name: string;
             /** @example software */
             type: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
             vendor_id: string;
+        };
+        /** @description CreateProductFamilyDTO schema */
+        CreateProductFamilyDTO: {
+            /** @example Family Name */
+            name: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            parent_id?: string;
         };
         /** @description CreateProductVersionDTO schema */
         CreateProductVersionDTO: {
@@ -781,6 +898,11 @@ export interface components {
         ProductDTO: {
             /** @example Product Description */
             description?: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            family_id?: string | null;
             /** @example Vendor Name - Product Name */
             full_name: string;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
@@ -848,6 +970,20 @@ export interface components {
                  */
                 released_at?: string | null;
             }[];
+        };
+        /** @description ProductFamilyDTO schema */
+        ProductFamilyDTO: {
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            id: string;
+            /** @example Family Name */
+            name: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            parent_id?: string;
+            /** @example ['Parent Family', 'Family Name'] */
+            path: string[];
         };
         /** @description ProductVersionDTO schema */
         ProductVersionDTO: {
@@ -946,6 +1082,11 @@ export interface components {
                 product: {
                     /** @example Product Description */
                     description?: string;
+                    /**
+                     * @description string schema
+                     * @example 123e4567-e89b-12d3-a456-426614174000
+                     */
+                    family_id?: string | null;
                     /** @example Vendor Name - Product Name */
                     full_name: string;
                     /** @example 123e4567-e89b-12d3-a456-426614174000 */
@@ -1068,6 +1209,11 @@ export interface components {
             description?: string;
             /**
              * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            family_id?: string | null;
+            /**
+             * @description string schema
              * @example Product Name
              */
             name?: string;
@@ -1081,6 +1227,16 @@ export interface components {
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             vendor_id?: string;
+        };
+        /** @description UpdateProductFamilyDTO schema */
+        UpdateProductFamilyDTO: {
+            /** @example Family Name */
+            name?: string;
+            /**
+             * @description string schema
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            parent_id?: string;
         };
         /** @description UpdateProductVersionDTO schema */
         UpdateProductVersionDTO: {
@@ -1363,6 +1519,267 @@ export interface operations {
         };
     };
     "DELETE_/api/v1/identification-helper/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["unknown-interface"];
+                    "application/xml": components["schemas"]["unknown-interface"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/product-families": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductFamilyDTO"][];
+                    "application/xml": components["schemas"]["ProductFamilyDTO"][];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "POST_/api/v1/product-families": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Request body for internal.CreateProductFamilyDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["CreateProductFamilyDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductFamilyDTO"];
+                    "application/xml": components["schemas"]["ProductFamilyDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "GET_/api/v1/product-families/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductFamilyDTO"];
+                    "application/xml": components["schemas"]["ProductFamilyDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "PUT_/api/v1/product-families/:id": {
+        parameters: {
+            query?: never;
+            header?: {
+                Accept?: string;
+            };
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        /** @description Request body for internal.UpdateProductFamilyDTO */
+        requestBody: {
+            content: {
+                "*/*": components["schemas"]["UpdateProductFamilyDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductFamilyDTO"];
+                    "application/xml": components["schemas"]["ProductFamilyDTO"];
+                };
+            };
+            /** @description Bad Request _(validation or deserialization error)_ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            /** @description Internal Server Error _(panics)_ */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPError"];
+                    "application/xml": components["schemas"]["HTTPError"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "DELETE_/api/v1/product-families/:id": {
         parameters: {
             query?: never;
             header?: {
