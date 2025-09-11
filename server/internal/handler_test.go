@@ -10025,6 +10025,38 @@ func TestHandlerIntegrationTests(t *testing.T) {
 	t.Logf("Handler integration testing completed!")
 }
 
+func TestIdentificationHelperRoutes(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+
+	repo := NewRepository(db)
+	svc := NewService(repo)
+
+	s := fuego.NewServer()
+	RegisterRoutes(s, svc)
+
+	t.Run("DeleteRelationshipsByVersionAndCategory", func(t *testing.T) {
+		prodVersion := Node{
+			ID:          uuid.NewString(),
+			Name:        "Test Product Version for Relationship Deletion",
+			Description: "A product version node for testing relationship deletion",
+			Category:    ProductVersion,
+		}
+		createdVersion, err := repo.CreateNode(context.Background(), prodVersion)
+		if err != nil {
+			t.Fatalf("Failed to create product version node: %v", err)
+		}
+
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("DELETE", "/api/v1/product-versions/"+createdVersion.ID+"/relationships/test", nil)
+		s.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+	})
+}
+
 // TestDeletionTesting - Target the deletion functions!
 func TestServiceDeletionOperations(t *testing.T) {
 	db := testutils.SetupTestDB(t)

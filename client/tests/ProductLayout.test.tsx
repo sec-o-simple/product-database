@@ -10,6 +10,11 @@ import { useVendorQuery } from '@/routes/Vendor'
 vi.mock('@/client', () => ({
   default: {
     useMutation: vi.fn(),
+    useQuery: vi.fn(() => ({
+      data: null,
+      isLoading: false,
+      error: null,
+    })),
   },
 }))
 
@@ -53,6 +58,15 @@ vi.mock('@/routes/Product', () => ({
 
 vi.mock('@/routes/Vendor', () => ({
   useVendorQuery: vi.fn(),
+}))
+
+// Mock ProductFamilies
+vi.mock('@/routes/ProductFamilies', () => ({
+  useProductFamilyQuery: vi.fn(() => ({
+    data: null,
+    isLoading: false,
+    error: null,
+  })),
 }))
 
 // Mock PageContainer, TopBar, Sidebar components

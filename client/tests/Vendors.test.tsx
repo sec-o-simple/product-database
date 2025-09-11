@@ -29,6 +29,23 @@ vi.mock('@heroui/react', () => ({
       {children}
     </span>
   ),
+  Divider: ({ ...props }: any) => (
+    <hr data-testid="divider" {...props} />
+  ),
+}))
+
+// Mock HeroUI tabs
+vi.mock('@heroui/tabs', () => ({
+  Tabs: ({ children, selectedKey, ...props }: any) => (
+    <div data-testid="tabs" data-selected={selectedKey} {...props}>
+      {children}
+    </div>
+  ),
+  Tab: ({ title, href, ...props }: any) => (
+    <a data-testid="tab" href={href} {...props}>
+      {title}
+    </a>
+  ),
 }))
 
 // Mock FontAwesome
@@ -235,7 +252,7 @@ describe('Vendors', () => {
         </TestWrapper>
       )
 
-      const tabs = screen.getByTestId('dashboard-tabs')
+      const tabs = screen.getByTestId('tabs')
       expect(tabs).toHaveAttribute('data-selected', 'vendors')
     })
 

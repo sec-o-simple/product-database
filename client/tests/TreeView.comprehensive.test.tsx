@@ -18,6 +18,9 @@ vi.mock('../src/routes/Vendors', () => ({
 
 vi.mock('../src/routes/Products', () => ({
   useProductListQuery: vi.fn(),
+}))
+
+vi.mock('../src/components/DashboardTabs', () => ({
   DashboardTabs: ({ selectedKey }: { selectedKey: string }) => (
     <div data-testid="dashboard-tabs" data-selected-key={selectedKey}>
       Dashboard Tabs
@@ -50,6 +53,22 @@ vi.mock('@heroui/button', () => ({
 vi.mock('@heroui/react', () => ({
   Spinner: () => <div data-testid="spinner">Loading...</div>,
   Tooltip: ({ children }: any) => <div>{children}</div>,
+  Divider: ({ ...props }: any) => (
+    <hr data-testid="divider" {...props} />
+  ),
+}))
+
+vi.mock('@heroui/tabs', () => ({
+  Tabs: ({ children, selectedKey, ...props }: any) => (
+    <div data-testid="tabs" data-selected={selectedKey} {...props}>
+      {children}
+    </div>
+  ),
+  Tab: ({ title, href, ...props }: any) => (
+    <a data-testid="tab" href={href} {...props}>
+      {title}
+    </a>
+  ),
 }))
 
 vi.mock('@mui/x-tree-view', () => ({

@@ -210,7 +210,10 @@ export default function CreateEditProduct() {
             placeholder="Select a type"
             className="w-full"
             selectedKeys={[product.type]}
-            onChange={(e) => setProduct({ ...product, type: e.target.value })}
+            onSelectionChange={(keys) => {
+              const selectedKey = Array.from(keys)[0] as string
+              setProduct({ ...product, type: selectedKey })
+            }}
           >
             <SelectItem key="firmware">Firmware</SelectItem>
             <SelectItem key="software">Software</SelectItem>

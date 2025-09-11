@@ -150,16 +150,32 @@ vi.mock('../src/routes/Product', () => ({
   DeleteProduct: () => <button data-testid="delete-product">Delete Product</button>
 }))
 
+// Mock DashboardTabs component
+vi.mock('../src/components/DashboardTabs', () => ({
+  DashboardTabs: ({ selectedKey, endContent }: { selectedKey: string; endContent?: React.ReactNode }) => (
+    <div>
+      <div data-testid="tabs" data-selected={selectedKey}>
+        <a data-testid="tab" href="/vendors">vendor.label</a>
+        <a data-testid="tab" href="/products">product.label</a>
+        <a data-testid="tab" href="/product-families">productFamily.label</a>
+        <a data-testid="tab" href="/tree">treeView.label</a>
+        {endContent}
+      </div>
+      <div data-testid="divider" />
+    </div>
+  ),
+}))
+
 // Now import the components we want to test
 import Products, { 
   useProductListQuery, 
   useVendorProductListQuery,
-  DashboardTabs,
   SelectableContext,
   ProductItem,
   downloadExportFile,
   handleExportError
 } from '../src/routes/Products'
+import { DashboardTabs } from '../src/components/DashboardTabs'
 import client from '../src/client'
 import React from 'react'
 
