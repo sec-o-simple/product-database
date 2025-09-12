@@ -190,6 +190,17 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 		}
 	}
 
+	// Helper for collecting unique full product names
+	fullNamesMap := make(map[string]string) // productID -> name
+	addFullName := func(id, name string) {
+		if id == "" || name == "" {
+			return
+		}
+		if _, exists := fullNamesMap[id]; !exists {
+			fullNamesMap[id] = name
+		}
+	}
+
 	// Group products by vendor first, then by family path
 	type ProductGroup struct {
 		FamilyPath []string // Actual family names in order, nil/empty for no family
@@ -197,6 +208,9 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 	}
 
 	vendorGroups := make(map[string][]ProductGroup) // vendorName -> ProductGroups
+
+	// Relationships collected across all versions included
+	var relationshipExports []map[string]interface{}
 
 	for _, id := range productIDs {
 		p, err := s.GetProductByID(ctx, id)
@@ -221,6 +235,9 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			return nil, err
 		}
 
+		// Add product itself to full product names
+		addFullName(p.ID, v.Name+" "+p.Name)
+
 		// Build version nodes
 		var versionNodes []interface{}
 		for _, ver := range vers {
@@ -229,8 +246,11 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 				return nil, err
 			}
 
+			versionFullName := v.Name + " " + p.Name + " " + ver.Name
+			addFullName(ver.ID, versionFullName)
+
 			prodMap := map[string]interface{}{
-				"name":       v.Name + " " + p.Name + " " + ver.Name,
+				"name":       versionFullName,
 				"product_id": ver.ID,
 			}
 
@@ -244,6 +264,55 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 				"name":     ver.Name,
 				"product":  prodMap,
 			})
+
+			// Collect relationships for this version (as source)
+			// Fetch node with relationships
+			nodeWithRels, err := s.repo.GetNodeByID(ctx, ver.ID, WithRelationships(), WithParent())
+			if err == nil && len(nodeWithRels.SourceRelationships) > 0 { // ignore errors silently to not block export
+				for _, rel := range nodeWithRels.SourceRelationships {
+					if rel.TargetNode == nil { // insufficient data
+						continue
+					}
+
+					// Ensure target's full name is collected
+					// Assemble target full name: vendor + product + version (if available)
+					var targetFullName string
+					targetVersionID := rel.TargetNode.ID
+					// Build target name
+					if rel.TargetNode.Parent != nil { // product node
+						productNode := rel.TargetNode.Parent
+						productName := productNode.Name
+						// Need vendor name for target product
+						var vendorName string
+						if productNode.ParentID != nil {
+							if vendorNode, err := s.repo.GetNodeByID(ctx, *productNode.ParentID); err == nil {
+								vendorName = vendorNode.Name
+							}
+						}
+						if vendorName != "" {
+							targetFullName = vendorName + " " + productName + " " + rel.TargetNode.Name
+						} else {
+							targetFullName = productName + " " + rel.TargetNode.Name
+						}
+					} else {
+						targetFullName = rel.TargetNode.Name
+					}
+					addFullName(targetVersionID, targetFullName)
+
+					// Relationship export object
+					relObj := map[string]interface{}{
+						"product_reference":            ver.ID,
+						"category":                     string(rel.Category),
+						"relates_to_product_reference": targetVersionID,
+						"full_product_name": map[string]interface{}{
+							"product_id": rel.ID,
+							// Basic concatenation; could be refined per CSAF relation semantics
+							"name": versionFullName + " " + string(rel.Category) + " " + targetFullName,
+						},
+					}
+					relationshipExports = append(relationshipExports, relObj)
+				}
+			}
 		}
 
 		// Create the product node
@@ -317,9 +386,20 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 		vendorNodes = append(vendorNodes, vendorNode)
 	}
 
+	// Convert map to slice for full_product_names
+	var fullProductNames []map[string]string
+	for id, name := range fullNamesMap {
+		fullProductNames = append(fullProductNames, map[string]string{
+			"product_id": id,
+			"name":       name,
+		})
+	}
+
 	return map[string]interface{}{
 		"product_tree": map[string]interface{}{
-			"branches": vendorNodes,
+			"branches":           vendorNodes,
+			"full_product_names": fullProductNames,
+			"relationships":      relationshipExports,
 		},
 	}, nil
 }
