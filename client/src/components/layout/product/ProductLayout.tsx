@@ -24,7 +24,6 @@ export default function ProductLayout() {
   const { data: product } = useProductQuery(productId || '')
   const { data: vendor } = useVendorQuery(product?.vendor_id || '')
   const { data: family } = useProductFamilyQuery(product?.family_id || '')
-  console.log('family', family)
 
   if (!product) {
     return null

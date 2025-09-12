@@ -1,21 +1,26 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { BrowserRouter } from 'react-router-dom'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import ProductFamilies, { 
-  ProductFamilyChains, 
-  ProductFamilyItem, 
-  useProductFamilyListQuery, 
-  useProductFamilyQuery,
-  ProductFamily 
-} from '@/routes/ProductFamilies'
 import client from '@/client'
+import ProductFamilies, {
+  ProductFamily,
+  ProductFamilyChains,
+  ProductFamilyItem,
+  useProductFamilyListQuery,
+  useProductFamilyQuery,
+} from '@/routes/ProductFamilies'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the client module
 vi.mock('@/client', () => ({
   default: {
     useQuery: vi.fn(() => ({
       data: [],
+      isLoading: false,
+      error: null,
+    })),
+    useMutation: vi.fn(() => ({
+      mutate: vi.fn(),
       isLoading: false,
       error: null,
     })),
@@ -85,9 +90,7 @@ vi.mock('@/components/layout/productFamily/CreateEditProductFamily', () => ({
 // Mock FontAwesome icons
 vi.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: ({ icon }: { icon: any }) => (
-    <span data-testid="font-awesome-icon">
-      {icon?.iconName || 'icon'}
-    </span>
+    <span data-testid="font-awesome-icon">{icon?.iconName || 'icon'}</span>
   ),
 }))
 
@@ -136,7 +139,7 @@ describe('ProductFamilyChains', () => {
   it('should render family chain for root item', () => {
     const item = mockProductFamilies[0]
     render(<ProductFamilyChains item={item} />)
-    
+
     expect(screen.getByText('Root Family')).toBeInTheDocument()
     expect(screen.getByText('Root Family')).toHaveClass('font-bold')
   })
@@ -144,7 +147,7 @@ describe('ProductFamilyChains', () => {
   it('should render family chain for nested item', () => {
     const item = mockProductFamilies[1]
     render(<ProductFamilyChains item={item} />)
-    
+
     expect(screen.getByText('Root Family /')).toBeInTheDocument()
     expect(screen.getByText('Child Family')).toBeInTheDocument()
     expect(screen.getByText('Child Family')).toHaveClass('font-bold')
@@ -153,7 +156,7 @@ describe('ProductFamilyChains', () => {
   it('should render family chain for deeply nested item', () => {
     const item = mockProductFamilies[3]
     render(<ProductFamilyChains item={item} />)
-    
+
     expect(screen.getByText('Root Family /')).toBeInTheDocument()
     expect(screen.getByText('Child Family /')).toBeInTheDocument()
     expect(screen.getByText('Grandchild Family')).toBeInTheDocument()
@@ -171,7 +174,7 @@ describe('ProductFamilyItem', () => {
     render(
       <TestWrapper>
         <ProductFamilyItem productFamily={productFamily} />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('list-item')).toBeInTheDocument()
@@ -184,14 +187,14 @@ describe('ProductFamilyItem', () => {
     render(
       <TestWrapper>
         <ProductFamilyItem productFamily={productFamily} />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     fireEvent.click(screen.getByTestId('list-item'))
 
     expect(mockNavigateToModal).toHaveBeenCalledWith(
       '/product-families/1/edit',
-      '/product-families/1'
+      '/product-families/1',
     )
   })
 
@@ -200,14 +203,14 @@ describe('ProductFamilyItem', () => {
     render(
       <TestWrapper>
         <ProductFamilyItem productFamily={productFamily} />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     fireEvent.click(screen.getByTestId('icon-button'))
 
     expect(mockNavigateToModal).toHaveBeenCalledWith(
       '/product-families/1/edit',
-      '/product-families/1'
+      '/product-families/1',
     )
   })
 
@@ -216,7 +219,7 @@ describe('ProductFamilyItem', () => {
     render(
       <TestWrapper>
         <ProductFamilyItem productFamily={productFamily} />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByText('Root Family /')).toBeInTheDocument()
@@ -245,7 +248,7 @@ describe('useProductFamilyListQuery', () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('result')).toHaveTextContent('[]')
@@ -263,7 +266,11 @@ describe('useProductFamilyListQuery', () => {
       const { data } = useProductFamilyListQuery()
       return (
         <div data-testid="result">
-          {data.map(f => <div key={f.id} data-testid={`family-${f.id}`}>{f.name}</div>)}
+          {data.map((f) => (
+            <div key={f.id} data-testid={`family-${f.id}`}>
+              {f.name}
+            </div>
+          ))}
         </div>
       )
     }
@@ -271,19 +278,19 @@ describe('useProductFamilyListQuery', () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     // Should be sorted alphabetically at each level, with children after parents
     const familyElements = screen.getAllByTestId(/family-/)
-    const familyOrder = familyElements.map(el => el.textContent)
-    
+    const familyOrder = familyElements.map((el) => el.textContent)
+
     // Expected order: Another Root, Root Family, Child Family, Grandchild Family
     expect(familyOrder).toEqual([
       'Another Root',
-      'Root Family', 
+      'Root Family',
       'Child Family',
-      'Grandchild Family'
+      'Grandchild Family',
     ])
   })
 
@@ -308,7 +315,7 @@ describe('useProductFamilyListQuery', () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('loading')).toHaveTextContent('true')
@@ -337,7 +344,7 @@ describe('useProductFamilyQuery', () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(mockUseQuery).toHaveBeenCalledWith(
@@ -352,7 +359,7 @@ describe('useProductFamilyQuery', () => {
       },
       {
         enabled: true,
-      }
+      },
     )
   })
 
@@ -372,7 +379,7 @@ describe('useProductFamilyQuery', () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(mockUseQuery).toHaveBeenCalledWith(
@@ -387,7 +394,7 @@ describe('useProductFamilyQuery', () => {
       },
       {
         enabled: false,
-      }
+      },
     )
   })
 })
@@ -408,12 +415,16 @@ describe('ProductFamilies', () => {
     render(
       <TestWrapper>
         <ProductFamilies />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('dashboard-tabs')).toBeInTheDocument()
-    expect(screen.getByTestId('selected-key')).toHaveTextContent('productFamilies')
-    expect(screen.getByTestId('create-product-group-button')).toBeInTheDocument()
+    expect(screen.getByTestId('selected-key')).toHaveTextContent(
+      'productFamilies',
+    )
+    expect(
+      screen.getByTestId('create-product-group-button'),
+    ).toBeInTheDocument()
     expect(screen.getByTestId('data-grid')).toBeInTheDocument()
   })
 
@@ -428,18 +439,18 @@ describe('ProductFamilies', () => {
     render(
       <TestWrapper>
         <ProductFamilies />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('dashboard-tabs')).toBeInTheDocument()
     expect(screen.getByTestId('data-grid')).toBeInTheDocument()
-    
+
     // Should render all product families
     expect(screen.getByText('Root Family')).toBeInTheDocument()
     expect(screen.getByText('Child Family')).toBeInTheDocument()
     expect(screen.getByText('Another Root')).toBeInTheDocument()
     expect(screen.getByText('Grandchild Family')).toBeInTheDocument()
-    
+
     // Should render all as list items
     expect(screen.getAllByTestId('list-item')).toHaveLength(4)
   })
@@ -455,7 +466,7 @@ describe('ProductFamilies', () => {
     render(
       <TestWrapper>
         <ProductFamilies />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     const createButton = screen.getByTestId('create-product-group-button')
@@ -474,7 +485,7 @@ describe('ProductFamilies', () => {
     render(
       <TestWrapper>
         <ProductFamilies />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('data-grid')).toBeInTheDocument()
@@ -499,7 +510,7 @@ describe('sortProductFamiliesTree', () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('count')).toHaveTextContent('0')
@@ -523,7 +534,9 @@ describe('sortProductFamiliesTree', () => {
       return (
         <div>
           {data.map((f, i) => (
-            <div key={f.id} data-testid={`family-${i}`}>{f.name}</div>
+            <div key={f.id} data-testid={`family-${i}`}>
+              {f.name}
+            </div>
           ))}
         </div>
       )
@@ -532,7 +545,7 @@ describe('sortProductFamiliesTree', () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     expect(screen.getByTestId('family-0')).toHaveTextContent('Alpha')
@@ -543,9 +556,24 @@ describe('sortProductFamiliesTree', () => {
     const complexFamilies = [
       { id: '1', name: 'Root B', parent_id: undefined, path: ['Root B'] },
       { id: '2', name: 'Root A', parent_id: undefined, path: ['Root A'] },
-      { id: '3', name: 'Child B of A', parent_id: '2', path: ['Root A', 'Child B of A'] },
-      { id: '4', name: 'Child A of A', parent_id: '2', path: ['Root A', 'Child A of A'] },
-      { id: '5', name: 'Grandchild of B', parent_id: '3', path: ['Root A', 'Child B of A', 'Grandchild of B'] },
+      {
+        id: '3',
+        name: 'Child B of A',
+        parent_id: '2',
+        path: ['Root A', 'Child B of A'],
+      },
+      {
+        id: '4',
+        name: 'Child A of A',
+        parent_id: '2',
+        path: ['Root A', 'Child A of A'],
+      },
+      {
+        id: '5',
+        name: 'Grandchild of B',
+        parent_id: '3',
+        path: ['Root A', 'Child B of A', 'Grandchild of B'],
+      },
     ]
 
     const mockUseQuery = vi.mocked(client.useQuery)
@@ -560,7 +588,9 @@ describe('sortProductFamiliesTree', () => {
       return (
         <div>
           {data.map((f, i) => (
-            <div key={f.id} data-testid={`family-${i}`}>{f.name}</div>
+            <div key={f.id} data-testid={`family-${i}`}>
+              {f.name}
+            </div>
           ))}
         </div>
       )
@@ -569,7 +599,7 @@ describe('sortProductFamiliesTree', () => {
     render(
       <TestWrapper>
         <TestComponent />
-      </TestWrapper>
+      </TestWrapper>,
     )
 
     // Expected order: Root A, Child A of A, Child B of A, Grandchild of B, Root B

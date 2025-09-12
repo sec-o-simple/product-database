@@ -98,9 +98,9 @@ export const ProductFamilyChains: React.FC<{ item: ProductFamily }> = ({
         {pathWithoutSelf.map((parent, index) => (
           <span
             key={`${item.id}-${index}`}
-            className="break-words text-gray-500 opacity-70 after:ml-1 after:content-['/'] last:after:content-none"
+            className="break-words text-gray-500 opacity-70"
           >
-            {parent}
+            {parent} /
           </span>
         ))}
         <span className="font-bold break-words">{item.name}</span>
