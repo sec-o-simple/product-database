@@ -3,6 +3,7 @@ import CreateEditProduct from './components/layout/product/CreateEditProduct'
 import CreateRelationship from './components/layout/product/CreateRelationship'
 import { default as ProductHistory } from './components/layout/product/ProductHistory'
 import ProductLayout from './components/layout/product/ProductLayout'
+import CreateEditProductGroup from './components/layout/productFamily/CreateEditProductFamily'
 import TopBarLayout from './components/layout/TopBarLayout'
 import CreateEditVendor from './components/layout/vendor/CreateEditVendor'
 import VendorHistory from './components/layout/vendor/VendorHistory'
@@ -13,6 +14,7 @@ import VersionLayout from './components/layout/version/VersionLayout'
 import Layout from './Layout'
 import IdentificationOverview from './routes/IdentificationHelper/IdentificationOverview'
 import Product from './routes/Product'
+import ProductFamilies from './routes/ProductFamilies'
 import Products from './routes/Products'
 import TreeView from './routes/TreeView'
 import Vendor from './routes/Vendor'
@@ -30,17 +32,14 @@ function App() {
           <Route path="/" element={<Navigate to="/vendors" replace />} />
 
           <Route element={<TopBarLayout />}>
-            <Route path="vendors">
-              <Route index element={<Vendors />} />
-            </Route>
-
-            <Route path="products">
-              <Route index element={<Products />} />
-            </Route>
-
-            <Route path="tree">
-              <Route index element={<TreeView />} />
-            </Route>
+            <Route path="vendors" index element={<Vendors />} />
+            <Route path="products" index element={<Products />} />
+            <Route
+              path="product-families"
+              index
+              element={<ProductFamilies />}
+            />
+            <Route path="tree" index element={<TreeView />} />
           </Route>
 
           <Route element={<VendorLayout />}>
@@ -100,10 +99,18 @@ function App() {
           />
 
           <Route
+            path="product-families/create"
+            element={<CreateEditProductGroup />}
+          />
+          <Route
+            path="product-families/:familyId/edit"
+            element={<CreateEditProductGroup />}
+          />
+
+          <Route
             path="product-versions/:versionId/relationships/create"
             element={<CreateRelationship />}
           />
-
           <Route
             path="product-versions/:versionId/relationships/:category/edit"
             element={<CreateRelationship />}

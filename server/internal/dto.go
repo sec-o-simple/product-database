@@ -24,10 +24,11 @@ type ExportRequestDTO struct {
 }
 
 type CreateProductDTO struct {
-	Name        string `json:"name" example:"Product Name" validate:"required"`
-	Description string `json:"description" example:"Product Description"`
-	VendorID    string `json:"vendor_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
-	Type        string `json:"type" example:"software" validate:"required,oneof=software hardware firmware"`
+	Name        string  `json:"name" example:"Product Name" validate:"required"`
+	Description string  `json:"description" example:"Product Description"`
+	VendorID    string  `json:"vendor_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required,uuid"`
+	Type        string  `json:"type" example:"software" validate:"required,oneof=software hardware firmware"`
+	FamilyID    *string `json:"family_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
 }
 
 type UpdateProductDTO struct {
@@ -35,6 +36,7 @@ type UpdateProductDTO struct {
 	Description *string `json:"description" example:"Product Description"`
 	VendorID    *string `json:"vendor_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
 	Type        *string `json:"type" example:"software" validate:"oneof=software hardware firmware"`
+	FamilyID    *string `json:"family_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
 }
 
 type ProductDTO struct {
@@ -44,6 +46,7 @@ type ProductDTO struct {
 	FullName       string              `json:"full_name" example:"Vendor Name - Product Name" validate:"required"`
 	Description    string              `json:"description" example:"Product Description"`
 	Type           string              `json:"type" example:"software" validate:"required,oneof=software hardware firmware"`
+	FamilyID       *string             `json:"family_id,omitempty" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
 	Versions       []ProductVersionDTO `json:"versions" validate:"dive"`
 	LatestVersions []ProductVersionDTO `json:"latest_versions" validate:"dive"`
 }
@@ -73,6 +76,7 @@ func NodeToProductDTO(node Node) ProductDTO {
 		Description: node.Description,
 		Type:        string(node.ProductType),
 		Versions:    versions,
+		FamilyID:    node.ProductFamilyID,
 	}
 }
 
@@ -196,4 +200,22 @@ func IdentificationHelperToDTO(helper IdentificationHelper) IdentificationHelper
 		ProductVersionID: helper.NodeID,
 		Metadata:         string(helper.Metadata),
 	}
+}
+
+// Product Families
+type ProductFamilyDTO struct {
+	ID       string   `json:"id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"required"`
+	Name     string   `json:"name" example:"Family Name" validate:"required"`
+	ParentID *string  `json:"parent_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
+	Path     []string `json:"path" example:"['Parent Family', 'Family Name']" validate:"required"`
+}
+
+type CreateProductFamilyDTO struct {
+	Name     string  `json:"name" example:"Family Name" validate:"required"`
+	ParentID *string `json:"parent_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
+}
+
+type UpdateProductFamilyDTO struct {
+	Name     string  `json:"name" example:"Family Name"`
+	ParentID *string `json:"parent_id" example:"123e4567-e89b-12d3-a456-426614174000" validate:"omitempty,uuid"`
 }

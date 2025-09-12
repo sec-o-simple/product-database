@@ -42,6 +42,11 @@
         "software": "Software",
         "hardware": "Hardware",
         "firmware": "Firmware"
+      },
+      "delete": {
+        "title": "Delete Product",
+        "text": "Are you sure you want to delete the product \"{{name}}\"? This action cannot be undone.",
+        "success": "Product \"{{name}}\" has been deleted successfully."
       }
     },
     "version": {
@@ -49,6 +54,17 @@
       "label_other": "Versions",
       "label_count": "{{count}} Version",
       "label_count_other": "{{count}} Versions"
+    },
+    "productFamily": {
+      "label": "Product Family",
+      "label_other": "Product Families",
+      "products": "{{ count }} Product",
+      "products_other": "{{ count }} Products",
+      "delete": {
+        "title": "Delete Product Family",
+        "text": "Are you sure you want to delete the product family \"{{name}}\"? All associated products will remain but lose the association to this product family.",
+        "success": "Product family \"{{name}}\" has been deleted successfully."
+      }
     },
     "relationship": {
       "label": "Relationship",
@@ -152,14 +168,17 @@
       "select": "Please select an option",
       "fields": {
         "name": "Name",
+        "type": "Type",
         "description": "Description",
+        "parent": "Parent Product Family",
         "vendor": "Vendor",
         "product": "Product",
         "version": "Version",
         "relationshipCategory": "Relationship Category",
         "relationshipType": "Relationship Type",
         "helperType": "Helper Type",
-        "selectHelperType": "Select a helper type"
+        "selectHelperType": "Select a helper type",
+        "productFamily": "Product Family"
       }
     }
   }

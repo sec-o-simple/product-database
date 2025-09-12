@@ -181,7 +181,22 @@ func (s *Service) DeleteVendor(ctx context.Context, id string) error {
 // Products
 
 func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string) (map[string]interface{}, error) {
-	vendorMap := make(map[string]map[string]interface{})
+	// Get all families upfront for path resolution
+	allFamilies, err := s.repo.GetNodesByCategory(ctx, ProductFamily)
+	if err != nil {
+		return nil, fuego.InternalServerError{
+			Title: "Failed to list product families",
+			Err:   err,
+		}
+	}
+
+	// Group products by vendor first, then by family path
+	type ProductGroup struct {
+		FamilyPath []string // Actual family names in order, nil/empty for no family
+		Products   []interface{}
+	}
+
+	vendorGroups := make(map[string][]ProductGroup) // vendorName -> ProductGroups
 
 	for _, id := range productIDs {
 		p, err := s.GetProductByID(ctx, id)
@@ -206,6 +221,7 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			return nil, err
 		}
 
+		// Build version nodes
 		var versionNodes []interface{}
 		for _, ver := range vers {
 			helpers, err := s.GetIdentificationHelpersByProductVersion(ctx, ver.ID)
@@ -230,6 +246,7 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			})
 		}
 
+		// Create the product node
 		productNode := map[string]interface{}{
 			"category": "product_name",
 			"name":     p.Name,
@@ -242,20 +259,62 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			productNode["branches"] = versionNodes
 		}
 
-		if vn, exists := vendorMap[v.Name]; exists {
-			vn["branches"] = append(vn["branches"].([]interface{}), productNode)
-		} else {
-			vendorMap[v.Name] = map[string]interface{}{
-				"category": "vendor",
-				"name":     v.Name,
-				"branches": []interface{}{productNode},
+		// Determine family path
+		var familyPath []string
+		if p.FamilyID != nil {
+			familyPath = s.getNodePath(*p.FamilyID, allFamilies)
+		}
+
+		// Find or create group for this vendor and family path
+		vendorName := v.Name
+		groups := vendorGroups[vendorName]
+
+		// Look for existing group with same family path
+		var foundGroup *ProductGroup
+		for i := range groups {
+			if s.familyPathsEqual(groups[i].FamilyPath, familyPath) {
+				foundGroup = &groups[i]
+				break
 			}
+		}
+
+		if foundGroup != nil {
+			// Add to existing group
+			foundGroup.Products = append(foundGroup.Products, productNode)
+		} else {
+			// Create new group
+			newGroup := ProductGroup{
+				FamilyPath: familyPath,
+				Products:   []interface{}{productNode},
+			}
+			vendorGroups[vendorName] = append(vendorGroups[vendorName], newGroup)
 		}
 	}
 
+	// Build the final tree structure
 	var vendorNodes []interface{}
-	for _, vn := range vendorMap {
-		vendorNodes = append(vendorNodes, vn)
+	for vendorName, groups := range vendorGroups {
+		vendorNode := map[string]interface{}{
+			"category": "vendor",
+			"name":     vendorName,
+		}
+
+		var vendorBranches []interface{}
+		for _, group := range groups {
+			if len(group.FamilyPath) == 0 {
+				// Direct products (no family)
+				vendorBranches = append(vendorBranches, group.Products...)
+			} else {
+				// Products with families - build nested structure
+				familyBranch := s.buildNestedFamilyStructure(group.FamilyPath, group.Products)
+				vendorBranches = append(vendorBranches, familyBranch)
+			}
+		}
+
+		if len(vendorBranches) > 0 {
+			vendorNode["branches"] = vendorBranches
+		}
+		vendorNodes = append(vendorNodes, vendorNode)
 	}
 
 	return map[string]interface{}{
@@ -263,6 +322,43 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 			"branches": vendorNodes,
 		},
 	}, nil
+}
+
+// Helper function to compare two family paths for equality
+func (s *Service) familyPathsEqual(path1, path2 []string) bool {
+	if len(path1) != len(path2) {
+		return false
+	}
+	for i, name := range path1 {
+		if name != path2[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// Helper function to build nested family structure recursively
+func (s *Service) buildNestedFamilyStructure(familyNames []string, products []interface{}) interface{} {
+	if len(familyNames) == 0 {
+		return nil
+	}
+
+	if len(familyNames) == 1 {
+		// This is the deepest family level, add products here
+		return map[string]interface{}{
+			"category": "product_family",
+			"name":     familyNames[0],
+			"branches": products,
+		}
+	}
+
+	// Recursively build nested family structure
+	childBranch := s.buildNestedFamilyStructure(familyNames[1:], products)
+	return map[string]interface{}{
+		"category": "product_family",
+		"name":     familyNames[0],
+		"branches": []interface{}{childBranch},
+	}
 }
 
 func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (ProductDTO, error) {
@@ -288,12 +384,13 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 	}
 
 	node := Node{
-		ID:          uuid.New().String(),
-		Name:        product.Name,
-		Description: product.Description,
-		Category:    ProductName,
-		ParentID:    &vendorNode.ID,
-		ProductType: ProductType(product.Type),
+		ID:              uuid.New().String(),
+		Name:            product.Name,
+		Description:     product.Description,
+		Category:        ProductName,
+		ParentID:        &vendorNode.ID,
+		ProductType:     ProductType(product.Type),
+		ProductFamilyID: product.FamilyID,
 	}
 
 	createdNode, err := s.repo.CreateNode(ctx, node)
@@ -311,6 +408,7 @@ func (s *Service) CreateProduct(ctx context.Context, product CreateProductDTO) (
 		Name:        createdNode.Name,
 		Description: createdNode.Description,
 		Type:        string(createdNode.ProductType),
+		FamilyID:    createdNode.ProductFamilyID,
 	}, nil
 }
 
@@ -345,6 +443,7 @@ func (s *Service) UpdateProduct(ctx context.Context, id string, update UpdatePro
 	if update.Type != nil {
 		product.ProductType = ProductType(*update.Type)
 	}
+	product.ProductFamilyID = update.FamilyID
 
 	if err := s.repo.UpdateNode(ctx, product); err != nil {
 		return ProductDTO{}, fuego.InternalServerError{
@@ -358,6 +457,8 @@ func (s *Service) UpdateProduct(ctx context.Context, id string, update UpdatePro
 		VendorID:    product.ParentID,
 		Name:        product.Name,
 		Description: product.Description,
+		FamilyID:    product.ProductFamilyID,
+		Type:        string(product.ProductType),
 	}, nil
 }
 
@@ -436,6 +537,7 @@ func (s *Service) ListVendorProducts(ctx context.Context, vendorID string) ([]Pr
 			VendorID:    product.ParentID,
 			Name:        product.Name,
 			Description: product.Description,
+			FamilyID:    product.ProductFamilyID,
 		}
 	}
 	return products, nil
@@ -1265,4 +1367,249 @@ func (s *Service) DeleteIdentificationHelper(ctx context.Context, id string) err
 	}
 
 	return nil
+}
+
+// Product Families
+
+// Helper to build the path of a node by traversing up its parents
+func (s *Service) getNodePath(id string, families []Node) []string {
+	var path []string
+	currentID := id
+
+	for {
+		found := false
+		for _, family := range families {
+			if family.ID == currentID {
+				path = append([]string{family.Name}, path...)
+				if family.ParentID == nil {
+					return path
+				}
+				currentID = *family.ParentID
+				found = true
+				break
+			}
+		}
+		if !found {
+			break
+		}
+	}
+
+	return path
+}
+
+func (s *Service) fillPathOfFamilies(ctx context.Context, families []*ProductFamilyDTO) error {
+	allFamilies, err := s.repo.GetNodesByCategory(ctx, ProductFamily)
+	if err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to list product families",
+			Err:   err,
+		}
+	}
+
+	for i, family := range families {
+		families[i].Path = s.getNodePath(family.ID, allFamilies)
+	}
+
+	return nil
+}
+
+func (s *Service) GetProductFamilyByID(ctx context.Context, id string) (ProductFamilyDTO, error) {
+	family, err := s.repo.GetNodeByID(ctx, id)
+	notFoundError := fuego.NotFoundError{
+		Title: "Product family not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductFamilyDTO{}, notFoundError
+		} else {
+			return ProductFamilyDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch product family",
+				Err:   err,
+			}
+		}
+	}
+
+	if family.Category != ProductFamily {
+		return ProductFamilyDTO{}, notFoundError
+	}
+
+	dto := ProductFamilyDTO{
+		ID:       family.ID,
+		Name:     family.Name,
+		ParentID: family.ParentID,
+	}
+	err = s.fillPathOfFamilies(ctx, []*ProductFamilyDTO{&dto})
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return dto, nil
+}
+
+func (s *Service) CreateProductFamily(ctx context.Context, family CreateProductFamilyDTO) (ProductFamilyDTO, error) {
+	if family.ParentID != nil {
+		parent, err := s.repo.GetNodeByID(ctx, *family.ParentID)
+		if err != nil || parent.Category != ProductFamily {
+			return ProductFamilyDTO{}, fuego.BadRequestError{
+				Title: "Invalid product version ID",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "CreateProductFamilyDTO.ParentID",
+						Reason: "Parent ID must be a valid product family ID",
+					},
+				},
+			}
+		}
+	}
+
+	node := Node{
+		ID:       uuid.New().String(),
+		Name:     family.Name,
+		Category: ProductFamily,
+		ParentID: family.ParentID,
+	}
+
+	createdNode, err := s.repo.CreateNode(ctx, node)
+
+	if err != nil {
+		return ProductFamilyDTO{}, fuego.InternalServerError{
+			Title: "Failed to create product family",
+			Err:   err,
+		}
+	}
+
+	dto := ProductFamilyDTO{
+		ID:       createdNode.ID,
+		Name:     createdNode.Name,
+		ParentID: createdNode.ParentID,
+	}
+	err = s.fillPathOfFamilies(ctx, []*ProductFamilyDTO{&dto})
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return dto, nil
+}
+
+func (s *Service) UpdateProductFamily(ctx context.Context, id string, update UpdateProductFamilyDTO) (ProductFamilyDTO, error) {
+	family, err := s.repo.GetNodeByID(ctx, id)
+	notFoundError := fuego.NotFoundError{
+		Title: "Product family not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ProductFamilyDTO{}, notFoundError
+		} else {
+			return ProductFamilyDTO{}, fuego.InternalServerError{
+				Title: "Failed to fetch product family",
+				Err:   err,
+			}
+		}
+	}
+
+	if family.Category != ProductFamily {
+		return ProductFamilyDTO{}, notFoundError
+	}
+
+	family.Name = update.Name
+
+	if update.ParentID != nil {
+		parent, err := s.repo.GetNodeByID(ctx, *update.ParentID)
+		if *update.ParentID == family.ID || err != nil || parent.Category != ProductFamily {
+			return ProductFamilyDTO{}, fuego.BadRequestError{
+				Title: "Invalid parent ID",
+				Errors: []fuego.ErrorItem{
+					{
+						Name:   "UpdateProductFamilyDTO.ParentID",
+						Reason: "Parent ID must be a valid product family ID",
+					},
+				},
+			}
+		}
+	}
+
+	family.ParentID = update.ParentID
+
+	if err := s.repo.UpdateNode(ctx, family); err != nil {
+		return ProductFamilyDTO{}, fuego.InternalServerError{
+			Title: "Failed to update product family",
+			Err:   err,
+		}
+	}
+
+	dto := ProductFamilyDTO{
+		ID:       family.ID,
+		Name:     family.Name,
+		ParentID: family.ParentID,
+	}
+	err = s.fillPathOfFamilies(ctx, []*ProductFamilyDTO{&dto})
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return dto, nil
+}
+
+func (s *Service) DeleteProductFamily(ctx context.Context, id string) error {
+	family, err := s.repo.GetNodeByID(ctx, id)
+	notFoundError := fuego.NotFoundError{
+		Title: "Product family not found",
+	}
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return notFoundError
+		} else {
+			return fuego.InternalServerError{
+				Title: "Failed to fetch product family",
+				Err:   err,
+			}
+		}
+	}
+
+	if family.Category != ProductFamily {
+		return notFoundError
+	}
+
+	if err := s.repo.DeleteNode(ctx, family.ID); err != nil {
+		return fuego.InternalServerError{
+			Title: "Failed to delete product family",
+			Err:   err,
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) ListProductFamilies(ctx context.Context) ([]ProductFamilyDTO, error) {
+	nodes, err := s.repo.GetNodesByCategory(ctx, ProductFamily, WithParent(), WithChildren())
+	if err != nil {
+		return nil, fuego.InternalServerError{
+			Title: "Failed to list product families",
+			Err:   err,
+		}
+	}
+
+	families := make([]*ProductFamilyDTO, len(nodes))
+	for i, node := range nodes {
+		families[i] = &ProductFamilyDTO{
+			ID:       node.ID,
+			Name:     node.Name,
+			ParentID: node.ParentID,
+		}
+	}
+	err = s.fillPathOfFamilies(ctx, families)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert []*ProductFamilyDTO to []ProductFamilyDTO
+	result := make([]ProductFamilyDTO, len(families))
+	for i, family := range families {
+		result[i] = *family
+	}
+
+	return result, nil
 }

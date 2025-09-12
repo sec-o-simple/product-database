@@ -356,3 +356,63 @@ func (h *Handler) CreateIdentificationHelper(c fuego.ContextWithBody[CreateIdent
 	}
 	return helper, nil
 }
+
+// Product Families
+
+func (h *Handler) GetProductFamily(c fuego.ContextNoBody) (ProductFamilyDTO, error) {
+	familyID := c.PathParam("id")
+	family, err := h.svc.GetProductFamilyByID(c.Request().Context(), familyID)
+
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return family, nil
+}
+
+func (h *Handler) ListProductFamilies(c fuego.ContextNoBody) ([]ProductFamilyDTO, error) {
+	families, err := h.svc.ListProductFamilies(c.Request().Context())
+
+	if err != nil {
+		return nil, err
+	}
+
+	return families, nil
+}
+
+func (h *Handler) UpdateProductFamily(c fuego.ContextWithBody[UpdateProductFamilyDTO]) (ProductFamilyDTO, error) {
+	familyID := c.PathParam("id")
+	body, err := c.Body()
+
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	family, err := h.svc.UpdateProductFamily(c.Request().Context(), familyID, body)
+
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return family, nil
+}
+
+func (h *Handler) DeleteProductFamily(c fuego.ContextNoBody) (any, error) {
+	err := h.svc.DeleteProductFamily(c.Request().Context(), c.PathParam("id"))
+
+	return nil, err
+}
+
+func (h *Handler) CreateProductFamily(c fuego.ContextWithBody[CreateProductFamilyDTO]) (ProductFamilyDTO, error) {
+	body, err := c.Body()
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	family, err := h.svc.CreateProductFamily(c.Request().Context(), body)
+	if err != nil {
+		return ProductFamilyDTO{}, err
+	}
+
+	return family, nil
+}

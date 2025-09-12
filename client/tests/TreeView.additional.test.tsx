@@ -42,6 +42,22 @@ vi.mock('@heroui/react', () => ({
       {children}
     </div>
   )),
+  Divider: ({ ...props }: any) => (
+    <hr data-testid="divider" {...props} />
+  ),
+}))
+
+vi.mock('@heroui/tabs', () => ({
+  Tabs: ({ children, selectedKey, ...props }: any) => (
+    <div data-testid="tabs" data-selected={selectedKey} {...props}>
+      {children}
+    </div>
+  ),
+  Tab: ({ title, href, ...props }: any) => (
+    <a data-testid="tab" href={href} {...props}>
+      {title}
+    </a>
+  ),
 }))
 
 vi.mock('@heroui/button', () => ({
@@ -84,12 +100,15 @@ vi.mock('../src/routes/Version', () => ({
 }))
 
 vi.mock('../src/routes/Products', () => ({
+  useProductListQuery: vi.fn(),
+}))
+
+vi.mock('../src/components/DashboardTabs', () => ({
   DashboardTabs: vi.fn(({ selectedKey }) => (
     <div data-testid="dashboard-tabs" data-selected-key={selectedKey}>
       Dashboard Tabs
     </div>
   )),
-  useProductListQuery: vi.fn(),
 }))
 
 vi.mock('../src/routes/Vendors', () => ({

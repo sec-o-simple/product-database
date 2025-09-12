@@ -2,6 +2,10 @@ import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
 import { DeleteProduct, useProductQuery } from '@/routes/Product'
+import {
+  ProductFamilyChains,
+  useProductFamilyQuery,
+} from '@/routes/ProductFamilies'
 import { useVendorQuery } from '@/routes/Vendor'
 import useRouter from '@/utils/useRouter'
 import { Button } from '@heroui/button'
@@ -19,9 +23,14 @@ export default function ProductLayout() {
   const { t } = useTranslation()
   const { data: product } = useProductQuery(productId || '')
   const { data: vendor } = useVendorQuery(product?.vendor_id || '')
+  const { data: family } = useProductFamilyQuery(product?.family_id || '')
 
   if (!product) {
     return null
+  }
+
+  const openEditModal = () => {
+    navigateToModal(`/products/${productId}/edit`, `/products/${productId}`)
   }
 
   return (
@@ -42,19 +51,34 @@ export default function ProductLayout() {
       <div className="flex grow flex-row overflow-scroll">
         <Sidebar
           attributes={[
-            <Attribute label="Name" value={product.name} key="name" />,
+            <Attribute
+              label={t('form.fields.name')}
+              value={product.name}
+              key="name"
+            />,
             <Attribute
               key="description"
-              label="Description"
+              label={t('form.fields.description')}
               value={product.description || '-/-'}
             />,
-            <Attribute label="Type" value={product.type || '-/-'} key="type" />,
+            <Attribute
+              label={t('form.fields.type')}
+              value={t(`product.type.${product.type}`) || '-/-'}
+              key="type"
+            />,
             <Attribute
               key="idHelpers"
-              label="Vendor"
+              label={t('form.fields.vendor')}
               value={vendor?.name || '-/-'}
               href={`/vendors/${product.vendor_id}`}
             />,
+            family && (
+              <Attribute
+                key="productFamily"
+                label={t('form.fields.productFamily')}
+                value={<ProductFamilyChains item={family} />}
+              />
+            ),
           ]}
           actions={
             <div className="flex flex-row gap-2">
@@ -64,12 +88,7 @@ export default function ProductLayout() {
                 variant="solid"
                 color="primary"
                 fullWidth
-                onPress={() =>
-                  navigateToModal(
-                    `/products/${productId}/edit`,
-                    `/products/${productId}`,
-                  )
-                }
+                onPress={() => openEditModal()}
               >
                 {t('common.edit')}
               </Button>

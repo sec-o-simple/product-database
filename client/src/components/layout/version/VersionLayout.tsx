@@ -22,10 +22,10 @@ export default function VersionLayout() {
   const location = useLocation()
   const { t } = useTranslation()
 
-  const { data: version, isLoading: isVersionLoading } = useVersionQuery(
+  const { data: version, isPending: isVersionLoading } = useVersionQuery(
     versionId || '',
   )
-  const { data: product, isLoading: isProductLoading } = useProductQuery(
+  const { data: product, isPending: isProductLoading } = useProductQuery(
     version?.product_id,
   )
 

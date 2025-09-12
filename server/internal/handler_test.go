@@ -13,6 +13,7 @@ import (
 	"product-database-api/testutils"
 
 	"github.com/go-fuego/fuego"
+	"github.com/google/uuid"
 )
 
 // TestServiceAllOperations provides complete service layer testing
@@ -8934,6 +8935,218 @@ func TestServiceProductVersionOperations(t *testing.T) {
 	})
 }
 
+func TestProductFamilyHandlers(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+
+	repo := NewRepository(db)
+	svc := NewService(repo)
+
+	s := fuego.NewServer()
+	RegisterRoutes(s, svc)
+
+	t.Run("CreateProductFamily Invalid Body", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("POST", "/api/v1/product-families", strings.NewReader(`{"name": "Family A", "parent_id": "wrong_string"}`))
+		s.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("CreateProductFamily Valid Without ParentID", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("POST", "/api/v1/product-families", strings.NewReader(`{"name": "Family A"}`))
+		s.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var resp ProductFamilyDTO
+		err := json.Unmarshal(w.Body.Bytes(), &resp)
+		if err != nil {
+			t.Errorf("Failed to parse response: %v", err)
+		}
+		if resp.ID == "" {
+			t.Errorf("Expected non-empty ID, got empty")
+		}
+	})
+
+	t.Run("CreateProductFamily Valid With ParentID", func(t *testing.T) {
+		parentFamily := Node{
+			ID:       uuid.New().String(),
+			Name:     "Parent Family",
+			Category: ProductFamily,
+		}
+		createdParent, err := repo.CreateNode(context.Background(), parentFamily)
+		if err != nil {
+			t.Fatalf("Failed to create parent family: %v", err)
+		}
+
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("POST", "/api/v1/product-families", strings.NewReader(`{"name": "Family A", "parent_id": "`+createdParent.ID+`"}`))
+		s.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var resp ProductFamilyDTO
+		err = json.Unmarshal(w.Body.Bytes(), &resp)
+		if err != nil {
+			t.Errorf("Failed to parse response: %v", err)
+		}
+		if *resp.ParentID != createdParent.ID {
+			t.Errorf("Expected ParentID %q, got %q", createdParent.ID, *resp.ParentID)
+		}
+	})
+
+	t.Run("GetProductFamilyByID Non-existent", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/api/v1/product-families/123e4567-e89b-12d3-a456-426614174000", nil)
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusNotFound {
+			t.Errorf("Expected status 404, got %d", w.Code)
+		}
+	})
+
+	t.Run("GetProductFamilyByID Existing", func(t *testing.T) {
+		family := Node{
+			ID:       uuid.New().String(),
+			Name:     "Existing Family",
+			Category: ProductFamily,
+		}
+		createdFamily, err := repo.CreateNode(context.Background(), family)
+		if err != nil {
+			t.Fatalf("Failed to create family: %v", err)
+		}
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/api/v1/product-families/"+createdFamily.ID, nil)
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+		var resp ProductFamilyDTO
+		err = json.Unmarshal(w.Body.Bytes(), &resp)
+		if err != nil {
+			t.Errorf("Failed to parse response: %v", err)
+		}
+		if resp.ID != createdFamily.ID {
+			t.Errorf("Expected ID %q, got %q", createdFamily.ID, resp.ID)
+		}
+	})
+
+	t.Run("ListProductFamilies", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/api/v1/product-families",
+			nil)
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+	})
+
+	t.Run("DeleteProductFamily Non-existent", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("DELETE", "/api/v1/product-families/123e4567-e89b-12d3-a456-426614174000", nil)
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusNotFound {
+			t.Errorf("Expected status 404, got %d", w.Code)
+		}
+	})
+
+	t.Run("DeleteProductFamily Existing", func(t *testing.T) {
+		family := Node{
+			ID:       uuid.New().String(),
+			Name:     "Deletable Family",
+			Category: ProductFamily,
+		}
+		createdFamily, err := repo.CreateNode(context.Background(), family)
+		if err != nil {
+			t.Fatalf("Failed to create family: %v", err)
+		}
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("DELETE", "/api/v1/product-families/"+createdFamily.ID, nil)
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+	})
+
+	t.Run("UpdateProductFamily Invalid Body", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("PUT", "/api/v1/product-families/some-id", strings.NewReader(`{"name": 123}`))
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("UpdateProductFamily Non-existent", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("PUT", "/api/v1/product-families/123e4567-e89b-12d3-a456-426614174000", strings.NewReader(`{"name": "Updated Name"}`))
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusNotFound {
+			t.Errorf("Expected status 404, got %d", w.Code)
+		}
+	})
+
+	t.Run("UpdateProductFamily Invalid Parent", func(t *testing.T) {
+		family := Node{
+			ID:       uuid.New().String(),
+			Name:     "Updatable Family",
+			Category: ProductFamily,
+		}
+		createdFamily, err := repo.CreateNode(context.Background(), family)
+		if err != nil {
+			t.Fatalf("Failed to create family: %v", err)
+		}
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("PUT", "/api/v1/product-families/"+createdFamily.ID, strings.NewReader(`{"name": "Updated Family Name", "parent_id": "`+family.ID+`"}`))
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("UpdateProductFamily Existing", func(t *testing.T) {
+		family := Node{
+			ID:       uuid.New().String(),
+			Name:     "Updatable Family",
+			Category: ProductFamily,
+		}
+		createdFamily, err := repo.CreateNode(context.Background(), family)
+		if err != nil {
+			t.Fatalf("Failed to create family: %v", err)
+		}
+		newParent := Node{
+			ID:       uuid.New().String(),
+			Name:     "New Parent Family",
+			Category: ProductFamily,
+		}
+		_, err = repo.CreateNode(context.Background(), newParent)
+		if err != nil {
+			t.Fatalf("Failed to create new parent family: %v", err)
+		}
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("PUT", "/api/v1/product-families/"+createdFamily.ID, strings.NewReader(`{"name": "Updated Family Name", "parent_id": "`+newParent.ID+`"}`))
+		s.Mux.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+		var resp ProductFamilyDTO
+		err = json.Unmarshal(w.Body.Bytes(), &resp)
+		if err != nil {
+			t.Errorf("Failed to parse response: %v", err)
+		}
+		if resp.Name != "Updated Family Name" {
+			t.Errorf("Expected name 'Updated Family Name', got %q", resp.Name)
+		}
+	})
+}
+
 func TestServiceDataValidation(t *testing.T) {
 	db := testutils.SetupTestDB(t)
 	defer testutils.CleanupTestDB(t, db)
@@ -9810,6 +10023,38 @@ func TestHandlerIntegrationTests(t *testing.T) {
 	})
 
 	t.Logf("Handler integration testing completed!")
+}
+
+func TestIdentificationHelperRoutes(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+
+	repo := NewRepository(db)
+	svc := NewService(repo)
+
+	s := fuego.NewServer()
+	RegisterRoutes(s, svc)
+
+	t.Run("DeleteRelationshipsByVersionAndCategory", func(t *testing.T) {
+		prodVersion := Node{
+			ID:          uuid.NewString(),
+			Name:        "Test Product Version for Relationship Deletion",
+			Description: "A product version node for testing relationship deletion",
+			Category:    ProductVersion,
+		}
+		createdVersion, err := repo.CreateNode(context.Background(), prodVersion)
+		if err != nil {
+			t.Fatalf("Failed to create product version node: %v", err)
+		}
+
+		w := httptest.NewRecorder()
+		req := httptest.NewRequest("DELETE", "/api/v1/product-versions/"+createdVersion.ID+"/relationships/test", nil)
+		s.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+	})
 }
 
 // TestDeletionTesting - Target the deletion functions!

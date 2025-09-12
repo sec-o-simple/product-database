@@ -34,6 +34,12 @@
 						"example": "Product Description",
 						"type": "string"
 					},
+					"family_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
+						"type": "string"
+					},
 					"name": {
 						"example": "Product Name",
 						"type": "string"
@@ -51,6 +57,24 @@
 					"name",
 					"vendor_id",
 					"type"
+				],
+				"type": "object"
+			},
+			"CreateProductFamilyDTO": {
+				"description": "CreateProductFamilyDTO schema",
+				"properties": {
+					"name": {
+						"example": "Family Name",
+						"type": "string"
+					},
+					"parent_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"required": [
+					"name"
 				],
 				"type": "object"
 			},
@@ -261,6 +285,12 @@
 						"example": "Product Description",
 						"type": "string"
 					},
+					"family_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
+						"type": "string"
+					},
 					"full_name": {
 						"example": "Vendor Name - Product Name",
 						"type": "string"
@@ -390,6 +420,37 @@
 					"name",
 					"full_name",
 					"type"
+				],
+				"type": "object"
+			},
+			"ProductFamilyDTO": {
+				"description": "ProductFamilyDTO schema",
+				"properties": {
+					"id": {
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"name": {
+						"example": "Family Name",
+						"type": "string"
+					},
+					"parent_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					},
+					"path": {
+						"example": "['Parent Family', 'Family Name']",
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"id",
+					"name",
+					"path"
 				],
 				"type": "object"
 			},
@@ -572,6 +633,12 @@
 									"properties": {
 										"description": {
 											"example": "Product Description",
+											"type": "string"
+										},
+										"family_id": {
+											"description": "string schema",
+											"example": "123e4567-e89b-12d3-a456-426614174000",
+											"nullable": true,
 											"type": "string"
 										},
 										"full_name": {
@@ -813,6 +880,12 @@
 						"example": "Product Description",
 						"type": "string"
 					},
+					"family_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
+						"type": "string"
+					},
 					"name": {
 						"description": "string schema",
 						"example": "Product Name",
@@ -824,6 +897,21 @@
 						"type": "string"
 					},
 					"vendor_id": {
+						"description": "string schema",
+						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"UpdateProductFamilyDTO": {
+				"description": "UpdateProductFamilyDTO schema",
+				"properties": {
+					"name": {
+						"example": "Family Name",
+						"type": "string"
+					},
+					"parent_id": {
 						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"type": "string"
@@ -1340,6 +1428,402 @@
 					"api/v1",
 					"identification-helper",
 					"identification-helpers"
+				]
+			}
+		},
+		"/api/v1/product-families": {
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).ListProductFamilies`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns a list of all product families in the system",
+				"operationId": "GET_/api/v1/product-families",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductFamilyDTO"
+									},
+									"type": "array"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/ProductFamilyDTO"
+									},
+									"type": "array"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "List all product families",
+				"tags": [
+					"api/v1",
+					"product-families"
+				]
+			},
+			"post": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).CreateProductFamily`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nCreates a new product family",
+				"operationId": "POST_/api/v1/product-families",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateProductFamilyDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.CreateProductFamilyDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductFamilyDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductFamilyDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Create product family",
+				"tags": [
+					"api/v1",
+					"product-families"
+				]
+			}
+		},
+		"/api/v1/product-families/{id}": {
+			"delete": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).DeleteProductFamily`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nRemoves a product family from the system",
+				"operationId": "DELETE_/api/v1/product-families/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Delete product family",
+				"tags": [
+					"api/v1",
+					"product-families"
+				]
+			},
+			"get": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).GetProductFamily`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nReturns details for a specific product family",
+				"operationId": "GET_/api/v1/product-families/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductFamilyDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductFamilyDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Get product family by ID",
+				"tags": [
+					"api/v1",
+					"product-families"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`product-database-api/internal.(*Handler).UpdateProductFamily`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\nUpdates an existing product family's information",
+				"operationId": "PUT_/api/v1/product-families/:id",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateProductFamilyDTO"
+							}
+						}
+					},
+					"description": "Request body for internal.UpdateProductFamilyDTO",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductFamilyDTO"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/ProductFamilyDTO"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Update product family",
+				"tags": [
+					"api/v1",
+					"product-families"
 				]
 			}
 		},
@@ -3214,6 +3698,9 @@
 		},
 		{
 			"name": "identification-helpers"
+		},
+		{
+			"name": "product-families"
 		},
 		{
 			"name": "product-versions"

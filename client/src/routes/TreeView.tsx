@@ -1,3 +1,4 @@
+import { DashboardTabs } from '@/components/DashboardTabs'
 import { ProductProps } from '@/components/layout/product/CreateEditProduct'
 import { VersionProps } from '@/components/layout/version/CreateEditVersion'
 import {
@@ -17,7 +18,7 @@ import {
 import { SyntheticEvent, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Product from './Product'
-import { DashboardTabs, useProductListQuery } from './Products'
+import { useProductListQuery } from './Products'
 import Vendor from './Vendor'
 import { useVendorListQuery, VendorProps } from './Vendors'
 import Version from './Version'
@@ -126,7 +127,7 @@ export function determineIdsToSet(
   }
 
   const idsToSet = getSelectedIdsAndChildrenIds(items, newIds)
-  
+
   // For each selected item, check if all siblings are also selected
   // and add parent if so, recursively up the tree
   const checkAndAddParents = (nodeId: string) => {
@@ -142,7 +143,7 @@ export function determineIdsToSet(
       }
     }
   }
-  
+
   // Check parents for all newly selected items
   const addedIds = newIds.filter((id) => !currentIds.includes(id))
   addedIds.forEach(checkAndAddParents)

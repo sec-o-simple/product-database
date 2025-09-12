@@ -2,12 +2,18 @@ import client from '@/client'
 import { Input, Textarea } from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { useProductQuery } from '@/routes/Product'
+import {
+  ProductFamilyChains,
+  useProductFamilyListQuery,
+} from '@/routes/ProductFamilies'
 import { useErrorLocalization } from '@/utils/useErrorLocalization'
 import useRouter from '@/utils/useRouter'
 import { faAdd } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Alert,
+  Autocomplete,
+  AutocompleteItem,
   Button,
   Modal,
   ModalBody,
@@ -32,6 +38,7 @@ export type ProductProps = {
   description: string | undefined
   type: string
   vendor_id: string
+  family_id: string | undefined | null
 }
 
 export function useProductMutation({
@@ -73,6 +80,7 @@ export function useProductMutation({
       description: product.description,
       type: product.type,
       vendor_id: product.vendor_id,
+      family_id: product.family_id,
     }
 
     if (isCreateForm) {
@@ -117,6 +125,7 @@ export default function CreateEditProduct() {
   const { productId, vendorId } = useParams()
   const isCreateForm = !productId
 
+  const { data: families } = useProductFamilyListQuery()
   const { data: previousData, isLoading } = useProductQuery(productId || '')
 
   const [product, setProduct] = useState<ProductProps>({
@@ -125,6 +134,7 @@ export default function CreateEditProduct() {
     description: '',
     type: 'software',
     vendor_id: vendorId || '',
+    family_id: undefined,
   })
 
   useEffect(() => {
@@ -135,6 +145,7 @@ export default function CreateEditProduct() {
         description: previousData.description || '',
         type: previousData.type,
         vendor_id: previousData.vendor_id || '',
+        family_id: previousData.family_id,
       })
     }
   }, [previousData])
@@ -145,6 +156,7 @@ export default function CreateEditProduct() {
       description: '',
       type: 'software',
       vendor_id: vendorId || '',
+      family_id: undefined,
     })
 
     navigate(location.state.returnTo ?? `/products/${product.id}`, {
@@ -198,7 +210,10 @@ export default function CreateEditProduct() {
             placeholder="Select a type"
             className="w-full"
             selectedKeys={[product.type]}
-            onChange={(e) => setProduct({ ...product, type: e.target.value })}
+            onSelectionChange={(keys) => {
+              const selectedKey = Array.from(keys)[0] as string
+              setProduct({ ...product, type: selectedKey })
+            }}
           >
             <SelectItem key="firmware">Firmware</SelectItem>
             <SelectItem key="software">Software</SelectItem>
@@ -228,6 +243,40 @@ export default function CreateEditProduct() {
             }
             type="text"
           />
+
+          <Autocomplete
+            labelPlacement="outside"
+            label={t('form.fields.productFamily')}
+            selectedKey={product.family_id || ''}
+            variant="bordered"
+            inputProps={{
+              classNames: {
+                inputWrapper: 'border-1 shadow-none',
+              },
+            }}
+            onSelectionChange={(key) => {
+              if (key === null) {
+                setProduct({ ...product, family_id: undefined })
+                return
+              }
+
+              setProduct({
+                ...product,
+                family_id: key === '' ? undefined : key?.toString(),
+              })
+            }}
+          >
+            {families
+              // .filter((item) => item.id !== family.id)
+              .map((item) => (
+                <AutocompleteItem
+                  key={item.id.toString()}
+                  textValue={item.name}
+                >
+                  <ProductFamilyChains item={item} />
+                </AutocompleteItem>
+              ))}
+          </Autocomplete>
         </ModalBody>
         <ModalFooter>
           <Button variant="light" onPress={onClose}>

@@ -14,10 +14,12 @@ export function Attribute({
   label,
   value,
   href = '',
+  onClick,
 }: {
   label: string
-  value: string | number
+  value: string | number | React.ReactNode
   href?: string
+  onClick?: () => void
 }) {
   const navigate = useNavigate()
 
@@ -29,16 +31,21 @@ export function Attribute({
       <div
         className={cn(
           'group bg-gray-50 border border-default-200 rounded-lg p-2 space-y-2',
-          href ? 'cursor-pointer hover:bg-gray-200 hover:transition-all' : '',
+          href || onClick
+            ? 'cursor-pointer hover:bg-gray-200 hover:transition-all'
+            : '',
         )}
         onClick={() => {
           if (href) navigate(href)
+          if (onClick) onClick()
         }}
       >
         <div
           className={cn(
             'rounded-lg px-2 py-1 space-y-2',
-            href ? 'cursor-pointer group-hover:underline text-primary' : '',
+            href || onClick
+              ? 'cursor-pointer group-hover:underline text-primary'
+              : '',
           )}
         >
           <p>{value}</p>

@@ -1,4 +1,5 @@
 import client from '@/client'
+import { DashboardTabs } from '@/components/DashboardTabs'
 import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import LatestChip from '@/components/forms/Latest'
@@ -8,8 +9,7 @@ import useRouter from '@/utils/useRouter'
 import { faEdit, faFileExport } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Button } from '@heroui/button'
-import { addToast, Chip, Divider } from '@heroui/react'
-import { Tab, Tabs } from '@heroui/tabs'
+import { addToast, Chip } from '@heroui/react'
 import { createContext, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DeleteProduct } from './Product'
@@ -43,44 +43,6 @@ export function useVendorProductListQuery(vendorId: string) {
 
   useRefetchQuery(request)
   return request
-}
-
-export function DashboardTabs({
-  selectedKey,
-  endContent,
-}: {
-  selectedKey: string
-  endContent?: React.ReactNode
-}) {
-  const { t } = useTranslation()
-
-  return (
-    <div className="flex w-full flex-col items-center justify-between">
-      <div className="mb-2 flex w-full items-center justify-between">
-        <Tabs
-          selectedKey={selectedKey}
-          className="w-full"
-          color="primary"
-          variant="light"
-        >
-          <Tab
-            key="vendors"
-            title={t('vendor.label', { count: 2 })}
-            href="/vendors"
-          />
-          <Tab
-            key="products"
-            title={t('product.label', { count: 2 })}
-            href="/products"
-          />
-          <Tab key="tree" title={t('treeView.label')} href="/tree" />
-        </Tabs>
-
-        {endContent}
-      </div>
-      <Divider />
-    </div>
-  )
 }
 
 export function ProductItem({

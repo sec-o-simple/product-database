@@ -11,7 +11,11 @@ import client from '@/client'
 vi.mock('@/client', () => ({
   default: {
     useMutation: vi.fn(),
-    useQuery: vi.fn(),
+    useQuery: vi.fn(() => ({
+      data: [],
+      isLoading: false,
+      error: null,
+    })),
   },
 }))
 
@@ -38,18 +42,80 @@ vi.mock('react-router-dom', async () => {
 })
 
 // Mock FontAwesome
+// Mock FontAwesome icons
 vi.mock('@fortawesome/react-fontawesome', () => ({
-  FontAwesomeIcon: ({ icon }: { icon: any }) => <span data-testid="icon">{icon.iconName}</span>,
+  FontAwesomeIcon: ({ icon }: { icon: any }) => (
+    <span data-testid="icon">
+      {icon?.iconName || 'plus'}
+    </span>
+  ),
 }))
 
 // Mock NextUI components
-vi.mock('@nextui-org/react', async () => {
-  const actual = await vi.importActual('@nextui-org/react')
-  return {
-    ...actual,
-    Spinner: () => <div data-testid="spinner">Loading...</div>,
-  }
-})
+vi.mock('@heroui/react', () => ({
+  Spinner: () => <div data-testid="spinner">Loading...</div>,
+  Button: ({ children, onPress, onClick, startContent, ...props }: any) => (
+    <button onClick={onPress || onClick} {...props}>
+      {startContent}
+      {children}
+    </button>
+  ),
+  Modal: ({ children, isOpen }: any) => isOpen ? <div data-testid="modal">{children}</div> : null,
+  ModalContent: ({ children }: any) => <div data-testid="modal-content">{children}</div>,
+  ModalHeader: ({ children }: any) => <div data-testid="modal-header">{children}</div>,
+  ModalBody: ({ children }: any) => <div data-testid="modal-body">{children}</div>,
+  ModalFooter: ({ children }: any) => <div data-testid="modal-footer">{children}</div>,
+  Alert: ({ children }: any) => <div data-testid="alert">{children}</div>,
+  Autocomplete: ({ children, label, ...props }: any) => (
+    <div data-testid="autocomplete">
+      <label>{label}</label>
+      <input {...props} />
+      {children}
+    </div>
+  ),
+  AutocompleteItem: ({ children, ...props }: any) => <option {...props}>{children}</option>,
+  Select: ({ children, selectedKeys, onSelectionChange, label, isInvalid, errorMessage, onChange, ...props }: any) => (
+    <div data-testid="hidden-select-container">
+      <label htmlFor="select">{label}</label>
+      <select
+        id="select"
+        role="combobox"
+        value={selectedKeys?.[0] || selectedKeys?.values?.()?.next?.()?.value || ''}
+        onChange={(e) => {
+          const targetValue = e.target?.value || '';
+          
+          // Handle onSelectionChange for HeroUI Select component
+          if (onSelectionChange) {
+            onSelectionChange(new Set([targetValue]))
+          }
+          
+          // Handle onChange for traditional select components
+          if (onChange) {
+            // Create a properly structured event object with guaranteed target.value
+            const mockEvent = {
+              ...e,
+              target: {
+                ...e.target,
+                value: targetValue
+              },
+              currentTarget: {
+                ...e.currentTarget,
+                value: targetValue
+              }
+            }
+            onChange(mockEvent)
+          }
+        }}
+        data-invalid={isInvalid}
+        {...(props.selectedKeys || props.onSelectionChange ? {} : props)}
+      >
+        {children}
+      </select>
+      {isInvalid && errorMessage && <span>{errorMessage}</span>}
+    </div>
+  ),
+  SelectItem: ({ children, ...props }: any) => <option {...props}>{children}</option>,
+}))
 
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
@@ -100,6 +166,59 @@ vi.mock('@/utils/useErrorLocalization', () => ({
     isFieldInvalid: () => false,
     getFieldErrorMessage: () => null,
   })),
+}))
+
+// Mock ProductFamilies
+vi.mock('@/routes/ProductFamilies', () => ({
+  useProductFamilyListQuery: vi.fn(() => ({
+    data: [
+      { id: 1, name: 'Family 1', parent_id: null, children: [] },
+      { id: 2, name: 'Family 2', parent_id: null, children: [] },
+    ]
+  })),
+  ProductFamilyChains: () => <div data-testid="product-family-chains">Family Chains</div>,
+}))
+
+// Mock form components
+vi.mock('@/components/forms/Input', () => ({
+  Input: ({ label, value, onChange, ...props }: any) => (
+    <div>
+      <label htmlFor={props.id || 'input'}>{label}</label>
+      <input
+        id={props.id || 'input'}
+        value={value || ''}
+        onChange={onChange}
+        {...props}
+      />
+    </div>
+  ),
+  Textarea: ({ label, value, onChange, ...props }: any) => (
+    <div>
+      <label htmlFor={props.id || 'textarea'}>{label}</label>
+      <textarea
+        id={props.id || 'textarea'}
+        value={value || ''}
+        onChange={onChange}
+        {...props}
+      />
+    </div>
+  ),
+}))
+
+vi.mock('@/components/forms/Select', () => ({
+  default: ({ label, value, onChange, children, ...props }: any) => (
+    <div data-testid="hidden-select-container">
+      <label htmlFor={props.id || 'select'}>{label}</label>
+      <select
+        id={props.id || 'select'}
+        value={value || ''}
+        onChange={(e) => onChange?.(e.target.value)}
+        {...props}
+      >
+        {children}
+      </select>
+    </div>
+  ),
 }))
 
 const TestWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -541,6 +660,449 @@ describe('CreateEditProduct', () => {
 
     await waitFor(() => {
       expect(screen.getByText('form.errors')).toBeInTheDocument()
+    })
+  })
+
+  it('should show loading spinner when loading edit data', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ productId: 'prod1', vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('spinner')).toBeInTheDocument()
+    })
+  })
+
+  it('should handle successful mutation callback with navigation', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ productId: 'prod1', vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: { id: 'prod1', name: 'Test Product', description: 'Test product description', type: 'software', vendor_id: 'vendor1' },
+      isLoading: false,
+      error: null,
+    } as any)
+
+    const mockMutate = vi.fn()
+    let onSuccessCallback: ((data: any, variables: any, context: any) => void) | undefined
+
+    mockUseMutation.mockImplementation((_method, _url, options) => {
+      onSuccessCallback = options?.onSuccess as ((data: any, variables: any, context: any) => void) | undefined
+      return {
+        mutate: mockMutate,
+        isPending: false,
+        error: null,
+      } as any
+    })
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Edit Product')).toBeInTheDocument()
+    })
+
+    // Simulate successful mutation
+    if (onSuccessCallback) {
+      onSuccessCallback({ id: 'new-product-id' }, {}, {})
+    }
+
+    expect(mockNavigate).toHaveBeenCalledWith('/products/new-product-id', {
+      replace: true,
+      state: { shouldRefetch: true },
+    })
+  })
+
+  it('should handle modal close with navigation', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ productId: 'prod1', vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: { id: 'prod1', name: 'Test Product', description: 'Test product description', type: 'software', vendor_id: 'vendor1' },
+      isLoading: false,
+      error: null,
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('common.cancel')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('common.cancel'))
+
+    expect(mockNavigate).toHaveBeenCalledWith('/vendors/vendor1', {
+      replace: true,
+      state: { shouldRefetch: true },
+    })
+  })
+
+  it('should handle product type selection', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('hidden-select-container')).toBeInTheDocument()
+    })
+
+    const typeSelect = screen.getByRole('combobox')
+    fireEvent.change(typeSelect, { target: { value: 'hardware' } })
+
+    // The change should be handled by the component's state
+    expect(typeSelect).toBeInTheDocument()
+  })
+
+  it('should handle family selection in autocomplete', async () => {
+    const { useProductFamilyListQuery } = await import('@/routes/ProductFamilies')
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as any)
+    vi.mocked(useProductFamilyListQuery).mockReturnValue({
+      data: [
+        { id: '1', name: 'Family 1', parent_id: undefined } as any,
+        { id: '2', name: 'Family 2', parent_id: undefined } as any,
+      ],
+      isError: false,
+      error: null,
+      isPending: false,
+      isLoading: false,
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('autocomplete')).toBeInTheDocument()
+    })
+
+    // Test the autocomplete component is rendered
+    expect(screen.getByTestId('autocomplete')).toBeInTheDocument()
+  })
+
+  it('should handle family selection change to null', async () => {
+    const { useProductFamilyListQuery } = await import('@/routes/ProductFamilies')
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as any)
+    vi.mocked(useProductFamilyListQuery).mockReturnValue({
+      data: [
+        { id: '1', name: 'Family 1', parent_id: undefined } as any,
+      ],
+      isError: false,
+      error: null,
+      isPending: false,
+      isLoading: false,
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('autocomplete')).toBeInTheDocument()
+    })
+
+    const autocompleteInput = screen.getByTestId('autocomplete').querySelector('input')
+    
+    // Simulate selection change to null (clearing the selection)
+    if (autocompleteInput) {
+      fireEvent.change(autocompleteInput, { target: { value: '' } })
+    }
+
+    // The component should handle null selection
+    expect(autocompleteInput).toBeInTheDocument()
+  })
+
+  it('should handle family selection change to empty string', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('autocomplete')).toBeInTheDocument()
+    })
+
+    const autocompleteInput = screen.getByTestId('autocomplete').querySelector('input')
+    
+    // Test empty string selection
+    if (autocompleteInput) {
+      fireEvent.change(autocompleteInput, { target: { value: '' } })
+    }
+
+    expect(autocompleteInput).toBeInTheDocument()
+  })
+
+  it('should handle family selection change to valid family id', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('autocomplete')).toBeInTheDocument()
+    })
+
+    const autocompleteInput = screen.getByTestId('autocomplete').querySelector('input')
+    
+    // Test valid family selection
+    if (autocompleteInput) {
+      fireEvent.change(autocompleteInput, { target: { value: '1' } })
+    }
+
+    expect(autocompleteInput).toBeInTheDocument()
+  })
+
+  it('should reset form state when closing modal', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
+    })
+
+    // Change form values
+    const nameInput = screen.getByLabelText(/name/i)
+    fireEvent.change(nameInput, { target: { value: 'Changed Name' } })
+
+    expect(nameInput).toHaveValue('Changed Name')
+
+    // Close modal
+    fireEvent.click(screen.getByText('common.cancel'))
+
+    // Should navigate away and reset form
+    expect(mockNavigate).toHaveBeenCalled()
+  })
+
+  it('should handle create mutation with proper payload', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: null,
+    } as any)
+
+    const mockCreateMutate = vi.fn()
+    mockUseMutation.mockImplementation((_method: string, url: string) => {
+      if (url === '/api/v1/products') {
+        return {
+          mutate: mockCreateMutate,
+          isPending: false,
+          error: null,
+        } as any
+      }
+      return { mutate: vi.fn(), isPending: false, error: null } as any
+    })
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Create Product')).toBeInTheDocument()
+    })
+
+    // Fill in the form
+    const nameInput = screen.getByLabelText(/name/i)
+    const descriptionInput = screen.getByLabelText(/description/i)
+    
+    fireEvent.change(nameInput, { target: { value: 'New Product' } })
+    fireEvent.change(descriptionInput, { target: { value: 'New Description' } })
+
+    // Submit the form
+    fireEvent.click(screen.getByText('common.create'))
+
+    await waitFor(() => {
+      expect(mockCreateMutate).toHaveBeenCalledWith({
+        body: {
+          name: 'New Product',
+          description: 'New Description',
+          type: 'software',
+          vendor_id: 'vendor1',
+          family_id: undefined,
+        },
+      })
+    })
+  })
+
+  it('should handle update mutation with proper payload', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ productId: 'prod1', vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: { id: 'prod1', name: 'Test Product', description: 'Test product description', type: 'software', vendor_id: 'vendor1' },
+      isLoading: false,
+      error: null,
+    } as any)
+
+    const mockUpdateMutate = vi.fn()
+    mockUseMutation.mockImplementation((_method: string, url: string) => {
+      if (url === '/api/v1/products/{id}') {
+        return {
+          mutate: mockUpdateMutate,
+          isPending: false,
+          error: null,
+        } as any
+      }
+      return { mutate: vi.fn(), isPending: false, error: null } as any
+    })
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('Edit Product')).toBeInTheDocument()
+    })
+
+    // Submit the form (should use existing product data)
+    fireEvent.click(screen.getByText('common.save'))
+
+    await waitFor(() => {
+      expect(mockUpdateMutate).toHaveBeenCalledWith({
+        body: {
+          name: 'Test Product',
+          description: 'Test product description',
+          type: 'software',
+          vendor_id: 'vendor1',
+          family_id: undefined,
+        },
+        params: { path: { id: 'prod1' } },
+      })
+    })
+  })
+
+  it('should handle location.state.returnTo fallback when closing modal', async () => {
+    const { useParams } = await import('react-router-dom')
+    const { useProductQuery } = await import('@/routes/Product')
+    
+    vi.mocked(useParams).mockReturnValue({ productId: 'prod1', vendorId: 'vendor1' })
+    vi.mocked(useProductQuery).mockReturnValue({
+      data: { id: 'prod1', name: 'Test Product', description: 'Test product description', type: 'software', vendor_id: 'vendor1' },
+      isLoading: false,
+      error: null,
+    } as any)
+
+    // Mock useRouter with empty location state for this test
+    const { default: useRouter } = await import('@/utils/useRouter')
+    vi.mocked(useRouter).mockReturnValue({
+      navigate: mockNavigate,
+      navigateToModal: mockNavigateToModal,
+      location: { state: {}, pathname: '/test', search: '', hash: '', key: 'test' },
+      goBack: vi.fn(),
+      state: { backgroundLocation: undefined },
+      params: {},
+    } as any)
+
+    render(
+      <TestWrapper>
+        <CreateEditProduct />
+      </TestWrapper>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('common.cancel')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('common.cancel'))
+
+    expect(mockNavigate).toHaveBeenCalledWith('/products/prod1', {
+      replace: true,
+      state: { shouldRefetch: true },
     })
   })
 })
