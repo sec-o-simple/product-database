@@ -2,6 +2,10 @@ import PageContainer from '@/components/forms/PageContainer'
 import { PageOutlet } from '@/components/forms/PageContent'
 import Sidebar from '@/components/forms/Sidebar'
 import { DeleteProduct, useProductQuery } from '@/routes/Product'
+import {
+  ProductFamilyChains,
+  useProductFamilyQuery,
+} from '@/routes/ProductFamilies'
 import { useVendorQuery } from '@/routes/Vendor'
 import useRouter from '@/utils/useRouter'
 import { Button } from '@heroui/button'
@@ -10,7 +14,6 @@ import { Outlet } from 'react-router-dom'
 import { TopBar } from '../TopBarLayout'
 import { Attribute } from '../vendor/VendorLayout'
 import { AddVersionButton } from '../version/CreateEditVersion'
-import { useProductFamilyQuery } from '@/routes/ProductFamilies'
 
 export default function ProductLayout() {
   const {
@@ -21,6 +24,7 @@ export default function ProductLayout() {
   const { data: product } = useProductQuery(productId || '')
   const { data: vendor } = useVendorQuery(product?.vendor_id || '')
   const { data: family } = useProductFamilyQuery(product?.family_id || '')
+  console.log('family', family)
 
   if (!product) {
     return null
@@ -60,7 +64,7 @@ export default function ProductLayout() {
             />,
             <Attribute
               label={t('form.fields.type')}
-              value={product.type || '-/-'}
+              value={t(`product.type.${product.type}`) || '-/-'}
               key="type"
             />,
             <Attribute
@@ -69,11 +73,13 @@ export default function ProductLayout() {
               value={vendor?.name || '-/-'}
               href={`/vendors/${product.vendor_id}`}
             />,
-            <Attribute
-              key="productFamily"
-              label={t('form.fields.productFamily')}
-              value={family?.path?.join('/') || '-/-'}
-            />,
+            family && (
+              <Attribute
+                key="productFamily"
+                label={t('form.fields.productFamily')}
+                value={<ProductFamilyChains item={family} />}
+              />
+            ),
           ]}
           actions={
             <div className="flex flex-row gap-2">

@@ -41,10 +41,15 @@
         "software": "Software",
         "hardware": "Hardware",
         "firmware": "Firmware"
+      },
+      "delete": {
+        "title": "Produkt löschen",
+        "text": "Sind Sie sicher, dass Sie das Produkt \"{{name}}\" löschen möchten?",
+        "success": "Produkt \"{{name}}\" wurde erfolgreich gelöscht."
       }
     },
     "version": {
-      "label": "Version", 
+      "label": "Version",
       "label_other": "Versionen",
       "label_count": "{{count}} Version",
       "label_count_other": "{{count}} Versionen"
@@ -53,7 +58,12 @@
       "label": "Produktfamilie",
       "label_other": "Produktfamilien",
       "products": "{{ count }} Produkt",
-      "products_other": "{{ count }} Produkte"
+      "products_other": "{{ count }} Produkte",
+      "delete": {
+        "title": "Produktfamilie löschen",
+        "text": "Sind Sie sicher, dass Sie die Produktfamilie \"{{name}}\" löschen möchten? Alle zugehörigen Produkte bleiben erhalten, verlieren jedoch die Zuordnung zu dieser Produktfamilie.",
+        "success": "Produktfamilie \"{{name}}\" wurde erfolgreich gelöscht."
+      }
     },
     "relationship": {
       "label": "Beziehung",

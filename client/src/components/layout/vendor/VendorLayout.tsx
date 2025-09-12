@@ -17,7 +17,7 @@ export function Attribute({
   onClick,
 }: {
   label: string
-  value: string | number
+  value: string | number | React.ReactNode
   href?: string
   onClick?: () => void
 }) {

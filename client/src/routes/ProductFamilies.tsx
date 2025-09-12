@@ -1,13 +1,16 @@
 import client from '@/client'
 import { DashboardTabs } from '@/components/DashboardTabs'
+import ConfirmButton from '@/components/forms/ConfirmButton'
 import DataGrid from '@/components/forms/DataGrid'
 import IconButton from '@/components/forms/IconButton'
 import ListItem from '@/components/forms/ListItem'
 import { CreateProductGroupButton } from '@/components/layout/productFamily/CreateEditProductFamily'
 import useRefetchQuery from '@/utils/useRefetchQuery'
 import useRouter from '@/utils/useRouter'
-import { faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export interface ProductFamily {
   id: string
@@ -88,15 +91,60 @@ export const ProductFamilyChains: React.FC<{ item: ProductFamily }> = ({
 
   return (
     <div>
-      <div className="flex gap-1" key={item.id}>
+      <div
+        className="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0.5 text-sm"
+        key={item.id}
+      >
         {pathWithoutSelf.map((parent, index) => (
-          <p key={`${item.id}-${index}`} className="text-default-400">
-            {parent} /
-          </p>
+          <span
+            key={`${item.id}-${index}`}
+            className="break-words text-gray-500 opacity-70 after:ml-1 after:content-['/'] last:after:content-none"
+          >
+            {parent}
+          </span>
         ))}
-        <p className="font-bold">{item.name}</p>
+        <span className="font-bold break-words">{item.name}</span>
       </div>
     </div>
+  )
+}
+
+export function DeleteFamily({
+  family,
+  isIconButton,
+}: {
+  family: ProductFamily
+  isIconButton?: boolean
+}) {
+  const mutation = client.useMutation('delete', '/api/v1/product-families/{id}')
+  const { navigate } = useRouter()
+  const { t } = useTranslation()
+
+  return (
+    <ConfirmButton
+      isIconOnly={isIconButton}
+      variant={isIconButton ? 'light' : 'solid'}
+      radius={isIconButton ? 'full' : 'md'}
+      color="danger"
+      confirmTitle={t('productFamily.delete.title')}
+      confirmText={t('productFamily.delete.text', { name: family.name })}
+      onConfirm={() => {
+        mutation.mutate({
+          params: { path: { id: family.id?.toString() ?? '' } },
+        })
+
+        navigate('/product-families/', {
+          state: {
+            shouldRefetch: true,
+            message: t('productFamily.delete.success', { name: family.name }),
+            type: 'success',
+          },
+        })
+      }}
+    >
+      <FontAwesomeIcon icon={faTrash} />
+      {!isIconButton && t('common.delete')}
+    </ConfirmButton>
   )
 }
 
@@ -126,6 +174,8 @@ export function ProductFamilyItem({
               handleOnActionClick(`/product-families/${productFamily.id}/edit`)
             }
           />
+
+          <DeleteFamily family={productFamily} isIconButton />
         </div>
       }
     />

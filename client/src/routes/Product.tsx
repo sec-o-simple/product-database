@@ -54,8 +54,8 @@ export function DeleteProduct({
       variant={isIconButton ? 'light' : 'solid'}
       radius={isIconButton ? 'full' : 'md'}
       color="danger"
-      confirmTitle="Delete Product"
-      confirmText={`Are you sure you want to delete the product "${product.name}"? This action cannot be undone.`}
+      confirmTitle={t('product.delete.title')}
+      confirmText={t('product.delete.text', { name: product.name })}
       onConfirm={() => {
         mutation.mutate({
           params: { path: { id: product.id?.toString() ?? '' } },
@@ -64,7 +64,7 @@ export function DeleteProduct({
         navigate(`/vendors/${product.vendor_id}`, {
           state: {
             shouldRefetch: true,
-            message: `Product "${product.name}" has been deleted successfully.`,
+            message: t('product.delete.success', { name: product.name }),
             type: 'success',
           },
         })
