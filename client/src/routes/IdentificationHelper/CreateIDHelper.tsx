@@ -223,7 +223,10 @@ function HashComponent({
       </div>
 
       {data.file_hashes.map((fileHash, fileIndex) => (
-        <div key={fileIndex} className="rounded-md border p-4">
+        <div
+          key={fileIndex}
+          className="rounded-md border border-neutral-200 p-4"
+        >
           <div className="mb-3 flex items-center gap-2">
             <Input
               type="text"
@@ -632,7 +635,10 @@ export function renderCreateModeDescription(
   t: (key: string, options?: Record<string, unknown>) => string,
 ): { shouldRender: boolean; description: string | null } {
   const shouldRender = shouldShowCreateModeDescription(selectedType, editData)
-  const description = shouldRender && selectedType ? getCreateModeDescription(selectedType, t) : null
+  const description =
+    shouldRender && selectedType
+      ? getCreateModeDescription(selectedType, t)
+      : null
   return { shouldRender, description }
 }
 
