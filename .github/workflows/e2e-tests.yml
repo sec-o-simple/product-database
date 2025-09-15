@@ -58,6 +58,7 @@ jobs:
           spec: tests/e2e/**/*.cy.js
           wait-on: 'http://localhost:4173'
           wait-on-timeout: 120
+          working-directory: client
         env:
           CYPRESS_baseUrl: http://localhost:4173
       
