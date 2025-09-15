@@ -14440,3 +14440,819 @@ func TestAdvancedServiceTesting(t *testing.T) {
 		}
 	})
 }
+
+func TestListProductVersionsHandler(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+
+	t.Run("SuccessfulListProductVersions", func(t *testing.T) {
+		// Create test vendor
+		vendorData := CreateVendorDTO{
+			Name:        "Test Vendor for Versions",
+			Description: "Test Description",
+		}
+		vendorJSON, _ := json.Marshal(vendorData)
+		req := httptest.NewRequest("POST", "/api/v1/vendors", bytes.NewBuffer(vendorJSON))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var vendor VendorDTO
+		json.Unmarshal(w.Body.Bytes(), &vendor)
+
+		// Create test product
+		productData := CreateProductDTO{
+			Name:        "Test Product for Versions",
+			Description: "Test Description",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		productJSON, _ := json.Marshal(productData)
+		req = httptest.NewRequest("POST", "/api/v1/products", bytes.NewBuffer(productJSON))
+		req.Header.Set("Content-Type", "application/json")
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var product ProductDTO
+		json.Unmarshal(w.Body.Bytes(), &product)
+
+		// Create multiple product versions
+		version1Data := CreateProductVersionDTO{
+			Version:   "1.0.0",
+			ProductID: product.ID,
+		}
+		version1JSON, _ := json.Marshal(version1Data)
+		req = httptest.NewRequest("POST", "/api/v1/product-versions", bytes.NewBuffer(version1JSON))
+		req.Header.Set("Content-Type", "application/json")
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("Expected status 200, got %d", w.Code)
+		}
+
+		version2Data := CreateProductVersionDTO{
+			Version:   "2.0.0",
+			ProductID: product.ID,
+		}
+		version2JSON, _ := json.Marshal(version2Data)
+		req = httptest.NewRequest("POST", "/api/v1/product-versions", bytes.NewBuffer(version2JSON))
+		req.Header.Set("Content-Type", "application/json")
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("Expected status 200, got %d", w.Code)
+		}
+
+		// Test ListProductVersions
+		req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product.ID), nil)
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("Expected status 200, got %d", w.Code)
+		}
+
+		var versions []ProductVersionDTO
+		err := json.Unmarshal(w.Body.Bytes(), &versions)
+		if err != nil {
+			t.Fatalf("Failed to unmarshal response: %v", err)
+		}
+
+		if len(versions) != 2 {
+			t.Errorf("Expected 2 versions, got %d", len(versions))
+		}
+
+		// Verify version details
+		versionNames := make(map[string]bool)
+		for _, v := range versions {
+			versionNames[v.Name] = true
+			if v.ProductID == nil || *v.ProductID != product.ID {
+				t.Errorf("Expected product ID %s, got %s", product.ID, *v.ProductID)
+			}
+		}
+
+		if !versionNames["1.0.0"] || !versionNames["2.0.0"] {
+			t.Error("Expected versions 1.0.0 and 2.0.0 to be present")
+		}
+	})
+
+	t.Run("NonExistentProduct", func(t *testing.T) {
+		nonExistentID := uuid.New().String()
+		req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", nonExistentID), nil)
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusNotFound {
+			t.Errorf("Expected status 404, got %d", w.Code)
+		}
+	})
+
+	t.Run("InvalidProductID", func(t *testing.T) {
+		invalidID := "invalid-uuid"
+		req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", invalidID), nil)
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusBadRequest && w.Code != http.StatusNotFound {
+			t.Errorf("Expected status 400 or 404, got %d", w.Code)
+		}
+	})
+
+	t.Run("EmptyProductVersionList", func(t *testing.T) {
+		// Create vendor and product without versions
+		vendorData := CreateVendorDTO{
+			Name:        "Empty Versions Vendor",
+			Description: "Test Description",
+		}
+		vendorJSON, _ := json.Marshal(vendorData)
+		req := httptest.NewRequest("POST", "/api/v1/vendors", bytes.NewBuffer(vendorJSON))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var vendor VendorDTO
+		json.Unmarshal(w.Body.Bytes(), &vendor)
+
+		productData := CreateProductDTO{
+			Name:        "Empty Versions Product",
+			Description: "Test Description",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		productJSON, _ := json.Marshal(productData)
+		req = httptest.NewRequest("POST", "/api/v1/products", bytes.NewBuffer(productJSON))
+		req.Header.Set("Content-Type", "application/json")
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var product ProductDTO
+		json.Unmarshal(w.Body.Bytes(), &product)
+
+		// Test ListProductVersions for product with no versions
+		req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product.ID), nil)
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var versions []ProductVersionDTO
+		err := json.Unmarshal(w.Body.Bytes(), &versions)
+		if err != nil {
+			t.Fatalf("Failed to unmarshal response: %v", err)
+		}
+
+		if len(versions) != 0 {
+			t.Errorf("Expected 0 versions, got %d", len(versions))
+		}
+	})
+
+	t.Run("MalformedURL", func(t *testing.T) {
+		// Test with missing product ID (double slash)
+		req := httptest.NewRequest("GET", "/api/v1/products//versions", nil)
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		// Router redirects double slashes to single slash (301), which is acceptable behavior
+		if w.Code != http.StatusNotFound && w.Code != http.StatusBadRequest && w.Code != http.StatusMovedPermanently {
+			t.Errorf("Expected status 301, 404 or 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("ContentTypeValidation", func(t *testing.T) {
+		// Create test data
+		vendorData := CreateVendorDTO{
+			Name:        "Content Type Test Vendor",
+			Description: "Test Description",
+		}
+		vendorJSON, _ := json.Marshal(vendorData)
+		req := httptest.NewRequest("POST", "/api/v1/vendors", bytes.NewBuffer(vendorJSON))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var vendor VendorDTO
+		json.Unmarshal(w.Body.Bytes(), &vendor)
+
+		productData := CreateProductDTO{
+			Name:        "Content Type Test Product",
+			Description: "Test Description",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		productJSON, _ := json.Marshal(productData)
+		req = httptest.NewRequest("POST", "/api/v1/products", bytes.NewBuffer(productJSON))
+		req.Header.Set("Content-Type", "application/json")
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var product ProductDTO
+		json.Unmarshal(w.Body.Bytes(), &product)
+
+		// Test with different content types (shouldn't matter for GET request)
+		req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product.ID), nil)
+		req.Header.Set("Content-Type", "text/plain")
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		// Verify response content type
+		contentType := w.Header().Get("Content-Type")
+		if !strings.Contains(contentType, "application/json") {
+			t.Errorf("Expected JSON content type, got %s", contentType)
+		}
+	})
+}
+
+func TestListProductVersionsServiceLayer(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	ctx := context.Background()
+
+	t.Run("ServiceLayerDirectTest", func(t *testing.T) {
+		// Create test vendor
+		vendorDTO := CreateVendorDTO{
+			Name:        "Service Test Vendor",
+			Description: "Test Description",
+		}
+		vendor, err := svc.CreateVendor(ctx, vendorDTO)
+		if err != nil {
+			t.Fatalf("CreateVendor failed: %v", err)
+		}
+
+		// Create test product
+		productDTO := CreateProductDTO{
+			Name:        "Service Test Product",
+			Description: "Test Description",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		product, err := svc.CreateProduct(ctx, productDTO)
+		if err != nil {
+			t.Fatalf("CreateProduct failed: %v", err)
+		}
+
+		// Create multiple versions
+		versionDTOs := []CreateProductVersionDTO{
+			{Version: "1.0.0", ProductID: product.ID},
+			{Version: "1.1.0", ProductID: product.ID},
+			{Version: "2.0.0", ProductID: product.ID},
+		}
+
+		for _, versionDTO := range versionDTOs {
+			_, err := svc.CreateProductVersion(ctx, versionDTO)
+			if err != nil {
+				t.Fatalf("CreateProductVersion failed: %v", err)
+			}
+		}
+
+		// Test ListProductVersions
+		versions, err := svc.ListProductVersions(ctx, product.ID)
+		if err != nil {
+			t.Fatalf("ListProductVersions failed: %v", err)
+		}
+
+		if len(versions) != 3 {
+			t.Errorf("Expected 3 versions, got %d", len(versions))
+		}
+
+		// Verify all versions are for the correct product
+		for _, version := range versions {
+			if version.ProductID == nil || *version.ProductID != product.ID {
+				t.Errorf("Expected product ID %s, got %s", product.ID, *version.ProductID)
+			}
+		}
+	})
+
+	t.Run("NonExistentProductService", func(t *testing.T) {
+		nonExistentID := uuid.New().String()
+		versions, err := svc.ListProductVersions(ctx, nonExistentID)
+
+		// This might return empty list or error depending on implementation
+		if err != nil {
+			// Error is acceptable for non-existent product
+			t.Logf("Expected error for non-existent product: %v", err)
+		} else if len(versions) != 0 {
+			t.Errorf("Expected empty list for non-existent product, got %d versions", len(versions))
+		}
+	})
+
+	t.Run("EmptyProductIDService", func(t *testing.T) {
+		versions, err := svc.ListProductVersions(ctx, "")
+
+		if err == nil && len(versions) > 0 {
+			t.Error("Expected error or empty list for empty product ID")
+		}
+	})
+}
+
+func TestListProductVersionsEdgeCases(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+
+	t.Run("SpecialCharactersInProductID", func(t *testing.T) {
+		// Only test valid URL-safe special characters that don't require encoding
+		specialIDs := []string{
+			"product-with-dashes",
+			"product_with_underscores",
+			"product.with.dots",
+			"product123numbers",
+		}
+
+		for _, specialID := range specialIDs {
+			req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", specialID), nil)
+			w := httptest.NewRecorder()
+			app.Mux.ServeHTTP(w, req)
+
+			// Should return 404 for non-existent IDs
+			if w.Code != http.StatusNotFound {
+				t.Errorf("For ID '%s', expected status 404, got %d", specialID, w.Code)
+			}
+		}
+	})
+
+	t.Run("VeryLongProductID", func(t *testing.T) {
+		longID := strings.Repeat("a", 1000)
+		req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", longID), nil)
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusNotFound && w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 404 or 400 for very long ID, got %d", w.Code)
+		}
+	})
+
+	t.Run("ProductWithManyVersions", func(t *testing.T) {
+		// Create vendor and product
+		vendorData := CreateVendorDTO{
+			Name:        "Many Versions Vendor",
+			Description: "Test Description",
+		}
+		vendorJSON, _ := json.Marshal(vendorData)
+		req := httptest.NewRequest("POST", "/api/v1/vendors", bytes.NewBuffer(vendorJSON))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var vendor VendorDTO
+		json.Unmarshal(w.Body.Bytes(), &vendor)
+
+		productData := CreateProductDTO{
+			Name:        "Many Versions Product",
+			Description: "Test Description",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		productJSON, _ := json.Marshal(productData)
+		req = httptest.NewRequest("POST", "/api/v1/products", bytes.NewBuffer(productJSON))
+		req.Header.Set("Content-Type", "application/json")
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var product ProductDTO
+		json.Unmarshal(w.Body.Bytes(), &product)
+
+		// Create many versions
+		expectedVersionCount := 10
+		for i := 1; i <= expectedVersionCount; i++ {
+			versionData := CreateProductVersionDTO{
+				Version:   fmt.Sprintf("%d.0.0", i),
+				ProductID: product.ID,
+			}
+			versionJSON, _ := json.Marshal(versionData)
+			req = httptest.NewRequest("POST", "/api/v1/product-versions", bytes.NewBuffer(versionJSON))
+			req.Header.Set("Content-Type", "application/json")
+			w = httptest.NewRecorder()
+			app.Mux.ServeHTTP(w, req)
+
+			if w.Code != http.StatusOK {
+				t.Fatalf("Failed to create version %d: status %d", i, w.Code)
+			}
+		}
+
+		// Test ListProductVersions
+		req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product.ID), nil)
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("Expected status 200, got %d", w.Code)
+		}
+
+		var versions []ProductVersionDTO
+		err := json.Unmarshal(w.Body.Bytes(), &versions)
+		if err != nil {
+			t.Fatalf("Failed to unmarshal response: %v", err)
+		}
+
+		if len(versions) != expectedVersionCount {
+			t.Errorf("Expected %d versions, got %d", expectedVersionCount, len(versions))
+		}
+	})
+}
+
+func TestListProductVersionsResponseFormat(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+
+	// Create test data
+	vendorData := CreateVendorDTO{
+		Name:        "Response Format Test Vendor",
+		Description: "Test Description",
+	}
+	vendorJSON, _ := json.Marshal(vendorData)
+	req := httptest.NewRequest("POST", "/api/v1/vendors", bytes.NewBuffer(vendorJSON))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	var vendor VendorDTO
+	json.Unmarshal(w.Body.Bytes(), &vendor)
+
+	productData := CreateProductDTO{
+		Name:        "Response Format Test Product",
+		Description: "Test Description",
+		VendorID:    vendor.ID,
+		Type:        "software",
+	}
+	productJSON, _ := json.Marshal(productData)
+	req = httptest.NewRequest("POST", "/api/v1/products", bytes.NewBuffer(productJSON))
+	req.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	var product ProductDTO
+	json.Unmarshal(w.Body.Bytes(), &product)
+
+	versionData := CreateProductVersionDTO{
+		Version:   "1.0.0",
+		ProductID: product.ID,
+	}
+	versionJSON, _ := json.Marshal(versionData)
+	req = httptest.NewRequest("POST", "/api/v1/product-versions", bytes.NewBuffer(versionJSON))
+	req.Header.Set("Content-Type", "application/json")
+	w = httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	t.Run("ValidJSONResponse", func(t *testing.T) {
+		req := httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product.ID), nil)
+		w := httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("Expected status 200, got %d", w.Code)
+		}
+
+		// Verify valid JSON
+		var versions []ProductVersionDTO
+		err := json.Unmarshal(w.Body.Bytes(), &versions)
+		if err != nil {
+			t.Fatalf("Response is not valid JSON: %v", err)
+		}
+
+		// Verify structure
+		if len(versions) > 0 {
+			version := versions[0]
+			if version.ID == "" {
+				t.Error("Version ID should not be empty")
+			}
+			if version.Name == "" {
+				t.Error("Version name should not be empty")
+			}
+			if version.ProductID == nil || *version.ProductID != product.ID {
+				t.Errorf("Expected product ID not returned, got %s", *version.ProductID)
+			}
+		}
+	})
+
+	t.Run("EmptyArrayForNoVersions", func(t *testing.T) {
+		// Create product without versions
+		productData2 := CreateProductDTO{
+			Name:        "No Versions Product",
+			Description: "Test Description",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		productJSON2, _ := json.Marshal(productData2)
+		req = httptest.NewRequest("POST", "/api/v1/products", bytes.NewBuffer(productJSON2))
+		req.Header.Set("Content-Type", "application/json")
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		var product2 ProductDTO
+		json.Unmarshal(w.Body.Bytes(), &product2)
+
+		req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product2.ID), nil)
+		w = httptest.NewRecorder()
+		app.Mux.ServeHTTP(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Fatalf("Expected status 200, got %d", w.Code)
+		}
+
+		var versions []ProductVersionDTO
+		err := json.Unmarshal(w.Body.Bytes(), &versions)
+		if err != nil {
+			t.Fatalf("Response is not valid JSON: %v", err)
+		}
+
+		if len(versions) != 0 {
+			t.Errorf("Expected empty array, got %d versions", len(versions))
+		}
+
+		// Verify it's actually an array, not null
+		responseBody := strings.TrimSpace(w.Body.String())
+		if responseBody != "[]" {
+			t.Errorf("Expected '[]', got '%s'", responseBody)
+		}
+	})
+}
+
+// newTestApp creates a fuego server with routes registered for testing
+func newTestApp(t *testing.T) *fuego.Server {
+	t.Helper()
+	db := testutils.SetupTestDB(t)
+	// Cleanup happens via t.Cleanup within SetupTestDB
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+	return app
+}
+
+func TestCreateVendor_InvalidJSON(t *testing.T) {
+	app := newTestApp(t)
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/vendors", bytes.NewBufferString("{invalid"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestCreateProduct_InvalidJSON(t *testing.T) {
+	app := newTestApp(t)
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/products", bytes.NewBufferString("{invalid"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestCreateProductVersion_InvalidJSON(t *testing.T) {
+	app := newTestApp(t)
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/product-versions", bytes.NewBufferString("{invalid"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestCreateRelationship_InvalidJSON(t *testing.T) {
+	app := newTestApp(t)
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/relationships", bytes.NewBufferString("{invalid"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestUpdateRelationship_InvalidJSON(t *testing.T) {
+	app := newTestApp(t)
+	req := httptest.NewRequest(http.MethodPut, "/api/v1/relationships", bytes.NewBufferString("{invalid"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestCreateIdentificationHelper_InvalidJSON(t *testing.T) {
+	app := newTestApp(t)
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/identification-helper", bytes.NewBufferString("{invalid"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestUpdateProduct_InvalidJSON(t *testing.T) {
+	app := newTestApp(t)
+	// ID value isn't validated before body parsing, so any value is fine for this test
+	req := httptest.NewRequest(http.MethodPut, "/api/v1/products/some-id", bytes.NewBufferString("{invalid"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestUpdateIdentificationHelper_InvalidJSON(t *testing.T) {
+	app := newTestApp(t)
+	req := httptest.NewRequest(http.MethodPut, "/api/v1/identification-helper/some-id", bytes.NewBufferString("{invalid"))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func newTestAppNoSeed(t *testing.T) *fuego.Server {
+	t.Helper()
+	db := testutils.SetupTestDB(t)
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+	return app
+}
+
+func TestListProductVersions_NotFound(t *testing.T) {
+	app := newTestAppNoSeed(t)
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/products/non-existent-id/versions", nil)
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestGetProductVersion_NotFound(t *testing.T) {
+	app := newTestAppNoSeed(t)
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/product-versions/non-existent-id", nil)
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestGetRelationship_NotFound(t *testing.T) {
+	app := newTestAppNoSeed(t)
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/relationships/non-existent-id", nil)
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestDeleteRelationshipsByVersionAndCategory_NotFound(t *testing.T) {
+	app := newTestAppNoSeed(t)
+	req := httptest.NewRequest(http.MethodDelete, "/api/v1/product-versions/non-existent-id/relationships/bundled_with", nil)
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+// Helper to create vendor/product and optional versions for export tests
+func seedExportData(t *testing.T, svc *Service, withSecondProduct bool) (string, []string) {
+	ctx := context.Background()
+	vendor, err := svc.CreateVendor(ctx, CreateVendorDTO{Name: "Export Vendor", Description: "Vendor"})
+	if err != nil {
+		t.Fatalf("CreateVendor failed: %v", err)
+	}
+	product, err := svc.CreateProduct(ctx, CreateProductDTO{Name: "Export Product 1", VendorID: vendor.ID, Type: "software"})
+	if err != nil {
+		t.Fatalf("CreateProduct failed: %v", err)
+	}
+	ids := []string{product.ID}
+	if withSecondProduct {
+		product2, err := svc.CreateProduct(ctx, CreateProductDTO{Name: "Export Product 2", VendorID: vendor.ID, Type: "software"})
+		if err != nil {
+			t.Fatalf("CreateProduct 2 failed: %v", err)
+		}
+		ids = append(ids, product2.ID)
+	}
+	return vendor.ID, ids
+}
+
+func TestExportProductTreeHandler_Basic(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+
+	_, productIDs := seedExportData(t, svc, false)
+	body := ExportRequestDTO{ProductIDs: productIDs}
+	b, _ := json.Marshal(body)
+	req := httptest.NewRequest("POST", "/api/v1/products/export", bytes.NewBuffer(b))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		v := w.Body.String()
+		if w.Code == http.StatusBadRequest && v == "{}" { // allow empty export edge
+			return
+		}
+		t.Fatalf("expected 200 got %d body=%s", w.Code, v)
+	}
+	var result map[string]any
+	if err := json.Unmarshal(w.Body.Bytes(), &result); err != nil {
+		// Some implementations might return empty object
+		if w.Body.String() != "{}" {
+			t.Fatalf("invalid JSON: %v body=%s", err, w.Body.String())
+		}
+	}
+}
+
+func TestExportProductTreeHandler_Multiple(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+
+	_, productIDs := seedExportData(t, svc, true)
+	body := ExportRequestDTO{ProductIDs: productIDs}
+	b, _ := json.Marshal(body)
+	req := httptest.NewRequest("POST", "/api/v1/products/export", bytes.NewBuffer(b))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200 got %d body=%s", w.Code, w.Body.String())
+	}
+}
+
+func TestExportProductTreeHandler_EmptyIDs(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+
+	body := ExportRequestDTO{ProductIDs: []string{}}
+	b, _ := json.Marshal(body)
+	req := httptest.NewRequest("POST", "/api/v1/products/export", bytes.NewBuffer(b))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	// Accept 200 (empty export) or 400 depending on validation
+	if w.Code != http.StatusOK && w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 200 or 400 got %d", w.Code)
+	}
+}
+
+func TestExportProductTreeHandler_InvalidJSON(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	app := fuego.NewServer()
+	RegisterRoutes(app, svc)
+
+	req := httptest.NewRequest("POST", "/api/v1/products/export", bytes.NewBuffer([]byte("{invalid")))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400 got %d", w.Code)
+	}
+}

@@ -124,7 +124,10 @@ func (h *Handler) ListProductVersions(c fuego.ContextNoBody) ([]ProductVersionDT
 	if err != nil {
 		return nil, err
 	}
-
+	// Normalize nil slice to empty slice so JSON encoder produces [] instead of null
+	if versions == nil {
+		versions = []ProductVersionDTO{}
+	}
 	return versions, nil
 }
 

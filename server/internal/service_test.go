@@ -850,6 +850,243 @@ func TestService(t *testing.T) {
 		}
 	})
 
+	t.Run("ExportCSAFProductTree_RelationshipExport", func(t *testing.T) {
+		// Create isolated test environment
+		isolatedDB := testutils.SetupTestDB(t)
+		defer testutils.CleanupTestDB(t, isolatedDB)
+
+		isolatedRepo := NewRepository(isolatedDB)
+		isolatedService := NewService(isolatedRepo)
+
+		// Create vendors
+		vendor1 := testutils.CreateTestVendor(t, isolatedDB, "Vendor A", "First vendor")
+		vendor2 := testutils.CreateTestVendor(t, isolatedDB, "Vendor B", "Second vendor")
+
+		// Create products
+		product1DTO := CreateProductDTO{
+			Name:        "Product 1",
+			Description: "First product",
+			VendorID:    vendor1.ID,
+			Type:        "software",
+		}
+		product1, err := isolatedService.CreateProduct(ctx, product1DTO)
+		testutils.AssertNoError(t, err, "Should create product 1")
+
+		product2DTO := CreateProductDTO{
+			Name:        "Product 2",
+			Description: "Second product",
+			VendorID:    vendor2.ID,
+			Type:        "software",
+		}
+		product2, err := isolatedService.CreateProduct(ctx, product2DTO)
+		testutils.AssertNoError(t, err, "Should create product 2")
+
+		// Create product versions
+		version1DTO := CreateProductVersionDTO{
+			Version:   "1.0.0",
+			ProductID: product1.ID,
+		}
+		version1, err := isolatedService.CreateProductVersion(ctx, version1DTO)
+		testutils.AssertNoError(t, err, "Should create version 1")
+
+		version2DTO := CreateProductVersionDTO{
+			Version:   "2.0.0",
+			ProductID: product2.ID,
+		}
+		version2, err := isolatedService.CreateProductVersion(ctx, version2DTO)
+		testutils.AssertNoError(t, err, "Should create version 2")
+
+		// Create relationships between versions
+		relationshipDTO := CreateRelationshipDTO{
+			Category:      "depends_on",
+			SourceNodeIDs: []string{version1.ID},
+			TargetNodeIDs: []string{version2.ID},
+		}
+		err = isolatedService.CreateRelationship(ctx, relationshipDTO)
+		testutils.AssertNoError(t, err, "Should create relationship")
+
+		// Export CSAF tree and verify relationship export
+		csafTree, err := isolatedService.ExportCSAFProductTree(ctx, []string{product1.ID})
+		testutils.AssertNoError(t, err, "Should export CSAF product tree")
+
+		// Verify structure
+		productTree, ok := csafTree["product_tree"].(map[string]interface{})
+		if !ok {
+			t.Fatal("Should have product_tree")
+		}
+
+		relationships, ok := productTree["relationships"].([]map[string]interface{})
+		if !ok {
+			t.Fatal("Should have relationships array")
+		}
+		testutils.AssertCount(t, 1, len(relationships), "Should have 1 relationship")
+
+		// Verify relationship structure
+		rel := relationships[0]
+		testutils.AssertEqual(t, version1.ID, rel["product_reference"], "Should have correct source version")
+		testutils.AssertEqual(t, "depends_on", rel["category"], "Should have correct category")
+		testutils.AssertEqual(t, version2.ID, rel["relates_to_product_reference"], "Should have correct target version")
+
+		// Verify full product name structure
+		fullProdName, ok := rel["full_product_name"].(map[string]interface{})
+		if !ok {
+			t.Fatal("Should have full_product_name structure")
+		}
+
+		expectedName := "Vendor A Product 1 1.0.0 depends_on Vendor B Product 2 2.0.0"
+		testutils.AssertEqual(t, expectedName, fullProdName["name"], "Should have correctly formatted full product name")
+	})
+
+	t.Run("ExportCSAFProductTree_MultipleRelationships", func(t *testing.T) {
+		// Create isolated test environment
+		isolatedDB := testutils.SetupTestDB(t)
+		defer testutils.CleanupTestDB(t, isolatedDB)
+
+		isolatedRepo := NewRepository(isolatedDB)
+		isolatedService := NewService(isolatedRepo)
+
+		// Create vendor and products
+		vendor := testutils.CreateTestVendor(t, isolatedDB, "Multi Vendor", "Vendor with multiple products")
+
+		// Create source product
+		sourceProductDTO := CreateProductDTO{
+			Name:        "Source Product",
+			Description: "Product with relationships",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		sourceProduct, err := isolatedService.CreateProduct(ctx, sourceProductDTO)
+		testutils.AssertNoError(t, err, "Should create source product")
+
+		// Create target products
+		target1DTO := CreateProductDTO{
+			Name:        "Target 1",
+			Description: "First target",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		target1, err := isolatedService.CreateProduct(ctx, target1DTO)
+		testutils.AssertNoError(t, err, "Should create target 1")
+
+		target2DTO := CreateProductDTO{
+			Name:        "Target 2",
+			Description: "Second target",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		target2, err := isolatedService.CreateProduct(ctx, target2DTO)
+		testutils.AssertNoError(t, err, "Should create target 2")
+
+		// Create versions
+		sourceVersionDTO := CreateProductVersionDTO{
+			Version:   "1.0.0",
+			ProductID: sourceProduct.ID,
+		}
+		sourceVersion, err := isolatedService.CreateProductVersion(ctx, sourceVersionDTO)
+		testutils.AssertNoError(t, err, "Should create source version")
+
+		target1VersionDTO := CreateProductVersionDTO{
+			Version:   "1.1.0",
+			ProductID: target1.ID,
+		}
+		target1Version, err := isolatedService.CreateProductVersion(ctx, target1VersionDTO)
+		testutils.AssertNoError(t, err, "Should create target 1 version")
+
+		target2VersionDTO := CreateProductVersionDTO{
+			Version:   "2.0.0",
+			ProductID: target2.ID,
+		}
+		target2Version, err := isolatedService.CreateProductVersion(ctx, target2VersionDTO)
+		testutils.AssertNoError(t, err, "Should create target 2 version")
+
+		// Create multiple relationships
+		rel1DTO := CreateRelationshipDTO{
+			Category:      "depends_on",
+			SourceNodeIDs: []string{sourceVersion.ID},
+			TargetNodeIDs: []string{target1Version.ID},
+		}
+		err = isolatedService.CreateRelationship(ctx, rel1DTO)
+		testutils.AssertNoError(t, err, "Should create relationship 1")
+
+		rel2DTO := CreateRelationshipDTO{
+			Category:      "includes",
+			SourceNodeIDs: []string{sourceVersion.ID},
+			TargetNodeIDs: []string{target2Version.ID},
+		}
+		err = isolatedService.CreateRelationship(ctx, rel2DTO)
+		testutils.AssertNoError(t, err, "Should create relationship 2")
+
+		// Export CSAF tree
+		csafTree, err := isolatedService.ExportCSAFProductTree(ctx, []string{sourceProduct.ID})
+		testutils.AssertNoError(t, err, "Should export CSAF product tree")
+
+		// Verify relationships
+		productTree := csafTree["product_tree"].(map[string]interface{})
+		relationships := productTree["relationships"].([]map[string]interface{})
+		testutils.AssertCount(t, 2, len(relationships), "Should have 2 relationships")
+
+		// Sort relationships by category for predictable testing
+		var dependsRel, includesRel map[string]interface{}
+		for _, rel := range relationships {
+			if rel["category"] == "depends_on" {
+				dependsRel = rel
+			} else if rel["category"] == "includes" {
+				includesRel = rel
+			}
+		}
+
+		// Verify depends_on relationship
+		if dependsRel == nil {
+			t.Fatal("Should have depends_on relationship")
+		}
+		testutils.AssertEqual(t, target1Version.ID, dependsRel["relates_to_product_reference"], "Should reference target 1")
+
+		// Verify includes relationship
+		if includesRel == nil {
+			t.Fatal("Should have includes relationship")
+		}
+		testutils.AssertEqual(t, target2Version.ID, includesRel["relates_to_product_reference"], "Should reference target 2")
+	})
+
+	t.Run("ExportCSAFProductTree_RelationshipWithoutTarget", func(t *testing.T) {
+		// This tests the edge case where a relationship might have missing target data
+		// We need to mock this scenario since normal operation should prevent it
+		isolatedDB := testutils.SetupTestDB(t)
+		defer testutils.CleanupTestDB(t, isolatedDB)
+
+		isolatedRepo := NewRepository(isolatedDB)
+		isolatedService := NewService(isolatedRepo)
+
+		// Create test data
+		vendor := testutils.CreateTestVendor(t, isolatedDB, "Test Vendor", "A vendor")
+		productDTO := CreateProductDTO{
+			Name:        "Test Product",
+			Description: "A product",
+			VendorID:    vendor.ID,
+			Type:        "software",
+		}
+		product, err := isolatedService.CreateProduct(ctx, productDTO)
+		testutils.AssertNoError(t, err, "Should create product")
+
+		versionDTO := CreateProductVersionDTO{
+			Version:   "1.0.0",
+			ProductID: product.ID,
+		}
+		_, err = isolatedService.CreateProductVersion(ctx, versionDTO)
+		testutils.AssertNoError(t, err, "Should create version")
+
+		// For this test, we'll create a product tree that should still work
+		// even if some relationships have incomplete data
+		csafTree, err := isolatedService.ExportCSAFProductTree(ctx, []string{product.ID})
+		testutils.AssertNoError(t, err, "Should export CSAF product tree even with edge cases")
+
+		// Verify basic structure exists
+		productTree := csafTree["product_tree"].(map[string]interface{})
+		relationships := productTree["relationships"].([]map[string]interface{})
+		// Should be empty since we didn't create any actual relationships
+		testutils.AssertCount(t, 0, len(relationships), "Should have no relationships")
+	})
+
 	// Additional error condition tests for robustness
 	t.Run("AdditionalErrorConditions", func(t *testing.T) {
 		t.Run("GetVendorByID_WrongCategory", func(t *testing.T) {
@@ -7374,6 +7611,428 @@ func TestUpdateProductFamilyErrorCases(t *testing.T) {
 		var internalErr fuego.InternalServerError
 		if !errors.As(err, &internalErr) {
 			t.Error("Expected InternalServerError")
+		}
+	})
+}
+
+// TestServiceAdditionalEdgeCases provides additional edge case testing for service functions
+func TestServiceAdditionalEdgeCases(t *testing.T) {
+	db := testutils.SetupTestDB(t)
+	defer testutils.CleanupTestDB(t, db)
+
+	repo := NewRepository(db)
+	svc := NewService(repo)
+	ctx := context.Background()
+
+	t.Run("ExportCSAFProductTree_AdditionalEdgeCases", func(t *testing.T) {
+		// Test with empty product IDs array
+		t.Run("EmptyProductIDsArray", func(t *testing.T) {
+			result, err := svc.ExportCSAFProductTree(ctx, []string{})
+			if err != nil {
+				t.Errorf("ExportCSAFProductTree should handle empty array gracefully, got error: %v", err)
+			}
+
+			// Should return valid structure with empty branches
+			if productTree, ok := result["product_tree"].(map[string]interface{}); ok {
+				if branches, ok := productTree["branches"].([]interface{}); ok {
+					if len(branches) != 0 {
+						t.Error("Expected empty branches for empty ProductIDs array")
+					}
+				} else {
+					t.Error("Expected 'branches' key in product_tree")
+				}
+			} else {
+				t.Error("Expected 'product_tree' key in result")
+			}
+		})
+
+		// Test with nil product IDs array
+		t.Run("NilProductIDsArray", func(t *testing.T) {
+			result, err := svc.ExportCSAFProductTree(ctx, nil)
+			if err != nil {
+				t.Errorf("ExportCSAFProductTree should handle nil array gracefully, got error: %v", err)
+			}
+
+			// Should return valid structure with empty branches
+			if productTree, ok := result["product_tree"].(map[string]interface{}); ok {
+				if branches, ok := productTree["branches"].([]interface{}); ok {
+					if len(branches) != 0 {
+						t.Error("Expected empty branches for nil ProductIDs array")
+					}
+				} else {
+					t.Error("Expected 'branches' key in product_tree")
+				}
+			} else {
+				t.Error("Expected 'product_tree' key in result")
+			}
+		})
+
+		// Test with malformed product IDs
+		t.Run("MalformedProductIDs", func(t *testing.T) {
+			malformedIDs := []string{
+				"",                                      // empty string
+				"not-a-uuid",                            // invalid format
+				"123e4567-e89b-12d3-a456-426614174",     // too short
+				"123e4567-e89b-12d3-a456-4266141740000", // too long
+				"123g4567-e89b-12d3-a456-426614174000",  // invalid character
+				"123e4567e89b12d3a456426614174000",      // missing hyphens
+			}
+
+			for _, id := range malformedIDs {
+				t.Run("ID_"+id, func(t *testing.T) {
+					_, err := svc.ExportCSAFProductTree(ctx, []string{id})
+					if err == nil {
+						t.Errorf("Expected error for malformed product ID: %s", id)
+					}
+				})
+			}
+		})
+
+		// Test with product that exists but has no vendor
+		t.Run("ProductWithoutVendor", func(t *testing.T) {
+			// First create a product normally
+			vendor, err := svc.CreateVendor(ctx, CreateVendorDTO{
+				Name:        "Temp Vendor",
+				Description: "Temporary vendor",
+			})
+			if err != nil {
+				t.Fatalf("Failed to create vendor: %v", err)
+			}
+
+			product, err := svc.CreateProduct(ctx, CreateProductDTO{
+				Name:        "Orphan Product",
+				Description: "Product that will become orphaned",
+				VendorID:    vendor.ID,
+				Type:        "software",
+			})
+			if err != nil {
+				t.Fatalf("Failed to create product: %v", err)
+			}
+
+			// Delete the vendor to orphan the product
+			err = svc.DeleteVendor(ctx, vendor.ID)
+			if err != nil {
+				t.Fatalf("Failed to delete vendor: %v", err)
+			}
+
+			// Now try to export the orphaned product
+			_, err = svc.ExportCSAFProductTree(ctx, []string{product.ID})
+			if err == nil {
+				t.Error("Expected error when trying to export product without vendor")
+			}
+		})
+	})
+
+	t.Run("HelperFunctions_EdgeCases", func(t *testing.T) {
+		// Test familyPathsEqual with various inputs
+		t.Run("FamilyPathsEqual", func(t *testing.T) {
+			testCases := []struct {
+				name     string
+				path1    []string
+				path2    []string
+				expected bool
+			}{
+				{
+					name:     "BothEmpty",
+					path1:    []string{},
+					path2:    []string{},
+					expected: true,
+				},
+				{
+					name:     "BothNil",
+					path1:    nil,
+					path2:    nil,
+					expected: true,
+				},
+				{
+					name:     "OneEmptyOneNil",
+					path1:    []string{},
+					path2:    nil,
+					expected: true,
+				},
+				{
+					name:     "DifferentLengths",
+					path1:    []string{"a"},
+					path2:    []string{"a", "b"},
+					expected: false,
+				},
+				{
+					name:     "SameLengthDifferentContent",
+					path1:    []string{"a", "b"},
+					path2:    []string{"a", "c"},
+					expected: false,
+				},
+				{
+					name:     "Identical",
+					path1:    []string{"a", "b", "c"},
+					path2:    []string{"a", "b", "c"},
+					expected: true,
+				},
+				{
+					name:     "EmptyStringsInPath",
+					path1:    []string{"", "b", ""},
+					path2:    []string{"", "b", ""},
+					expected: true,
+				},
+			}
+
+			for _, tc := range testCases {
+				t.Run(tc.name, func(t *testing.T) {
+					result := svc.familyPathsEqual(tc.path1, tc.path2)
+					if result != tc.expected {
+						t.Errorf("familyPathsEqual(%v, %v) = %v, expected %v",
+							tc.path1, tc.path2, result, tc.expected)
+					}
+				})
+			}
+		})
+
+		// Test buildNestedFamilyStructure with edge cases
+		t.Run("BuildNestedFamilyStructure", func(t *testing.T) {
+			testCases := []struct {
+				name        string
+				familyNames []string
+				products    []interface{}
+			}{
+				{
+					name:        "EmptyFamilyNames",
+					familyNames: []string{},
+					products:    []interface{}{"product1"},
+				},
+				{
+					name:        "NilFamilyNames",
+					familyNames: nil,
+					products:    []interface{}{"product1"},
+				},
+				{
+					name:        "EmptyProducts",
+					familyNames: []string{"family1"},
+					products:    []interface{}{},
+				},
+				{
+					name:        "NilProducts",
+					familyNames: []string{"family1"},
+					products:    nil,
+				},
+				{
+					name:        "SingleFamily",
+					familyNames: []string{"family1"},
+					products:    []interface{}{"product1", "product2"},
+				},
+				{
+					name:        "DeepNesting",
+					familyNames: []string{"root", "child1", "child2", "child3"},
+					products:    []interface{}{"product1"},
+				},
+				{
+					name:        "FamilyWithEmptyName",
+					familyNames: []string{"", "child"},
+					products:    []interface{}{"product1"},
+				},
+			}
+
+			for _, tc := range testCases {
+				t.Run(tc.name, func(t *testing.T) {
+					result := svc.buildNestedFamilyStructure(tc.familyNames, tc.products)
+					if len(tc.familyNames) == 0 {
+						if result != nil {
+							t.Error("Expected nil result for empty family names")
+						}
+					} else {
+						if result == nil {
+							t.Error("Expected non-nil result for non-empty family names")
+						}
+						// Verify the structure is a map
+						if resultMap, ok := result.(map[string]interface{}); ok {
+							if category, ok := resultMap["category"].(string); ok {
+								if category != "product_family" {
+									t.Errorf("Expected category 'product_family', got %s", category)
+								}
+							} else {
+								t.Error("Expected 'category' field in result")
+							}
+							if name, ok := resultMap["name"].(string); ok {
+								if name != tc.familyNames[0] {
+									t.Errorf("Expected name '%s', got %s", tc.familyNames[0], name)
+								}
+							} else {
+								t.Error("Expected 'name' field in result")
+							}
+						} else {
+							t.Error("Expected result to be a map[string]interface{}")
+						}
+					}
+				})
+			}
+		})
+	})
+
+	t.Run("NodePath_EdgeCases", func(t *testing.T) {
+		// Test getNodePath with edge cases
+		t.Run("GetNodePath", func(t *testing.T) {
+			// Create some test families for path testing
+			families := []Node{
+				{ID: "root", Name: "Root Family", ParentID: nil},
+				{ID: "child1", Name: "Child 1", ParentID: stringPtr("root")},
+				{ID: "child2", Name: "Child 2", ParentID: stringPtr("child1")},
+				{ID: "orphan", Name: "Orphan Family", ParentID: stringPtr("nonexistent")},
+			}
+
+			testCases := []struct {
+				name           string
+				nodeID         string
+				expectedLength int
+				shouldContain  []string
+			}{
+				{
+					name:           "RootNode",
+					nodeID:         "root",
+					expectedLength: 1,
+					shouldContain:  []string{"Root Family"},
+				},
+				{
+					name:           "ChildNode",
+					nodeID:         "child1",
+					expectedLength: 2,
+					shouldContain:  []string{"Root Family", "Child 1"},
+				},
+				{
+					name:           "GrandchildNode",
+					nodeID:         "child2",
+					expectedLength: 3,
+					shouldContain:  []string{"Root Family", "Child 1", "Child 2"},
+				},
+				{
+					name:           "NonexistentNode",
+					nodeID:         "nonexistent",
+					expectedLength: 0,
+					shouldContain:  []string{},
+				},
+				{
+					name:           "OrphanNode",
+					nodeID:         "orphan",
+					expectedLength: 1,
+					shouldContain:  []string{"Orphan Family"},
+				},
+			}
+
+			for _, tc := range testCases {
+				t.Run(tc.name, func(t *testing.T) {
+					path := svc.getNodePath(tc.nodeID, families)
+					if len(path) != tc.expectedLength {
+						t.Errorf("Expected path length %d, got %d", tc.expectedLength, len(path))
+					}
+					for _, expected := range tc.shouldContain {
+						found := false
+						for _, name := range path {
+							if name == expected {
+								found = true
+								break
+							}
+						}
+						if !found {
+							t.Errorf("Expected path to contain '%s', but it didn't. Path: %v", expected, path)
+						}
+					}
+				})
+			}
+		})
+	})
+
+	t.Run("ConvertIdentificationHelpersToCSAF_EdgeCases", func(t *testing.T) {
+		// Test convertIdentificationHelpersToCSAF with various edge cases
+		testCases := []struct {
+			name     string
+			helpers  []IdentificationHelperListItemDTO
+			expected map[string]interface{}
+		}{
+			{
+				name:     "EmptyHelpers",
+				helpers:  []IdentificationHelperListItemDTO{},
+				expected: map[string]interface{}{},
+			},
+			{
+				name:     "NilHelpers",
+				helpers:  nil,
+				expected: map[string]interface{}{},
+			},
+			{
+				name: "HelperWithEmptyMetadata",
+				helpers: []IdentificationHelperListItemDTO{
+					{
+						ID:               "helper1",
+						Category:         "cpe",
+						ProductVersionID: "version1",
+						Metadata:         "",
+					},
+				},
+				expected: map[string]interface{}{},
+			},
+			{
+				name: "HelperWithInvalidJSON",
+				helpers: []IdentificationHelperListItemDTO{
+					{
+						ID:               "helper1",
+						Category:         "cpe",
+						ProductVersionID: "version1",
+						Metadata:         "invalid json",
+					},
+				},
+				expected: map[string]interface{}{},
+			},
+			{
+				name: "HelperWithValidCPE",
+				helpers: []IdentificationHelperListItemDTO{
+					{
+						ID:               "helper1",
+						Category:         "cpe",
+						ProductVersionID: "version1",
+						Metadata:         `{"cpe": "cpe:2.3:a:vendor:product:1.0:*:*:*:*:*:*:*"}`,
+					},
+				},
+				expected: map[string]interface{}{
+					"cpe": "cpe:2.3:a:vendor:product:1.0:*:*:*:*:*:*:*",
+				},
+			},
+			{
+				name: "MultipleHelpersWithDifferentCategories",
+				helpers: []IdentificationHelperListItemDTO{
+					{
+						ID:               "helper1",
+						Category:         "cpe",
+						ProductVersionID: "version1",
+						Metadata:         `{"cpe": "cpe:2.3:a:vendor:product:1.0:*:*:*:*:*:*:*"}`,
+					},
+					{
+						ID:               "helper2",
+						Category:         "purl",
+						ProductVersionID: "version1",
+						Metadata:         `{"purl": "pkg:npm/package@1.0.0"}`,
+					},
+				},
+				expected: map[string]interface{}{
+					"cpe":  "cpe:2.3:a:vendor:product:1.0:*:*:*:*:*:*:*",
+					"purl": "pkg:npm/package@1.0.0",
+				},
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				result := svc.convertIdentificationHelpersToCSAF(tc.helpers)
+				if len(result) != len(tc.expected) {
+					t.Errorf("Expected result length %d, got %d", len(tc.expected), len(result))
+				}
+				for key, expectedValue := range tc.expected {
+					if actualValue, ok := result[key]; ok {
+						if actualValue != expectedValue {
+							t.Errorf("Expected %s = %v, got %v", key, expectedValue, actualValue)
+						}
+					} else {
+						t.Errorf("Expected key %s not found in result", key)
+					}
+				}
+			})
 		}
 	})
 }
