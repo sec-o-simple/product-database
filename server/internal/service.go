@@ -203,11 +203,11 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 
 	// Group products by vendor first, then by family path
 	type ProductGroup struct {
-		FamilyPath []string // Actual family names in order, nil/empty for no family
+		FamilyPath []string
 		Products   []interface{}
 	}
 
-	vendorGroups := make(map[string][]ProductGroup) // vendorName -> ProductGroups
+	vendorGroups := make(map[string][]ProductGroup)
 
 	// Relationships collected across all versions included
 	var relationshipExports []map[string]interface{}
@@ -265,21 +265,18 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 				"product":  prodMap,
 			})
 
-			// Collect relationships for this version (as source)
-			// Fetch node with relationships
 			nodeWithRels, err := s.repo.GetNodeByID(ctx, ver.ID, WithRelationships(), WithParent())
-			if err == nil && len(nodeWithRels.SourceRelationships) > 0 { // ignore errors silently to not block export
+			if err == nil && len(nodeWithRels.SourceRelationships) > 0 {
 				for _, rel := range nodeWithRels.SourceRelationships {
-					if rel.TargetNode == nil { // insufficient data
+					if rel.TargetNode == nil {
+						// insufficient data
 						continue
 					}
 
-					// Ensure target's full name is collected
-					// Assemble target full name: vendor + product + version (if available)
+					// Assemble target full name: vendor + product + version
 					var targetFullName string
 					targetVersionID := rel.TargetNode.ID
-					// Build target name
-					if rel.TargetNode.Parent != nil { // product node
+					if rel.TargetNode.Parent != nil {
 						productNode := rel.TargetNode.Parent
 						productName := productNode.Name
 						// Need vendor name for target product
@@ -306,8 +303,7 @@ func (s *Service) ExportCSAFProductTree(ctx context.Context, productIDs []string
 						"relates_to_product_reference": targetVersionID,
 						"full_product_name": map[string]interface{}{
 							"product_id": rel.ID,
-							// Basic concatenation; could be refined per CSAF relation semantics
-							"name": versionFullName + " " + string(rel.Category) + " " + targetFullName,
+							"name":       versionFullName + " " + string(rel.Category) + " " + targetFullName,
 						},
 					}
 					relationshipExports = append(relationshipExports, relObj)
