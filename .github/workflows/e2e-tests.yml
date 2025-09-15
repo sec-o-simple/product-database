@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - chore/e2e-tests
 
 permissions:
   contents: read
