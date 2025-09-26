@@ -44,7 +44,17 @@ export function DeleteProduct({
   product: { name: string; id: string; vendor_id?: string }
   isIconButton?: boolean
 }) {
-  const mutation = client.useMutation('delete', '/api/v1/products/{id}')
+  const mutation = client.useMutation('delete', '/api/v1/products/{id}', {
+    onSettled: () => {
+      navigate(`/vendors/${product.vendor_id}`, {
+        state: {
+          shouldRefetch: true,
+          message: t('product.delete.success', { name: product.name }),
+          type: 'success',
+        },
+      })
+    },
+  })
   const { navigate } = useRouter()
   const { t } = useTranslation()
 
@@ -59,14 +69,6 @@ export function DeleteProduct({
       onConfirm={() => {
         mutation.mutate({
           params: { path: { id: product.id?.toString() ?? '' } },
-        })
-
-        navigate(`/vendors/${product.vendor_id}`, {
-          state: {
-            shouldRefetch: true,
-            message: t('product.delete.success', { name: product.name }),
-            type: 'success',
-          },
         })
       }}
     >
