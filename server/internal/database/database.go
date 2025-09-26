@@ -19,5 +19,10 @@ func Connect() *gorm.DB {
 		panic("failed to connect database: " + err.Error())
 	}
 
+	// Enable foreign key constraints, disabled by default in SQLite
+	if err := db.Exec("PRAGMA foreign_keys = ON").Error; err != nil {
+		panic("failed to enable foreign keys: " + err.Error())
+	}
+
 	return db
 }
