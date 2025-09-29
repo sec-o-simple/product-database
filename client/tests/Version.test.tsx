@@ -185,7 +185,13 @@ describe('DeleteVersion', () => {
 
     const button = screen.getByRole('button')
     expect(button).toBeInTheDocument()
-    expect(mockUseMutation).toHaveBeenCalledWith('delete', '/api/v1/product-versions/{id}')
+    expect(mockUseMutation).toHaveBeenCalledWith(
+      'delete', 
+      '/api/v1/product-versions/{id}',
+      expect.objectContaining({
+        onSettled: expect.any(Function),
+      })
+    )
   })
 })
 

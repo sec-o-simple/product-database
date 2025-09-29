@@ -39,18 +39,19 @@ type Node struct {
 	Description string `gorm:"type:text"`
 
 	ParentID *string
-	Parent   *Node  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
-	Children []Node `gorm:"foreignKey:ParentID"`
+	Parent   *Node  `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:ParentID;references:ID"`
+	Children []Node `gorm:"foreignKey:ParentID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 
-	SourceRelationships []Relationship `gorm:"foreignKey:SourceNodeID"`
-	TargetRelationships []Relationship `gorm:"foreignKey:TargetNodeID"`
+	SourceRelationships []Relationship `gorm:"foreignKey:SourceNodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	TargetRelationships []Relationship `gorm:"foreignKey:TargetNodeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 
 	ProductType     ProductType `gorm:"type:product_type"`
-	ProductFamilyID *string     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+	ProductFamilyID *string
+	ProductFamily   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:ProductFamilyID;references:ID"`
 	ReleasedAt      sql.NullTime
 
 	SuccessorID *string
-	Successor   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
+	Successor   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:SuccessorID;references:ID"`
 }
 
 type Relationship struct {
@@ -58,10 +59,10 @@ type Relationship struct {
 	Category RelationshipCategory
 
 	SourceNodeID string
-	SourceNode   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	SourceNode   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:SourceNodeID;references:ID"`
 
 	TargetNodeID string
-	TargetNode   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	TargetNode   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:TargetNodeID;references:ID"`
 }
 
 type IdentificationHelper struct {
@@ -70,7 +71,7 @@ type IdentificationHelper struct {
 	Metadata []byte `gorm:"serializer:json"`
 
 	NodeID string
-	Node   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	Node   *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:NodeID;references:ID"`
 }
 
 func Models() []interface{} {

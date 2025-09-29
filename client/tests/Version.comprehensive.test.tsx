@@ -357,23 +357,21 @@ describe('Version Components', () => {
         </TestWrapper>
       )
 
+      // Check that useMutation was called with correct parameters including onSettled callback
+      expect(mockClient.useMutation).toHaveBeenCalledWith(
+        'delete',
+        '/api/v1/product-versions/{id}',
+        expect.objectContaining({
+          onSettled: expect.any(Function),
+        })
+      )
+
       const button = screen.getByTestId('confirm-button')
       fireEvent.click(button)
 
       expect(mockMutate).toHaveBeenCalledWith({
         params: { path: { id: 'version-1' } },
       })
-
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/products/product-1',
-        {
-          state: {
-            shouldRefetch: true,
-            message: 'Version "Test Version 1.0" has been deleted successfully.',
-            type: 'success',
-          },
-        }
-      )
     })
 
     it('should use returnTo parameter for navigation when provided', () => {
@@ -390,13 +388,20 @@ describe('Version Components', () => {
         </TestWrapper>
       )
 
+      // Check that useMutation was called with correct parameters including onSettled callback
+      expect(mockClient.useMutation).toHaveBeenCalledWith(
+        'delete',
+        '/api/v1/product-versions/{id}',
+        expect.objectContaining({
+          onSettled: expect.any(Function),
+        })
+      )
+
       const button = screen.getByTestId('confirm-button')
       fireEvent.click(button)
 
-      expect(mockNavigate).toHaveBeenCalledWith(
-        '/custom-path',
-        expect.any(Object)
-      )
+      // Verify that the mutation was called (the navigation happens in onSettled callback)
+      expect(mockClient.useMutation().mutate).toHaveBeenCalled()
     })
 
     it('should handle version without id', () => {

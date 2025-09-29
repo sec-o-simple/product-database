@@ -7,5 +7,6 @@ export default function useRefetchQuery(request: { refetch: () => void }) {
     if (location.state && location.state.shouldRefetch) {
       request.refetch()
     }
-  }, [location, request])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location, request.refetch])
 }

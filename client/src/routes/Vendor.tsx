@@ -42,7 +42,18 @@ export function DeleteVendor({
   vendor: VendorProps
   isIconButton?: boolean
 }) {
-  const mutation = client.useMutation('delete', '/api/v1/vendors/{id}')
+  const mutation = client.useMutation('delete', '/api/v1/vendors/{id}', {
+    onSettled: () => {
+      navigate('/vendors', {
+        state: {
+          shouldRefetch: true,
+          message: `Vendor "${vendor.name}" has been deleted successfully.`,
+          type: 'success',
+        },
+      })
+    },
+  })
+
   const { navigate } = useRouter()
   const { t } = useTranslation()
 
@@ -57,14 +68,6 @@ export function DeleteVendor({
       onConfirm={() => {
         mutation.mutate({
           params: { path: { id: vendor.id?.toString() ?? '' } },
-        })
-
-        navigate('/vendors', {
-          state: {
-            shouldRefetch: true,
-            message: `Vendor "${vendor.name}" has been deleted successfully.`,
-            type: 'success',
-          },
         })
       }}
     >

@@ -40,6 +40,7 @@ vi.mock('@heroui/react', async () => {
 vi.mock('../src/utils/useRouter', () => ({
   default: () => ({
     navigate: mockNavigate,
+    location: mockLocation,
   }),
 }))
 
@@ -84,7 +85,7 @@ describe('Layout', () => {
       title: 'Test message',
       color: 'success',
     })
-    expect(mockNavigate).toHaveBeenCalledWith('', { replace: true, state: {} })
+    expect(mockNavigate).toHaveBeenCalledWith('/test', { replace: true, state: {} })
   })
 
   it('should use default type when type is not specified', async () => {
@@ -105,6 +106,6 @@ describe('Layout', () => {
       title: 'Test message without type',
       color: 'default',
     })
-    expect(mockNavigate).toHaveBeenCalledWith('', { replace: true, state: {} })
+    expect(mockNavigate).toHaveBeenCalledWith('/test', { replace: true, state: {} })
   })
 })

@@ -5,7 +5,7 @@ import useRouter from './utils/useRouter'
 
 export default function Layout() {
   const { state } = useLocation()
-  const { navigate } = useRouter()
+  const { navigate, location } = useRouter()
 
   useEffect(() => {
     if (state?.message) {
@@ -13,9 +13,9 @@ export default function Layout() {
         title: state.message,
         color: state.type || 'default',
       })
-      navigate('', { replace: true, state: {} })
+      navigate(location.pathname, { replace: true, state: {} })
     }
-  }, [state, navigate])
+  }, [state, navigate, location.pathname])
 
   return <Outlet />
 }

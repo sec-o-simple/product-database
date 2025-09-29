@@ -45,7 +45,21 @@ export function DeleteVersion({
   isIconButton?: boolean
   returnTo?: string
 }) {
-  const mutation = client.useMutation('delete', `/api/v1/product-versions/{id}`)
+  const mutation = client.useMutation(
+    'delete',
+    `/api/v1/product-versions/{id}`,
+    {
+      onSettled: () => {
+        navigate(returnTo ?? `/products/${productId || ''}`, {
+          state: {
+            shouldRefetch: true,
+            message: `Version "${version.name}" has been deleted successfully.`,
+            type: 'success',
+          },
+        })
+      },
+    },
+  )
   const {
     navigate,
     params: { productId },
@@ -63,14 +77,6 @@ export function DeleteVersion({
       onConfirm={() => {
         mutation.mutate({
           params: { path: { id: version.id?.toString() ?? '' } },
-        })
-
-        navigate(returnTo ?? `/products/${productId || ''}`, {
-          state: {
-            shouldRefetch: true,
-            message: `Version "${version.name}" has been deleted successfully.`,
-            type: 'success',
-          },
         })
       }}
     >

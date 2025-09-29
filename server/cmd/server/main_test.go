@@ -33,7 +33,7 @@ func TestApplicationIntegration(t *testing.T) {
 	testutils.AssertNoError(t, err, "Should connect to test database")
 
 	// Run migrations
-	database.AutoMigrate(db, internal.Models()...)
+	database.Migrate(db)
 
 	// Create repository, service, and handler
 	repo := internal.NewRepository(db)

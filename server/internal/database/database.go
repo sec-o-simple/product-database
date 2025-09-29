@@ -14,7 +14,8 @@ func Connect() *gorm.DB {
 		panic("DATABASE_PATH environment variable is not set")
 	}
 
-	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+	// Ensure that foreign keys are enabled
+	db, err := gorm.Open(sqlite.Open(dbPath+"?_fk=1"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database: " + err.Error())
 	}

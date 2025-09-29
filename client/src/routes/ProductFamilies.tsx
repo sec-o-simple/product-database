@@ -116,7 +116,21 @@ export function DeleteFamily({
   family: ProductFamily
   isIconButton?: boolean
 }) {
-  const mutation = client.useMutation('delete', '/api/v1/product-families/{id}')
+  const mutation = client.useMutation(
+    'delete',
+    '/api/v1/product-families/{id}',
+    {
+      onSettled: () => {
+        navigate('/product-families', {
+          state: {
+            shouldRefetch: true,
+            message: t('productFamily.delete.success', { name: family.name }),
+            type: 'success',
+          },
+        })
+      },
+    },
+  )
   const { navigate } = useRouter()
   const { t } = useTranslation()
 
@@ -131,14 +145,6 @@ export function DeleteFamily({
       onConfirm={() => {
         mutation.mutate({
           params: { path: { id: family.id?.toString() ?? '' } },
-        })
-
-        navigate('/product-families/', {
-          state: {
-            shouldRefetch: true,
-            message: t('productFamily.delete.success', { name: family.name }),
-            type: 'success',
-          },
         })
       }}
     >
