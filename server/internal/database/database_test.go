@@ -84,7 +84,7 @@ func TestConnectPanic(t *testing.T) {
 	Connect()
 }
 
-func TestAutoMigrate(t *testing.T) {
+func TestMigrate(t *testing.T) {
 	// Set up test environment variable
 	originalPath := os.Getenv("DATABASE_PATH")
 	defer func() {
@@ -100,8 +100,7 @@ func TestAutoMigrate(t *testing.T) {
 	db := Connect()
 
 	// Test auto migration
-	models := internal.Models()
-	AutoMigrate(db, models...)
+	Migrate(db)
 
 	// Verify tables were created by checking if we can create records
 	testNode := internal.Node{
@@ -139,9 +138,8 @@ func TestAutoMigrateWithExistingTables(t *testing.T) {
 	db := Connect()
 
 	// Run migration twice to test idempotency
-	models := internal.Models()
-	AutoMigrate(db, models...)
-	AutoMigrate(db, models...)
+	Migrate(db)
+	Migrate(db)
 
 	// Should not cause errors when run multiple times
 	testNode := internal.Node{

@@ -98,7 +98,7 @@ func main() {
 		fuego.WithGlobalMiddlewares(corsMiddleware(allowedOrigins)),
 	)
 
-	database.AutoMigrate(db, internal.Models()...)
+	database.Migrate(db)
 
 	repo := internal.NewRepository(db)
 	svc := internal.NewService(repo)
