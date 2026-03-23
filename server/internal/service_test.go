@@ -2584,9 +2584,7 @@ func TestServiceAdvancedOperations(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Failed to get relationships: %v", err)
 			}
-			if len(relationships) < 0 {
-				t.Errorf("Expected non-negative relationships, got %d", len(relationships))
-			}
+			_ = relationships
 		})
 
 		// Test service functions with specific error conditions for robustness

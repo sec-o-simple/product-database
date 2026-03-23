@@ -723,7 +723,7 @@ func testProductHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var vendor VendorDTO
-	json.Unmarshal(w.Body.Bytes(), &vendor)
+	_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 	vendorID := vendor.ID
 
 	// Test CreateProduct
@@ -745,7 +745,7 @@ func testProductHandlers(t *testing.T, app *fuego.Server) {
 	}
 
 	var createdProduct ProductDTO
-	json.Unmarshal(w.Body.Bytes(), &createdProduct)
+	_ = json.Unmarshal(w.Body.Bytes(), &createdProduct)
 	productID := createdProduct.ID
 
 	// Test ListProducts
@@ -820,7 +820,7 @@ func testProductVersionHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var vendor VendorDTO
-	json.Unmarshal(w.Body.Bytes(), &vendor)
+	_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 	productData := CreateProductDTO{
 		Name: "Version Test Product", Description: "Test", VendorID: vendor.ID, Type: "software"}
@@ -831,7 +831,7 @@ func testProductVersionHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var product ProductDTO
-	json.Unmarshal(w.Body.Bytes(), &product)
+	_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 	// Test CreateProductVersion
 	versionData := CreateProductVersionDTO{
@@ -850,7 +850,7 @@ func testProductVersionHandlers(t *testing.T, app *fuego.Server) {
 	}
 
 	var createdVersion ProductVersionDTO
-	json.Unmarshal(w.Body.Bytes(), &createdVersion)
+	_ = json.Unmarshal(w.Body.Bytes(), &createdVersion)
 	versionID := createdVersion.ID
 
 	// Test ListProductVersions
@@ -906,7 +906,7 @@ func testRelationshipHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var vendor VendorDTO
-	json.Unmarshal(w.Body.Bytes(), &vendor)
+	_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 	productData := CreateProductDTO{Name: "Rel Test Product", Description: "Test", VendorID: vendor.ID, Type: "software"}
 	productJSON, _ := json.Marshal(productData)
@@ -916,7 +916,7 @@ func testRelationshipHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var product ProductDTO
-	json.Unmarshal(w.Body.Bytes(), &product)
+	_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 	// Create two versions
 	version1Data := CreateProductVersionDTO{Version: "1.0.0", ProductID: product.ID}
@@ -926,7 +926,7 @@ func testRelationshipHandlers(t *testing.T, app *fuego.Server) {
 	w = httptest.NewRecorder()
 	app.Mux.ServeHTTP(w, req)
 	var version1 ProductVersionDTO
-	json.Unmarshal(w.Body.Bytes(), &version1)
+	_ = json.Unmarshal(w.Body.Bytes(), &version1)
 
 	version2Data := CreateProductVersionDTO{Version: "2.0.0", ProductID: product.ID}
 	version2JSON, _ := json.Marshal(version2Data)
@@ -935,7 +935,7 @@ func testRelationshipHandlers(t *testing.T, app *fuego.Server) {
 	w = httptest.NewRecorder()
 	app.Mux.ServeHTTP(w, req)
 	var version2 ProductVersionDTO
-	json.Unmarshal(w.Body.Bytes(), &version2)
+	_ = json.Unmarshal(w.Body.Bytes(), &version2)
 
 	// Test CreateRelationship
 	relationshipData := CreateRelationshipDTO{
@@ -965,7 +965,7 @@ func testRelationshipHandlers(t *testing.T, app *fuego.Server) {
 
 	// Parse the response to get relationship ID
 	var relationshipsResponse []RelationshipGroupDTO
-	json.Unmarshal(w.Body.Bytes(), &relationshipsResponse)
+	_ = json.Unmarshal(w.Body.Bytes(), &relationshipsResponse)
 
 	var relationshipID string
 	if len(relationshipsResponse) > 0 && len(relationshipsResponse[0].Products) > 0 &&
@@ -1022,7 +1022,7 @@ func testIdentificationHelperHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var vendor VendorDTO
-	json.Unmarshal(w.Body.Bytes(), &vendor)
+	_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 	productData := CreateProductDTO{Name: "Helper Test Product", Description: "Test", VendorID: vendor.ID, Type: "software"}
 	productJSON, _ := json.Marshal(productData)
@@ -1032,7 +1032,7 @@ func testIdentificationHelperHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var product ProductDTO
-	json.Unmarshal(w.Body.Bytes(), &product)
+	_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 	versionData := CreateProductVersionDTO{Version: "1.0.0", ProductID: product.ID}
 	versionJSON, _ := json.Marshal(versionData)
@@ -1041,7 +1041,7 @@ func testIdentificationHelperHandlers(t *testing.T, app *fuego.Server) {
 	w = httptest.NewRecorder()
 	app.Mux.ServeHTTP(w, req)
 	var version ProductVersionDTO
-	json.Unmarshal(w.Body.Bytes(), &version)
+	_ = json.Unmarshal(w.Body.Bytes(), &version)
 
 	// Test CreateIdentificationHelper
 	helperData := CreateIdentificationHelperDTO{
@@ -1061,7 +1061,7 @@ func testIdentificationHelperHandlers(t *testing.T, app *fuego.Server) {
 	}
 
 	var createdHelper IdentificationHelperDTO
-	json.Unmarshal(w.Body.Bytes(), &createdHelper)
+	_ = json.Unmarshal(w.Body.Bytes(), &createdHelper)
 	helperID := createdHelper.ID
 
 	// Test ListIdentificationHelpersByProductVersion
@@ -1117,7 +1117,7 @@ func testExportHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var vendor VendorDTO
-	json.Unmarshal(w.Body.Bytes(), &vendor)
+	_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 	productData := CreateProductDTO{Name: "Export Test Product", Description: "Test", VendorID: vendor.ID, Type: "software"}
 	productJSON, _ := json.Marshal(productData)
@@ -1127,7 +1127,7 @@ func testExportHandlers(t *testing.T, app *fuego.Server) {
 	app.Mux.ServeHTTP(w, req)
 
 	var product ProductDTO
-	json.Unmarshal(w.Body.Bytes(), &product)
+	_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 	// Test ExportProductTree
 	exportData := ExportRequestDTO{
@@ -2565,7 +2565,7 @@ func TestRepositoryErrorHandling(t *testing.T) {
 			Category: "vendor",
 			Name:     "Test Node",
 		}
-		_, err = repo.CreateNode(ctx, validNode)
+		_, _ = repo.CreateNode(ctx, validNode)
 		// This should succeed or fail gracefully - testing the path
 
 		// Test updating non-existent node (might succeed silently in some implementations)
@@ -2574,11 +2574,11 @@ func TestRepositoryErrorHandling(t *testing.T) {
 			ID:   nonExistentID,
 			Name: "Updated Name",
 		}
-		err = repo.UpdateNode(ctx, updateNode)
+		_ = repo.UpdateNode(ctx, updateNode)
 		// Testing the code path, not necessarily expecting error
 
 		// Test deleting non-existent node (might succeed silently)
-		err = repo.DeleteNode(ctx, nonExistentID)
+		_ = repo.DeleteNode(ctx, nonExistentID)
 		// Testing the code path
 
 		// Test creating relationship with valid data
@@ -2586,7 +2586,7 @@ func TestRepositoryErrorHandling(t *testing.T) {
 			ID:       "123e4567-e89b-12d3-a456-426614174001",
 			Category: "default_component_of",
 		}
-		_, err = repo.CreateRelationship(ctx, validRel)
+		_, _ = repo.CreateRelationship(ctx, validRel)
 		// Testing the code path
 
 		// Test creating identification helper with valid data
@@ -2594,7 +2594,7 @@ func TestRepositoryErrorHandling(t *testing.T) {
 			ID:     "123e4567-e89b-12d3-a456-426614174002",
 			NodeID: "123e4567-e89b-12d3-a456-426614174000",
 		}
-		_, err = repo.CreateIdentificationHelper(ctx, validHelper)
+		_, _ = repo.CreateIdentificationHelper(ctx, validHelper)
 		// Testing the code path
 	})
 }
@@ -2724,7 +2724,7 @@ func TestCSAFExport(t *testing.T) {
 			t.Fatalf("ExportCSAFProductTree failed: %v", err)
 		}
 
-		if csafResult == nil || len(csafResult) == 0 {
+		if len(csafResult) == 0 {
 			t.Error("Expected CSAF export to contain data")
 		}
 
@@ -2735,7 +2735,7 @@ func TestCSAFExport(t *testing.T) {
 		}
 
 		// Test export with empty product list
-		csafEmpty, err := svc.ExportCSAFProductTree(ctx, []string{})
+		csafEmpty, _ := svc.ExportCSAFProductTree(ctx, []string{})
 		// This might succeed with empty results, testing the code path
 		_ = csafEmpty
 	})
@@ -2892,15 +2892,15 @@ func TestServiceSpecificOperations(t *testing.T) {
 		}
 
 		// Test vendor deletion with products (should fail or cascade)
-		err = svc.DeleteVendor(ctx, vendor.ID)
+		_ = svc.DeleteVendor(ctx, vendor.ID)
 		// This tests the DeleteVendor path
 
 		// Test product deletion with versions (should cascade)
-		err = svc.DeleteProduct(ctx, product.ID)
+		_ = svc.DeleteProduct(ctx, product.ID)
 		// This tests the DeleteProduct path
 
 		// Test version deletion with helpers (should cascade)
-		err = svc.DeleteProductVersion(ctx, version1.ID)
+		_ = svc.DeleteProductVersion(ctx, version1.ID)
 		// This tests the DeleteProductVersion path
 
 		// Clean up any remaining helpers
@@ -2948,11 +2948,11 @@ func TestRepositorySpecificPaths(t *testing.T) {
 		}
 
 		// Test GetIdentificationHelpersByProductVersion with non-existent version
-		_, err = repo.GetIdentificationHelpersByProductVersion(ctx, "123e4567-e89b-12d3-a456-426614174000")
+		_, _ = repo.GetIdentificationHelpersByProductVersion(ctx, "123e4567-e89b-12d3-a456-426614174000")
 		// This tests the code path
 
 		// Test GetRelationshipsBySourceAndCategory with non-existent data
-		_, err = repo.GetRelationshipsBySourceAndCategory(ctx, "123e4567-e89b-12d3-a456-426614174000", "default_component_of")
+		_, _ = repo.GetRelationshipsBySourceAndCategory(ctx, "123e4567-e89b-12d3-a456-426614174000", "default_component_of")
 		// This tests the code path
 	})
 }
@@ -3491,7 +3491,7 @@ func TestEdgeCasesAndErrorPaths(t *testing.T) {
 		}
 
 		// Test ListVendorProducts with non-existent vendor
-		_, err = svc.ListVendorProducts(ctx, "123e4567-e89b-12d3-a456-426614174000")
+		_, _ = svc.ListVendorProducts(ctx, "123e4567-e89b-12d3-a456-426614174000")
 		// This should test the error path
 
 		// Test UpdateVendor with empty fields
@@ -3675,11 +3675,11 @@ func TestEdgeCasesAndErrorPaths(t *testing.T) {
 		}
 
 		// Test GetIdentificationHelpersByProductVersion with non-existent version
-		_, err = repo.GetIdentificationHelpersByProductVersion(ctx, "non-existent")
+		_, _ = repo.GetIdentificationHelpersByProductVersion(ctx, "non-existent")
 		// This should not error but return empty results
 
 		// Test GetRelationshipsBySourceAndCategory with non-existent data
-		_, err = repo.GetRelationshipsBySourceAndCategory(ctx, "non-existent", "non-existent")
+		_, _ = repo.GetRelationshipsBySourceAndCategory(ctx, "non-existent", "non-existent")
 		// This should not error but return empty results
 	})
 }
@@ -11629,6 +11629,7 @@ func TestComplexTransactionFailures(t *testing.T) {
 				_, err := svc.GetVendorByID(ctx, fmt.Sprintf("concurrent-test-%d", i))
 				if err != nil {
 					// Expected to fail for non-existent vendors
+					continue
 				}
 			}
 		})
@@ -12862,7 +12863,7 @@ func TestComprehensiveTesting(t *testing.T) {
 			var vendorResp struct {
 				ID string `json:"id"`
 			}
-			json.Unmarshal(vendorW.Body.Bytes(), &vendorResp)
+			_ = json.Unmarshal(vendorW.Body.Bytes(), &vendorResp)
 
 			productReq := httptest.NewRequest("POST", "/api/v1/products", strings.NewReader(fmt.Sprintf(`{"name":"Test Product","vendor_id":"%s","type":"software","description":"Test"}`, vendorResp.ID)))
 			productReq.Header.Set("Content-Type", "application/json")
@@ -12876,7 +12877,7 @@ func TestComprehensiveTesting(t *testing.T) {
 			var productResp struct {
 				ID string `json:"id"`
 			}
-			json.Unmarshal(productW.Body.Bytes(), &productResp)
+			_ = json.Unmarshal(productW.Body.Bytes(), &productResp)
 
 			// Create product version
 			versionReq := httptest.NewRequest("POST", "/api/v1/product-versions", strings.NewReader(fmt.Sprintf(`{"version":"1.0.0","product_id":"%s","release_date":"2024-01-01"}`, productResp.ID)))
@@ -12891,7 +12892,7 @@ func TestComprehensiveTesting(t *testing.T) {
 			var versionResp struct {
 				ID string `json:"id"`
 			}
-			json.Unmarshal(versionW.Body.Bytes(), &versionResp)
+			_ = json.Unmarshal(versionW.Body.Bytes(), &versionResp)
 
 			// Create identification helper with complex metadata to trigger convertIdentificationHelpersToCSAF
 			identReq := httptest.NewRequest("POST", "/api/v1/identification-helper", strings.NewReader(fmt.Sprintf(`{"product_version_id":"%s","metadata":"{\"purl\":\"pkg:npm/test@1.0.0\",\"cpe\":\"cpe:2.3:a:test:test:1.0.0:*:*:*:*:*:*:*\",\"complex_data\":{\"nested\":true,\"array\":[1,2,3],\"null_value\":null}}"}`, versionResp.ID)))
@@ -12927,7 +12928,7 @@ func TestComprehensiveTesting(t *testing.T) {
 				var vendorResp struct {
 					ID string `json:"id"`
 				}
-				json.Unmarshal(vendorW.Body.Bytes(), &vendorResp)
+				_ = json.Unmarshal(vendorW.Body.Bytes(), &vendorResp)
 
 				// Delete vendor to trigger DeleteNode path
 				deleteReq := httptest.NewRequest("DELETE", "/api/v1/vendors/"+vendorResp.ID, nil)
@@ -12966,7 +12967,7 @@ func TestComprehensiveTesting(t *testing.T) {
 			var vendorResp struct {
 				ID string `json:"id"`
 			}
-			json.Unmarshal(vendorW.Body.Bytes(), &vendorResp)
+			_ = json.Unmarshal(vendorW.Body.Bytes(), &vendorResp)
 
 			// Test concurrent operations to hit all remaining code paths
 			for i := 0; i < 20; i++ {
@@ -13121,7 +13122,7 @@ func TestComprehensiveValidation(t *testing.T) {
 
 				// Create relationships with different categories
 				categories := []string{"depends_on", "bundles", "contains", "installed_on", "running_on"}
-				svc.CreateRelationship(context.Background(), CreateRelationshipDTO{
+				_ = svc.CreateRelationship(context.Background(), CreateRelationshipDTO{
 					SourceNodeIDs: []string{version.ID},
 					TargetNodeIDs: []string{targetVersion.ID},
 					Category:      categories[i%len(categories)],
@@ -13219,7 +13220,7 @@ func TestComprehensiveValidation(t *testing.T) {
 					})
 
 					// Create identification helpers
-					svc.CreateIdentificationHelper(context.Background(), CreateIdentificationHelperDTO{
+					_, _ = svc.CreateIdentificationHelper(context.Background(), CreateIdentificationHelperDTO{
 						ProductVersionID: version.ID,
 						Category:         "deletion_test",
 						Metadata:         `{"test":"deletion"}`,
@@ -13277,7 +13278,7 @@ func TestComprehensiveValidation(t *testing.T) {
 						continue
 					}
 
-					svc.CreateIdentificationHelper(context.Background(), CreateIdentificationHelperDTO{
+					_, _ = svc.CreateIdentificationHelper(context.Background(), CreateIdentificationHelperDTO{
 						ProductVersionID: version.ID,
 						Category:         "stress_test",
 						Metadata:         fmt.Sprintf(`{"stress":true,"index":%d}`, i*5+j),
@@ -13289,7 +13290,7 @@ func TestComprehensiveValidation(t *testing.T) {
 			products, _ := svc.ListProducts(context.Background())
 			for _, product := range products {
 				if strings.Contains(product.Name, "Stress Product") {
-					svc.DeleteProduct(context.Background(), product.ID)
+					_ = svc.DeleteProduct(context.Background(), product.ID)
 				}
 			}
 		})
@@ -13345,7 +13346,7 @@ func TestServiceDeepValidation(t *testing.T) {
 
 		// Create more entities to test AssertCount with different numbers
 		for i := 0; i < 5; i++ {
-			svc.CreateVendor(context.Background(), CreateVendorDTO{
+			_, _ = svc.CreateVendor(context.Background(), CreateVendorDTO{
 				Name: fmt.Sprintf("Assert Vendor %d", i), Description: "Test",
 			})
 		}
@@ -13397,7 +13398,7 @@ func TestServiceDeepValidation(t *testing.T) {
 
 				// Create identification helpers
 				for k := 0; k < 2; k++ {
-					svc.CreateIdentificationHelper(context.Background(), CreateIdentificationHelperDTO{
+					_, _ = svc.CreateIdentificationHelper(context.Background(), CreateIdentificationHelperDTO{
 						ProductVersionID: version.ID,
 						Category:         fmt.Sprintf("delete_test_%d", k),
 						Metadata:         fmt.Sprintf(`{"delete_test":true,"index":%d}`, k),
@@ -13408,7 +13409,7 @@ func TestServiceDeepValidation(t *testing.T) {
 
 		// Create relationships between versions
 		for i := 0; i < len(versions)-1; i++ {
-			svc.CreateRelationship(context.Background(), CreateRelationshipDTO{
+			_ = svc.CreateRelationship(context.Background(), CreateRelationshipDTO{
 				SourceNodeIDs: []string{versions[i].ID},
 				TargetNodeIDs: []string{versions[i+1].ID},
 				Category:      "depends_on",
@@ -13473,7 +13474,7 @@ func TestServiceDeepValidation(t *testing.T) {
 			categories := []string{"depends_on", "bundles", "contains", "installed_on", "running_on"}
 			category := categories[i%len(categories)]
 
-			svc.CreateRelationship(context.Background(), CreateRelationshipDTO{
+			_ = svc.CreateRelationship(context.Background(), CreateRelationshipDTO{
 				SourceNodeIDs: []string{sourceVersion.ID},
 				TargetNodeIDs: []string{targetVersion.ID},
 				Category:      category,
@@ -14463,7 +14464,7 @@ func TestListProductVersionsHandler(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var vendor VendorDTO
-		json.Unmarshal(w.Body.Bytes(), &vendor)
+		_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 		// Create test product
 		productData := CreateProductDTO{
@@ -14479,7 +14480,7 @@ func TestListProductVersionsHandler(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var product ProductDTO
-		json.Unmarshal(w.Body.Bytes(), &product)
+		_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 		// Create multiple product versions
 		version1Data := CreateProductVersionDTO{
@@ -14578,7 +14579,7 @@ func TestListProductVersionsHandler(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var vendor VendorDTO
-		json.Unmarshal(w.Body.Bytes(), &vendor)
+		_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 		productData := CreateProductDTO{
 			Name:        "Empty Versions Product",
@@ -14593,7 +14594,7 @@ func TestListProductVersionsHandler(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var product ProductDTO
-		json.Unmarshal(w.Body.Bytes(), &product)
+		_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 		// Test ListProductVersions for product with no versions
 		req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product.ID), nil)
@@ -14640,7 +14641,7 @@ func TestListProductVersionsHandler(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var vendor VendorDTO
-		json.Unmarshal(w.Body.Bytes(), &vendor)
+		_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 		productData := CreateProductDTO{
 			Name:        "Content Type Test Product",
@@ -14655,7 +14656,7 @@ func TestListProductVersionsHandler(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var product ProductDTO
-		json.Unmarshal(w.Body.Bytes(), &product)
+		_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 		// Test with different content types (shouldn't matter for GET request)
 		req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product.ID), nil)
@@ -14814,7 +14815,7 @@ func TestListProductVersionsEdgeCases(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var vendor VendorDTO
-		json.Unmarshal(w.Body.Bytes(), &vendor)
+		_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 		productData := CreateProductDTO{
 			Name:        "Many Versions Product",
@@ -14829,7 +14830,7 @@ func TestListProductVersionsEdgeCases(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var product ProductDTO
-		json.Unmarshal(w.Body.Bytes(), &product)
+		_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 		// Create many versions
 		expectedVersionCount := 10
@@ -14891,7 +14892,7 @@ func TestListProductVersionsResponseFormat(t *testing.T) {
 	app.Mux.ServeHTTP(w, req)
 
 	var vendor VendorDTO
-	json.Unmarshal(w.Body.Bytes(), &vendor)
+	_ = json.Unmarshal(w.Body.Bytes(), &vendor)
 
 	productData := CreateProductDTO{
 		Name:        "Response Format Test Product",
@@ -14906,7 +14907,7 @@ func TestListProductVersionsResponseFormat(t *testing.T) {
 	app.Mux.ServeHTTP(w, req)
 
 	var product ProductDTO
-	json.Unmarshal(w.Body.Bytes(), &product)
+	_ = json.Unmarshal(w.Body.Bytes(), &product)
 
 	versionData := CreateProductVersionDTO{
 		Version:   "1.0.0",
@@ -14964,7 +14965,7 @@ func TestListProductVersionsResponseFormat(t *testing.T) {
 		app.Mux.ServeHTTP(w, req)
 
 		var product2 ProductDTO
-		json.Unmarshal(w.Body.Bytes(), &product2)
+		_ = json.Unmarshal(w.Body.Bytes(), &product2)
 
 		req = httptest.NewRequest("GET", fmt.Sprintf("/api/v1/products/%s/versions", product2.ID), nil)
 		w = httptest.NewRecorder()

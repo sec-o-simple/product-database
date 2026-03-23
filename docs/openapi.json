@@ -21,9 +21,9 @@
 					}
 				},
 				"required": [
-					"product_version_id",
 					"category",
-					"metadata"
+					"metadata",
+					"product_version_id"
 				],
 				"type": "object"
 			},
@@ -35,7 +35,6 @@
 						"type": "string"
 					},
 					"family_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"nullable": true,
 						"type": "string"
@@ -55,8 +54,8 @@
 				},
 				"required": [
 					"name",
-					"vendor_id",
-					"type"
+					"type",
+					"vendor_id"
 				],
 				"type": "object"
 			},
@@ -68,8 +67,8 @@
 						"type": "string"
 					},
 					"parent_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
 						"type": "string"
 					}
 				},
@@ -82,7 +81,6 @@
 				"description": "CreateProductVersionDTO schema",
 				"properties": {
 					"predecessor_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"nullable": true,
 						"type": "string"
@@ -92,7 +90,6 @@
 						"type": "string"
 					},
 					"release_date": {
-						"description": "string schema",
 						"example": "2023-10-01",
 						"nullable": true,
 						"type": "string"
@@ -103,8 +100,8 @@
 					}
 				},
 				"required": [
-					"version",
-					"product_id"
+					"product_id",
+					"version"
 				],
 				"type": "object"
 			},
@@ -117,13 +114,15 @@
 					},
 					"source_node_ids": {
 						"items": {
-							"type": "string"
+							"type": "string",
+							"x-fuego-required-marker": true
 						},
 						"type": "array"
 					},
 					"target_node_ids": {
 						"items": {
-							"type": "string"
+							"type": "string",
+							"x-fuego-required-marker": true
 						},
 						"type": "array"
 					}
@@ -158,7 +157,9 @@
 					"product_ids": {
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"items": {
-							"type": "string"
+							"example": "123e4567-e89b-12d3-a456-426614174000",
+							"type": "string",
+							"x-fuego-required-marker": true
 						},
 						"type": "array"
 					}
@@ -178,9 +179,13 @@
 					},
 					"errors": {
 						"items": {
+							"nullable": true,
 							"properties": {
 								"more": {
-									"additionalProperties": {},
+									"additionalProperties": {
+										"description": "Additional information about the error",
+										"nullable": true
+									},
 									"description": "Additional information about the error",
 									"nullable": true,
 									"type": "object"
@@ -243,10 +248,10 @@
 					}
 				},
 				"required": [
-					"id",
 					"category",
-					"product_version_id",
-					"metadata"
+					"id",
+					"metadata",
+					"product_version_id"
 				],
 				"type": "object"
 			},
@@ -271,10 +276,10 @@
 					}
 				},
 				"required": [
-					"id",
 					"category",
-					"product_version_id",
-					"metadata"
+					"id",
+					"metadata",
+					"product_version_id"
 				],
 				"type": "object"
 			},
@@ -286,7 +291,6 @@
 						"type": "string"
 					},
 					"family_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"nullable": true,
 						"type": "string"
@@ -323,28 +327,26 @@
 									"type": "string"
 								},
 								"predecessor_id": {
-									"description": "string schema",
 									"example": "123e4567-e89b-12d3-a456-426614174000",
 									"nullable": true,
 									"type": "string"
 								},
 								"product_id": {
-									"description": "string schema",
 									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"nullable": true,
 									"type": "string"
 								},
 								"released_at": {
-									"description": "string schema",
 									"example": "2023-10-01",
 									"nullable": true,
 									"type": "string"
 								}
 							},
 							"required": [
-								"id",
-								"name",
 								"full_name",
-								"is_latest"
+								"id",
+								"is_latest",
+								"name"
 							],
 							"type": "object"
 						},
@@ -359,8 +361,8 @@
 						"type": "string"
 					},
 					"vendor_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
 						"type": "string"
 					},
 					"versions": {
@@ -387,28 +389,26 @@
 									"type": "string"
 								},
 								"predecessor_id": {
-									"description": "string schema",
 									"example": "123e4567-e89b-12d3-a456-426614174000",
 									"nullable": true,
 									"type": "string"
 								},
 								"product_id": {
-									"description": "string schema",
 									"example": "123e4567-e89b-12d3-a456-426614174000",
+									"nullable": true,
 									"type": "string"
 								},
 								"released_at": {
-									"description": "string schema",
 									"example": "2023-10-01",
 									"nullable": true,
 									"type": "string"
 								}
 							},
 							"required": [
-								"id",
-								"name",
 								"full_name",
-								"is_latest"
+								"id",
+								"is_latest",
+								"name"
 							],
 							"type": "object"
 						},
@@ -416,9 +416,9 @@
 					}
 				},
 				"required": [
+					"full_name",
 					"id",
 					"name",
-					"full_name",
 					"type"
 				],
 				"type": "object"
@@ -435,14 +435,16 @@
 						"type": "string"
 					},
 					"parent_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
 						"type": "string"
 					},
 					"path": {
 						"example": "['Parent Family', 'Family Name']",
 						"items": {
-							"type": "string"
+							"example": "['Parent Family', 'Family Name']",
+							"type": "string",
+							"x-fuego-required-marker": true
 						},
 						"type": "array"
 					}
@@ -478,28 +480,26 @@
 						"type": "string"
 					},
 					"predecessor_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"nullable": true,
 						"type": "string"
 					},
 					"product_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
 						"type": "string"
 					},
 					"released_at": {
-						"description": "string schema",
 						"example": "2023-10-01",
 						"nullable": true,
 						"type": "string"
 					}
 				},
 				"required": [
-					"id",
-					"name",
 					"full_name",
-					"is_latest"
+					"id",
+					"is_latest",
+					"name"
 				],
 				"type": "object"
 			},
@@ -537,28 +537,26 @@
 								"type": "string"
 							},
 							"predecessor_id": {
-								"description": "string schema",
 								"example": "123e4567-e89b-12d3-a456-426614174000",
 								"nullable": true,
 								"type": "string"
 							},
 							"product_id": {
-								"description": "string schema",
 								"example": "123e4567-e89b-12d3-a456-426614174000",
+								"nullable": true,
 								"type": "string"
 							},
 							"released_at": {
-								"description": "string schema",
 								"example": "2023-10-01",
 								"nullable": true,
 								"type": "string"
 							}
 						},
 						"required": [
-							"id",
-							"name",
 							"full_name",
-							"is_latest"
+							"id",
+							"is_latest",
+							"name"
 						],
 						"type": "object"
 					},
@@ -585,35 +583,33 @@
 								"type": "string"
 							},
 							"predecessor_id": {
-								"description": "string schema",
 								"example": "123e4567-e89b-12d3-a456-426614174000",
 								"nullable": true,
 								"type": "string"
 							},
 							"product_id": {
-								"description": "string schema",
 								"example": "123e4567-e89b-12d3-a456-426614174000",
+								"nullable": true,
 								"type": "string"
 							},
 							"released_at": {
-								"description": "string schema",
 								"example": "2023-10-01",
 								"nullable": true,
 								"type": "string"
 							}
 						},
 						"required": [
-							"id",
-							"name",
 							"full_name",
-							"is_latest"
+							"id",
+							"is_latest",
+							"name"
 						],
 						"type": "object"
 					}
 				},
 				"required": [
-					"id",
 					"category",
+					"id",
 					"source",
 					"target"
 				],
@@ -636,7 +632,6 @@
 											"type": "string"
 										},
 										"family_id": {
-											"description": "string schema",
 											"example": "123e4567-e89b-12d3-a456-426614174000",
 											"nullable": true,
 											"type": "string"
@@ -673,28 +668,26 @@
 														"type": "string"
 													},
 													"predecessor_id": {
-														"description": "string schema",
 														"example": "123e4567-e89b-12d3-a456-426614174000",
 														"nullable": true,
 														"type": "string"
 													},
 													"product_id": {
-														"description": "string schema",
 														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"nullable": true,
 														"type": "string"
 													},
 													"released_at": {
-														"description": "string schema",
 														"example": "2023-10-01",
 														"nullable": true,
 														"type": "string"
 													}
 												},
 												"required": [
-													"id",
-													"name",
 													"full_name",
-													"is_latest"
+													"id",
+													"is_latest",
+													"name"
 												],
 												"type": "object"
 											},
@@ -709,8 +702,8 @@
 											"type": "string"
 										},
 										"vendor_id": {
-											"description": "string schema",
 											"example": "123e4567-e89b-12d3-a456-426614174000",
+											"nullable": true,
 											"type": "string"
 										},
 										"versions": {
@@ -737,28 +730,26 @@
 														"type": "string"
 													},
 													"predecessor_id": {
-														"description": "string schema",
 														"example": "123e4567-e89b-12d3-a456-426614174000",
 														"nullable": true,
 														"type": "string"
 													},
 													"product_id": {
-														"description": "string schema",
 														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"nullable": true,
 														"type": "string"
 													},
 													"released_at": {
-														"description": "string schema",
 														"example": "2023-10-01",
 														"nullable": true,
 														"type": "string"
 													}
 												},
 												"required": [
-													"id",
-													"name",
 													"full_name",
-													"is_latest"
+													"id",
+													"is_latest",
+													"name"
 												],
 												"type": "object"
 											},
@@ -766,9 +757,9 @@
 										}
 									},
 									"required": [
+										"full_name",
 										"id",
 										"name",
-										"full_name",
 										"type"
 									],
 									"type": "object"
@@ -803,28 +794,26 @@
 														"type": "string"
 													},
 													"predecessor_id": {
-														"description": "string schema",
 														"example": "123e4567-e89b-12d3-a456-426614174000",
 														"nullable": true,
 														"type": "string"
 													},
 													"product_id": {
-														"description": "string schema",
 														"example": "123e4567-e89b-12d3-a456-426614174000",
+														"nullable": true,
 														"type": "string"
 													},
 													"released_at": {
-														"description": "string schema",
 														"example": "2023-10-01",
 														"nullable": true,
 														"type": "string"
 													}
 												},
 												"required": [
-													"id",
-													"name",
 													"full_name",
-													"is_latest"
+													"id",
+													"is_latest",
+													"name"
 												],
 												"type": "object"
 											}
@@ -833,7 +822,8 @@
 											"id",
 											"version"
 										],
-										"type": "object"
+										"type": "object",
+										"x-fuego-required-marker": true
 									},
 									"type": "array"
 								}
@@ -842,7 +832,8 @@
 								"product",
 								"version_relationships"
 							],
-							"type": "object"
+							"type": "object",
+							"x-fuego-required-marker": true
 						},
 						"type": "array"
 					}
@@ -861,8 +852,8 @@
 						"type": "string"
 					},
 					"metadata": {
-						"description": "string schema",
 						"example": "{\"key\":\"value\"}",
+						"nullable": true,
 						"type": "string"
 					},
 					"product_version_id": {
@@ -876,29 +867,28 @@
 				"description": "UpdateProductDTO schema",
 				"properties": {
 					"description": {
-						"description": "string schema",
 						"example": "Product Description",
+						"nullable": true,
 						"type": "string"
 					},
 					"family_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"nullable": true,
 						"type": "string"
 					},
 					"name": {
-						"description": "string schema",
 						"example": "Product Name",
+						"nullable": true,
 						"type": "string"
 					},
 					"type": {
-						"description": "string schema",
 						"example": "software",
+						"nullable": true,
 						"type": "string"
 					},
 					"vendor_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
 						"type": "string"
 					}
 				},
@@ -912,8 +902,8 @@
 						"type": "string"
 					},
 					"parent_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
 						"type": "string"
 					}
 				},
@@ -923,24 +913,23 @@
 				"description": "UpdateProductVersionDTO schema",
 				"properties": {
 					"predecessor_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
 						"nullable": true,
 						"type": "string"
 					},
 					"product_id": {
-						"description": "string schema",
 						"example": "123e4567-e89b-12d3-a456-426614174000",
+						"nullable": true,
 						"type": "string"
 					},
 					"release_date": {
-						"description": "string schema",
 						"example": "2023-10-01",
+						"nullable": true,
 						"type": "string"
 					},
 					"version": {
-						"description": "string schema",
 						"example": "Version Name",
+						"nullable": true,
 						"type": "string"
 					}
 				},
@@ -963,14 +952,15 @@
 					},
 					"target_node_ids": {
 						"items": {
-							"type": "string"
+							"type": "string",
+							"x-fuego-required-marker": true
 						},
 						"type": "array"
 					}
 				},
 				"required": [
-					"previous_category",
 					"category",
+					"previous_category",
 					"source_node_id",
 					"target_node_ids"
 				],
@@ -980,13 +970,13 @@
 				"description": "UpdateVendorDTO schema",
 				"properties": {
 					"description": {
-						"description": "string schema",
 						"example": "Vendor Description",
+						"nullable": true,
 						"type": "string"
 					},
 					"name": {
-						"description": "string schema",
 						"example": "Vendor Name",
+						"nullable": true,
 						"type": "string"
 					}
 				},
@@ -1013,9 +1003,9 @@
 					}
 				},
 				"required": [
+					"description",
 					"id",
 					"name",
-					"description",
 					"product_count"
 				],
 				"type": "object"

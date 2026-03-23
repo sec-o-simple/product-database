@@ -12,6 +12,7 @@ product-database/
 ├── client/     # Vite + React frontend
 ├── docker/     # Docker configuration and compose files
 ├── docs/       # Documentation (OpenAPI, Database)
+├── RELEASE.md  # Release process documentation
 ```
 
 ---
@@ -49,6 +50,7 @@ This is a monorepo. Each subproject (`server`, `client`) has its own setup instr
 
 -   [`server/README.md`](./server/README.md)
 -   [`client/README.md`](./client/README.md)
+-   [`RELEASE.md`](./RELEASE.md)
 
 ## Architecture Overview
 
@@ -100,9 +102,9 @@ in order to prevent large merge conflicts.
 -   Commit messages should be clear and imperative.
 -   Address reviewer feedback promptly
 
-## Release
+## Release Process
 
-Please refer to this [`RELEASE.md`](RELEASE.md)
+For detailed release instructions and versioning, please see [`RELEASE.md`](./RELEASE.md).
 
 ## Contributing
 

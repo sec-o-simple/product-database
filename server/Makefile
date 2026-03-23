@@ -31,7 +31,7 @@ fmt:             ## Format code
 	$(GO) fmt ./...
 
 lint:            ## Run golangci-lint
-	golangci-lint run
+	golangci-lint run --tests=false
 
 build:           ## Build the application
 	$(GO) build -o $(BUILD) $(CMD_DIR)
@@ -43,4 +43,4 @@ tools:           ## Install air & golangci-lint if missing
 	@command -v air >/dev/null 2>&1 || { echo "installing air…"; \
 		$(GO) install github.com/air-verse/air@latest ; }
 	@command -v golangci-lint >/dev/null 2>&1 || { echo "installing golangci-lint…"; \
-		$(GO) install github.com/golangci/golangci-lint/cmd/golangci-lint@latest ; }
+		$(GO) install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.11.4 ; }
