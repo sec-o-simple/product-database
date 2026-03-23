@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:api": "cd ../server && make dev",
-    "build": "tsc && vite build",
+    "build": "tsc -b tsconfig.app.json && vite build",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:watch": "vitest",
