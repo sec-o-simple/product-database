@@ -60,7 +60,6 @@ export function useProductFamilyMutation({
       onSuccess: () => {
         onSuccess()
       },
-      params: { path: { id: productFamily.id } },
     },
   )
 
