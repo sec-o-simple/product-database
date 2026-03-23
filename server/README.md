@@ -6,7 +6,7 @@ This is the **API Server** for the Product Database. It is built with Go and pro
 
 ## Technologies Used
 
-- **Go 1.24+**
+- **Go 1.25+**
 - [**Fuego**](https://github.com/go-fuego/fuego) – lightweight HTTP framework
 - [**GORM**](https://gorm.io/) – ORM for PostgreSQL, SQLite, etc.
 - [**go-playground/validator**](https://github.com/go-playground/validator) – request validation
@@ -31,7 +31,7 @@ server/
 
 ### Prerequisites
 
-- [Go](https://golang.org/dl/) 1.24 or higher
+- [Go](https://golang.org/dl/) 1.25 or higher
 
 ### Setup
 

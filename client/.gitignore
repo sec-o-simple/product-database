@@ -31,3 +31,4 @@ bun.lockb
 .env
 
 coverage/
+*.tsbuildinfo

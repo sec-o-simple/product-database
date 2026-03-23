@@ -74,7 +74,6 @@ export function useVersionMutation({
     'put',
     '/api/v1/product-versions/{id}',
     {
-      params: { path: { id: version.id } },
       onSuccess: (res) => {
         onSuccess(res.id)
       },

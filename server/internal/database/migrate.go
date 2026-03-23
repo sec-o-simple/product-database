@@ -149,15 +149,31 @@ func Migrate(db *gorm.DB) {
 				Successor           *Node `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;foreignKey:SuccessorID;references:ID"`
 			}
 
-			tx.Migrator().DropConstraint(&Node{}, "fk_nodes_children")
-			tx.Migrator().DropConstraint(&Node{}, "fk_nodes_product_family")
-			tx.Migrator().CreateConstraint(&Node{}, "fk_nodes_children")
-			tx.Migrator().CreateConstraint(&Node{}, "fk_nodes_product_family")
+			if err := tx.Migrator().DropConstraint(&Node{}, "fk_nodes_children"); err != nil {
+				return err
+			}
+			if err := tx.Migrator().DropConstraint(&Node{}, "fk_nodes_product_family"); err != nil {
+				return err
+			}
+			if err := tx.Migrator().CreateConstraint(&Node{}, "fk_nodes_children"); err != nil {
+				return err
+			}
+			if err := tx.Migrator().CreateConstraint(&Node{}, "fk_nodes_product_family"); err != nil {
+				return err
+			}
 
-			tx.Migrator().DropConstraint(&Relationship{}, "fk_nodes_target_relationships")
-			tx.Migrator().DropConstraint(&Relationship{}, "fk_nodes_source_relationships")
-			tx.Migrator().CreateConstraint(&Node{}, "fk_nodes_target_relationships")
-			tx.Migrator().CreateConstraint(&Node{}, "fk_nodes_source_relationships")
+			if err := tx.Migrator().DropConstraint(&Relationship{}, "fk_nodes_target_relationships"); err != nil {
+				return err
+			}
+			if err := tx.Migrator().DropConstraint(&Relationship{}, "fk_nodes_source_relationships"); err != nil {
+				return err
+			}
+			if err := tx.Migrator().CreateConstraint(&Node{}, "fk_nodes_target_relationships"); err != nil {
+				return err
+			}
+			if err := tx.Migrator().CreateConstraint(&Node{}, "fk_nodes_source_relationships"); err != nil {
+				return err
+			}
 
 			return nil
 		},

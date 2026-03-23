@@ -113,7 +113,7 @@ func CleanupTestDB(t *testing.T, db *gorm.DB) {
 		t.Logf("Failed to get underlying SQL DB: %v", err)
 		return
 	}
-	sqlDB.Close()
+	_ = sqlDB.Close()
 }
 
 // CreateTestVendor creates a test vendor node
@@ -212,18 +212,18 @@ func CreateTestIdentificationHelper(t *testing.T, db *gorm.DB, nodeID string, ca
 
 // SetupTestEnv sets up environment variables for testing
 func SetupTestEnv() {
-	os.Setenv("ENV", "test")
-	os.Setenv("HOST", "localhost")
-	os.Setenv("PORT", "8080")
-	os.Setenv("CORS_ORIGIN", "http://localhost:3000")
+	_ = os.Setenv("ENV", "test")
+	_ = os.Setenv("HOST", "localhost")
+	_ = os.Setenv("PORT", "8080")
+	_ = os.Setenv("CORS_ORIGIN", "http://localhost:3000")
 }
 
 // CleanupTestEnv cleans up environment variables after testing
 func CleanupTestEnv() {
-	os.Unsetenv("ENV")
-	os.Unsetenv("HOST")
-	os.Unsetenv("PORT")
-	os.Unsetenv("CORS_ORIGIN")
+	_ = os.Unsetenv("ENV")
+	_ = os.Unsetenv("HOST")
+	_ = os.Unsetenv("PORT")
+	_ = os.Unsetenv("CORS_ORIGIN")
 }
 
 // AssertNoError is a helper to assert that no error occurred

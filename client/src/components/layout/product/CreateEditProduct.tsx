@@ -68,7 +68,6 @@ export function useProductMutation({
     },
   })
   const updateMutation = client.useMutation('put', '/api/v1/products/{id}', {
-    params: { path: { id: product.id } },
     onSuccess: (res) => {
       onSuccess(res.id)
     },

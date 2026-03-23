@@ -49,7 +49,9 @@ func corsMiddleware(allowedOrigins []string) func(http.Handler) http.Handler {
 }
 
 func main() {
-	godotenv.Load()
+	if err := godotenv.Load(); err != nil {
+		slog.Info("Could not load .env file")
+	}
 
 	db := database.Connect()
 
@@ -105,7 +107,12 @@ func main() {
 
 	internal.RegisterRoutes(s, svc)
 
-	go s.Run()
+	go func() {
+		if err := s.Run(); err != nil {
+			slog.Error("Failed to start server", "error", err)
+			os.Exit(1)
+		}
+	}()
 	slog.Info("Server is running", "addr", s.Addr)
 
 	quit := make(chan os.Signal, 1)

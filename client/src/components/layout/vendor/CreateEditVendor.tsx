@@ -46,7 +46,6 @@ export function useVendorMutation({ vendor }: { vendor: VendorProps }) {
     onSuccess: (res) => {
       onSuccess(res.id)
     },
-    params: { path: { id: vendor.id } },
   })
 
   const mutateVendor = useCallback(() => {
