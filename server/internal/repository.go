@@ -69,7 +69,9 @@ func (r *repository) GetNodeByID(ctx context.Context, id string, opts ...LoadOpt
 		query = query.Preload("Children")
 	}
 	if options.LoadRelationships {
-		query = query.Preload("SourceRelationships.TargetNode.Parent.Parent")
+		query = query.
+			Preload("SourceRelationships.TargetNode.Parent.Parent").
+			Preload("TargetRelationships.SourceNode.Parent.Parent")
 	}
 	if options.LoadParent {
 		query = query.Preload("Parent")

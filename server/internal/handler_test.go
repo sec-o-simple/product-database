@@ -226,6 +226,15 @@ func testRelationshipOperations(t *testing.T, svc *Service, ctx context.Context,
 		t.Error("Expected at least one relationship")
 	}
 
+	// Get incoming relationships by product version (target side)
+	incomingRelationships, err := svc.GetIncomingRelationshipsByProductVersion(ctx, targetVersionID)
+	if err != nil {
+		t.Fatalf("GetIncomingRelationshipsByProductVersion failed: %v", err)
+	}
+	if len(incomingRelationships) == 0 {
+		t.Error("Expected at least one incoming relationship")
+	}
+
 	// Get the first relationship ID
 	var relationshipID string
 	if len(relationships) > 0 && len(relationships[0].Products) > 0 && len(relationships[0].Products[0].VersionRelationships) > 0 {
@@ -961,6 +970,45 @@ func testRelationshipHandlers(t *testing.T, app *fuego.Server) {
 
 	if w.Code != http.StatusOK {
 		t.Errorf("Expected status 200, got %d", w.Code)
+	}
+
+	// Test ListRelationshipsByProductVersion incoming direction
+	req = httptest.NewRequest(
+		"GET",
+		fmt.Sprintf("/api/v1/product-versions/%s/relationships?direction=incoming", version2.ID),
+		nil,
+	)
+	w = httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status 200 for incoming direction, got %d", w.Code)
+	}
+
+	// Test ListRelationshipsByProductVersion invalid direction
+	req = httptest.NewRequest(
+		"GET",
+		fmt.Sprintf("/api/v1/product-versions/%s/relationships?direction=invalid", version1.ID),
+		nil,
+	)
+	w = httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("Expected status 400 for invalid direction, got %d", w.Code)
+	}
+
+	// Test incoming direction for non-existent version to cover service error path
+	req = httptest.NewRequest(
+		"GET",
+		"/api/v1/product-versions/00000000-0000-0000-0000-000000000000/relationships?direction=incoming",
+		nil,
+	)
+	w = httptest.NewRecorder()
+	app.Mux.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Errorf("Expected status 404 for non-existent incoming direction request, got %d", w.Code)
 	}
 
 	// Parse the response to get relationship ID

@@ -69,6 +69,14 @@
     "relationship": {
       "label": "Relationship",
       "label_other": "Relationships",
+      "outgoing": {
+        "label": "Outgoing Relationship",
+        "label_other": "Outgoing Relationships"
+      },
+      "incoming": {
+        "label": "Incoming Relationship",
+        "label_other": "Incoming Relationships"
+      },
       "targetProduct": {
         "empty": "No target added yet.",
         "label": "Target Product",

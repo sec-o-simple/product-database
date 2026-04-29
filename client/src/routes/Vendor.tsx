@@ -14,7 +14,7 @@ import { useParams } from 'react-router-dom'
 import { ProductItem, useVendorProductListQuery } from './Products'
 import { VendorProps } from './Vendors'
 
-export function useVendorQuery(vendorId?: string) {
+export function useVendorQuery(vendorId?: string | null) {
   const request = client.useQuery(
     'get',
     '/api/v1/vendors/{id}',

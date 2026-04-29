@@ -185,7 +185,29 @@ func (h *Handler) GetProductVersion(c fuego.ContextNoBody) (ProductVersionDTO, e
 
 func (h *Handler) ListRelationshipsByProductVersion(c fuego.ContextNoBody) ([]RelationshipGroupDTO, error) {
 	productVersionID := c.PathParam("id")
-	relationships, err := h.svc.GetRelationshipsByProductVersion(c.Request().Context(), productVersionID)
+	direction := c.Request().URL.Query().Get("direction")
+
+	var (
+		relationships []RelationshipGroupDTO
+		err           error
+	)
+
+	switch direction {
+	case "", "outgoing":
+		relationships, err = h.svc.GetRelationshipsByProductVersion(c.Request().Context(), productVersionID)
+	case "incoming":
+		relationships, err = h.svc.GetIncomingRelationshipsByProductVersion(c.Request().Context(), productVersionID)
+	default:
+		return nil, fuego.BadRequestError{
+			Title: "Invalid relationship direction",
+			Errors: []fuego.ErrorItem{
+				{
+					Name:   "direction",
+					Reason: "Direction must be either 'incoming' or 'outgoing'",
+				},
+			},
+		}
+	}
 
 	if err != nil {
 		return nil, err

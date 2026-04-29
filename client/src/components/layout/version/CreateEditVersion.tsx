@@ -42,7 +42,7 @@ export function useVersionMutation({
   productId,
   version,
 }: {
-  productId?: string
+  productId?: string | null
   version: VersionProps
 }) {
   const { navigate } = useRouter()

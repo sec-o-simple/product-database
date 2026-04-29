@@ -17,7 +17,7 @@ import { useParams } from 'react-router-dom'
 import { useVendorQuery } from './Vendor'
 import { DeleteVersion } from './Version'
 
-export function useProductQuery(productId?: string) {
+export function useProductQuery(productId?: string | null) {
   const request = client.useQuery(
     'get',
     '/api/v1/products/{id}',
@@ -41,12 +41,12 @@ export function DeleteProduct({
   product,
   isIconButton,
 }: {
-  product: { name: string; id: string; vendor_id?: string }
+  product: { name: string; id: string; vendor_id?: string | null }
   isIconButton?: boolean
 }) {
   const mutation = client.useMutation('delete', '/api/v1/products/{id}', {
     onSettled: () => {
-      navigate(`/vendors/${product.vendor_id}`, {
+      navigate(`/vendors/${product.vendor_id ?? ''}`, {
         state: {
           shouldRefetch: true,
           message: t('product.delete.success', { name: product.name }),
