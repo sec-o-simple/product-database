@@ -129,6 +129,179 @@ export function handleTypeSelection(
   }
 }
 
+export function isValidHttpUrl(value: string): boolean {
+  const trimmedValue = value.trim()
+  if (!trimmedValue) return false
+
+  try {
+    const parsed = new URL(trimmedValue)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
+export function isValidGenericUri(value: string): boolean {
+  const trimmedValue = value.trim()
+  if (!trimmedValue) return false
+
+  // RFC 3986-like scheme check. Allows URL and non-URL URIs such as urn: and mailto:.
+  return /^[a-z][a-z0-9+.-]*:[^\s]+$/i.test(trimmedValue)
+}
+
+export function isValidPurlString(value: string): boolean {
+  const trimmedValue = value.trim()
+  if (!trimmedValue) return false
+
+  // purl spec shape: pkg:type/name@version?qualifiers#subpath
+  return /^pkg:[a-z0-9.+-]+\/[^\s@?#]+(?:\/[^\s@?#]+)*(?:@[^\s?#]+)?(?:\?[^\s#]+)?(?:#\S+)?$/i.test(
+    trimmedValue,
+  )
+}
+
+export function isValidCpeString(value: string): boolean {
+  const trimmedValue = value.trim()
+  if (!trimmedValue) return false
+
+  // CPE 2.3: cpe:2.3:part:vendor:product:version:update:edition:language:sw_edition:target_sw:target_hw:other
+  if (trimmedValue.startsWith('cpe:2.3:')) {
+    const parts = trimmedValue.split(':')
+    if (parts.length !== 13) return false
+    if (!['a', 'o', 'h', '*'].includes(parts[2])) return false
+    return parts.slice(3).every((part) => part.length > 0)
+  }
+
+  // CPE 2.2 URI binding (kept for compatibility): cpe:/part:vendor:product:...
+  return /^cpe:\/[aho*](?::[^\s:]*){0,6}$/i.test(trimmedValue)
+}
+
+export function isValidIdentificationHelperData(
+  selectedType: HelperTypeProps | null,
+  helperData: HelperData | null,
+): boolean {
+  if (!selectedType || !helperData) return false
+
+  switch (selectedType.component) {
+    case 'cpe': {
+      const cpe = (helperData as CPEData).cpe || ''
+      return isValidCpeString(cpe)
+    }
+    case 'purl': {
+      const purl = (helperData as PURLData).purl || ''
+      return isValidPurlString(purl)
+    }
+    case 'hashes': {
+      const hashData = helperData as HashData
+      return hashData.file_hashes.some(
+        (fh) =>
+          fh.filename?.trim() &&
+          fh.items.some((item) => item.algorithm?.trim() && item.value?.trim()),
+      )
+    }
+    case 'models':
+      return (helperData as ModelData).models.some((m) => m?.trim())
+    case 'sbom': {
+      const sbomUrls = (helperData as SBOMData).sbom_urls
+      const trimmed = sbomUrls.map((url) => url?.trim() || '')
+      const nonEmpty = trimmed.filter(Boolean)
+      return nonEmpty.length > 0 && nonEmpty.every((url) => isValidHttpUrl(url))
+    }
+    case 'serial':
+      return (helperData as SerialData).serial_numbers.some((sn) => sn?.trim())
+    case 'sku':
+      return (helperData as SKUData).skus.some((sku) => sku?.trim())
+    case 'uri': {
+      const uris = (helperData as URIData).uris
+      if (!uris.length) return false
+
+      const completedUris = uris.filter(
+        (uri) => uri.namespace?.trim() && uri.uri?.trim(),
+      )
+      if (!completedUris.length) return false
+
+      // All rows must be complete and valid to avoid persisting partial URI entries.
+      return (
+        completedUris.length === uris.length &&
+        completedUris.every((uri) => isValidGenericUri(uri.uri))
+      )
+    }
+    default:
+      return false
+  }
+}
+
+export function hasEnteredIdentificationHelperData(
+  selectedType: HelperTypeProps | null,
+  helperData: HelperData | null,
+): boolean {
+  if (!selectedType || !helperData) return false
+
+  switch (selectedType.component) {
+    case 'cpe':
+      return !!(helperData as CPEData).cpe?.trim()
+    case 'purl':
+      return !!(helperData as PURLData).purl?.trim()
+    case 'hashes': {
+      const hashData = helperData as HashData
+      return hashData.file_hashes.some(
+        (fh) =>
+          !!fh.filename?.trim() ||
+          fh.items.some(
+            (item) => !!item.algorithm?.trim() || !!item.value?.trim(),
+          ),
+      )
+    }
+    case 'models':
+      return (helperData as ModelData).models.some((m) => !!m?.trim())
+    case 'sbom':
+      return (helperData as SBOMData).sbom_urls.some((url) => !!url?.trim())
+    case 'serial':
+      return (helperData as SerialData).serial_numbers.some(
+        (sn) => !!sn?.trim(),
+      )
+    case 'sku':
+      return (helperData as SKUData).skus.some((sku) => !!sku?.trim())
+    case 'uri':
+      return (helperData as URIData).uris.some(
+        (uri) => !!uri.namespace?.trim() || !!uri.uri?.trim(),
+      )
+    default:
+      return false
+  }
+}
+
+export function getIdentificationHelperValidationError(
+  selectedType: HelperTypeProps | null,
+  helperData: HelperData | null,
+  t: (key: string, options?: Record<string, unknown>) => string,
+): string | null {
+  if (!selectedType || !helperData) return null
+  if (!hasEnteredIdentificationHelperData(selectedType, helperData)) return null
+  if (isValidIdentificationHelperData(selectedType, helperData)) return null
+
+  switch (selectedType.component) {
+    case 'cpe':
+      return t('identificationHelper.validation.invalidCpe')
+    case 'purl':
+      return t('identificationHelper.validation.invalidPurl')
+    case 'sbom':
+      return t('identificationHelper.validation.invalidSbomUrl')
+    case 'uri': {
+      const uris = (helperData as URIData).uris
+      const hasIncompleteRow = uris.some((uri) => {
+        const hasAnyValue = !!uri.namespace?.trim() || !!uri.uri?.trim()
+        const isComplete = !!uri.namespace?.trim() && !!uri.uri?.trim()
+        return hasAnyValue && !isComplete
+      })
+      return hasIncompleteRow
+        ? t('identificationHelper.validation.incompleteUri')
+        : t('identificationHelper.validation.invalidGenericUri')
+    }
+    default:
+      return t('form.errors')
+  }
+}
+
 // Component for CPE input
 function CPEComponent({
   data,
@@ -764,41 +937,12 @@ export default function CreateEditIDHelper({
   }
 
   const canSubmit = useMemo(() => {
-    if (!selectedType || !helperData) return false
-
-    // Basic validation for different types
-    switch (selectedType.component) {
-      case 'cpe':
-        return !!(helperData as CPEData).cpe?.trim()
-      case 'purl':
-        return !!(helperData as PURLData).purl?.trim()
-      case 'hashes':
-        const hashData = helperData as HashData
-        return hashData.file_hashes.some(
-          (fh) =>
-            fh.filename?.trim() &&
-            fh.items.some(
-              (item) => item.algorithm?.trim() && item.value?.trim(),
-            ),
-        )
-      case 'models':
-        return (helperData as ModelData).models.some((m) => m?.trim())
-      case 'sbom':
-        return (helperData as SBOMData).sbom_urls.some((url) => url?.trim())
-      case 'serial':
-        return (helperData as SerialData).serial_numbers.some((sn) =>
-          sn?.trim(),
-        )
-      case 'sku':
-        return (helperData as SKUData).skus.some((sku) => sku?.trim())
-      case 'uri':
-        return (helperData as URIData).uris.some(
-          (uri) => uri.namespace?.trim() && uri.uri?.trim(),
-        )
-      default:
-        return false
-    }
+    return isValidIdentificationHelperData(selectedType, helperData)
   }, [selectedType, helperData])
+
+  const validationErrorMessage = useMemo(() => {
+    return getIdentificationHelperValidationError(selectedType, helperData, t)
+  }, [selectedType, helperData, t])
 
   const handleSubmit = () => {
     if (!selectedType || !helperData || !canSubmit || !versionId) return
@@ -903,6 +1047,15 @@ export default function CreateEditIDHelper({
                     data={helperData}
                     onChange={setHelperData}
                   />
+                )}
+
+                {validationErrorMessage && (
+                  <p
+                    className="text-sm text-danger"
+                    data-testid="id-helper-validation-error"
+                  >
+                    {validationErrorMessage}
+                  </p>
                 )}
               </div>
             )}

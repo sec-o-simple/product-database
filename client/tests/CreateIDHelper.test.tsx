@@ -391,7 +391,7 @@ describe('CreateIDHelper', () => {
         data: { 
           id: 'test-helper-id',
           category: 'cpe',
-          metadata: JSON.stringify({ cpe: 'test-cpe' })
+          metadata: JSON.stringify({ cpe: 'cpe:2.3:a:test:product:1.0:*:*:*:*:*:*:*' })
         },
         isLoading: false,
         error: null,
@@ -1188,6 +1188,34 @@ describe('CreateIDHelper', () => {
   })
 
   describe('Validation Logic', () => {
+    it('should show validation text when CPE is invalid', () => {
+      const editData = {
+        type: idHelperTypes[0], // CPE
+        helperId: 'test-cpe-invalid-id',
+      }
+
+      mockClient.useQuery.mockReturnValue({
+        data: {
+          id: 'test-cpe-invalid-id',
+          category: 'cpe',
+          metadata: JSON.stringify({ cpe: 'cpe:2.3:a:vendor:product' }),
+        },
+        isLoading: false,
+        error: null,
+        refetch: vi.fn(),
+      })
+
+      render(
+        <TestWrapper>
+          <CreateIDHelper editData={editData} onClose={mockOnClose} />
+        </TestWrapper>
+      )
+
+      expect(screen.getByTestId('id-helper-validation-error')).toHaveTextContent(
+        'identificationHelper.validation.invalidCpe',
+      )
+    })
+
     it('should validate CPE helper correctly', () => {
       const editData = {
         type: idHelperTypes[0], // CPE
@@ -1426,7 +1454,7 @@ describe('CreateIDHelper', () => {
         data: { 
           id: 'test-id',
           category: 'cpe',
-          metadata: JSON.stringify({ cpe: 'test-cpe' })
+          metadata: JSON.stringify({ cpe: 'cpe:2.3:a:test:product:1.0:*:*:*:*:*:*:*' })
         },
         isLoading: false,
         error: null,
@@ -2254,7 +2282,7 @@ describe('CreateIDHelper', () => {
         data: { 
           id: 'test-submit-id',
           category: 'cpe',
-          metadata: JSON.stringify({ cpe: 'valid-cpe-string' })
+          metadata: JSON.stringify({ cpe: 'cpe:2.3:a:test:product:1.0:*:*:*:*:*:*:*' })
         },
         isLoading: false,
         error: null,
@@ -2274,7 +2302,7 @@ describe('CreateIDHelper', () => {
       expect(mockMutate).toHaveBeenCalledWith({
         params: { path: { id: 'test-submit-id' } },
         body: {
-          metadata: JSON.stringify({ cpe: 'valid-cpe-string' }),
+          metadata: JSON.stringify({ cpe: 'cpe:2.3:a:test:product:1.0:*:*:*:*:*:*:*' }),
         },
       })
     })
@@ -2529,7 +2557,7 @@ describe('CreateIDHelper', () => {
       const testCases = [
         {
           type: idHelperTypes.find(t => t.id === 'cpe')!,
-          metadata: { cpe: 'valid-cpe-string' },
+          metadata: { cpe: 'cpe:2.3:a:test:product:1.0:*:*:*:*:*:*:*' },
           shouldBeValid: true
         },
         {

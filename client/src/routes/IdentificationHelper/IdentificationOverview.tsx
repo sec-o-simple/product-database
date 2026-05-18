@@ -164,7 +164,7 @@ function IdentificationItem({
   return (
     <div className="group flex w-full flex-col justify-between gap-2 rounded-lg border-1 border-default-200 bg-gray-50 px-4 py-2 hover:bg-gray-100 hover:transition-background">
       <div className="flex items-center justify-between">
-        <div className="flex grow flex-col gap-1">
+        <div className="flex grow flex-col gap-1 min-w-0">
           <div>
             <div className="text-sm text-default-500">
               {t(`${helperType.translationKey}.label`)}
