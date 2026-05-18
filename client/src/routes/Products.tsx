@@ -21,7 +21,7 @@ type VersionDTO = {
   is_latest: boolean
   name: string
   predecessor_id?: string | null
-  product_id?: string
+  product_id?: string | null
   released_at?: string | null
 }
 
@@ -52,7 +52,7 @@ export function ProductItem({
     id: string
     name: string
     description?: string
-    vendor_id?: string
+    vendor_id?: string | null
     type?: string
     versions?: VersionDTO[]
     latest_versions?: VersionDTO[]
@@ -62,7 +62,7 @@ export function ProductItem({
   const { t } = useTranslation()
 
   const handleOnActionClick = (href: string) => {
-    navigateToModal(href, `/vendors/${product.vendor_id}`)
+    navigateToModal(href, `/vendors/${product.vendor_id ?? ''}`)
   }
 
   return (

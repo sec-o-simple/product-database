@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next'
 export interface ProductFamily {
   id: string
   name: string
-  parent_id?: string
+  parent_id?: string | null
   path: string[]
 }
 
@@ -62,7 +62,7 @@ export function useProductFamilyListQuery() {
   }
 }
 
-export function useProductFamilyQuery(id: string) {
+export function useProductFamilyQuery(id?: string | null) {
   const request = client.useQuery(
     'get',
     '/api/v1/product-families/{id}',

@@ -22,8 +22,6 @@ export interface paths {
          *     - `github.com/go-fuego/fuego.defaultLogger.middleware`
          *
          *     ---
-         *
-         *
          */
         get: operations["GET_/api/v1/health"];
         put?: never;
@@ -774,7 +772,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** @description  schema */
+        /** @description schema */
         "": unknown;
         /** @description CreateIdentificationHelperDTO schema */
         CreateIdentificationHelperDTO: {
@@ -789,10 +787,7 @@ export interface components {
         CreateProductDTO: {
             /** @example Product Description */
             description?: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
             family_id?: string | null;
             /** @example Product Name */
             name: string;
@@ -805,25 +800,16 @@ export interface components {
         CreateProductFamilyDTO: {
             /** @example Family Name */
             name: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            parent_id?: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            parent_id?: string | null;
         };
         /** @description CreateProductVersionDTO schema */
         CreateProductVersionDTO: {
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
             predecessor_id?: string | null;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
             product_id: string;
-            /**
-             * @description string schema
-             * @example 2023-10-01
-             */
+            /** @example 2023-10-01 */
             release_date?: string | null;
             /** @example Version Name */
             version: string;
@@ -851,7 +837,7 @@ export interface components {
         HTTPError: {
             /** @description Human readable error message */
             detail?: string | null;
-            errors?: {
+            errors?: ({
                 /** @description Additional information about the error */
                 more?: {
                     [key: string]: unknown;
@@ -860,7 +846,7 @@ export interface components {
                 name?: string;
                 /** @description Human readable error message */
                 reason?: string;
-            }[] | null;
+            } | null)[] | null;
             instance?: string | null;
             /**
              * @description HTTP status code
@@ -898,10 +884,7 @@ export interface components {
         ProductDTO: {
             /** @example Product Description */
             description?: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
             family_id?: string | null;
             /** @example Vendor Name - Product Name */
             full_name: string;
@@ -918,31 +901,19 @@ export interface components {
                 is_latest: boolean;
                 /** @example Version Name */
                 name: string;
-                /**
-                 * @description string schema
-                 * @example 123e4567-e89b-12d3-a456-426614174000
-                 */
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
                 predecessor_id?: string | null;
-                /**
-                 * @description string schema
-                 * @example 123e4567-e89b-12d3-a456-426614174000
-                 */
-                product_id?: string;
-                /**
-                 * @description string schema
-                 * @example 2023-10-01
-                 */
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                product_id?: string | null;
+                /** @example 2023-10-01 */
                 released_at?: string | null;
             }[];
             /** @example Product Name */
             name: string;
             /** @example software */
             type: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            vendor_id?: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            vendor_id?: string | null;
             versions?: {
                 /** @example Version Description */
                 description?: string;
@@ -954,20 +925,11 @@ export interface components {
                 is_latest: boolean;
                 /** @example Version Name */
                 name: string;
-                /**
-                 * @description string schema
-                 * @example 123e4567-e89b-12d3-a456-426614174000
-                 */
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
                 predecessor_id?: string | null;
-                /**
-                 * @description string schema
-                 * @example 123e4567-e89b-12d3-a456-426614174000
-                 */
-                product_id?: string;
-                /**
-                 * @description string schema
-                 * @example 2023-10-01
-                 */
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                product_id?: string | null;
+                /** @example 2023-10-01 */
                 released_at?: string | null;
             }[];
         };
@@ -977,11 +939,8 @@ export interface components {
             id: string;
             /** @example Family Name */
             name: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            parent_id?: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            parent_id?: string | null;
             /** @example ['Parent Family', 'Family Name'] */
             path: string[];
         };
@@ -997,20 +956,11 @@ export interface components {
             is_latest: boolean;
             /** @example Version Name */
             name: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
             predecessor_id?: string | null;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            product_id?: string;
-            /**
-             * @description string schema
-             * @example 2023-10-01
-             */
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_id?: string | null;
+            /** @example 2023-10-01 */
             released_at?: string | null;
         };
         /** @description RelationshipDTO schema */
@@ -1030,20 +980,11 @@ export interface components {
                 is_latest: boolean;
                 /** @example Version Name */
                 name: string;
-                /**
-                 * @description string schema
-                 * @example 123e4567-e89b-12d3-a456-426614174000
-                 */
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
                 predecessor_id?: string | null;
-                /**
-                 * @description string schema
-                 * @example 123e4567-e89b-12d3-a456-426614174000
-                 */
-                product_id?: string;
-                /**
-                 * @description string schema
-                 * @example 2023-10-01
-                 */
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                product_id?: string | null;
+                /** @example 2023-10-01 */
                 released_at?: string | null;
             };
             target: {
@@ -1057,20 +998,11 @@ export interface components {
                 is_latest: boolean;
                 /** @example Version Name */
                 name: string;
-                /**
-                 * @description string schema
-                 * @example 123e4567-e89b-12d3-a456-426614174000
-                 */
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
                 predecessor_id?: string | null;
-                /**
-                 * @description string schema
-                 * @example 123e4567-e89b-12d3-a456-426614174000
-                 */
-                product_id?: string;
-                /**
-                 * @description string schema
-                 * @example 2023-10-01
-                 */
+                /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                product_id?: string | null;
+                /** @example 2023-10-01 */
                 released_at?: string | null;
             };
         };
@@ -1082,10 +1014,7 @@ export interface components {
                 product: {
                     /** @example Product Description */
                     description?: string;
-                    /**
-                     * @description string schema
-                     * @example 123e4567-e89b-12d3-a456-426614174000
-                     */
+                    /** @example 123e4567-e89b-12d3-a456-426614174000 */
                     family_id?: string | null;
                     /** @example Vendor Name - Product Name */
                     full_name: string;
@@ -1102,31 +1031,19 @@ export interface components {
                         is_latest: boolean;
                         /** @example Version Name */
                         name: string;
-                        /**
-                         * @description string schema
-                         * @example 123e4567-e89b-12d3-a456-426614174000
-                         */
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
                         predecessor_id?: string | null;
-                        /**
-                         * @description string schema
-                         * @example 123e4567-e89b-12d3-a456-426614174000
-                         */
-                        product_id?: string;
-                        /**
-                         * @description string schema
-                         * @example 2023-10-01
-                         */
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                        product_id?: string | null;
+                        /** @example 2023-10-01 */
                         released_at?: string | null;
                     }[];
                     /** @example Product Name */
                     name: string;
                     /** @example software */
                     type: string;
-                    /**
-                     * @description string schema
-                     * @example 123e4567-e89b-12d3-a456-426614174000
-                     */
-                    vendor_id?: string;
+                    /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                    vendor_id?: string | null;
                     versions?: {
                         /** @example Version Description */
                         description?: string;
@@ -1138,20 +1055,11 @@ export interface components {
                         is_latest: boolean;
                         /** @example Version Name */
                         name: string;
-                        /**
-                         * @description string schema
-                         * @example 123e4567-e89b-12d3-a456-426614174000
-                         */
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
                         predecessor_id?: string | null;
-                        /**
-                         * @description string schema
-                         * @example 123e4567-e89b-12d3-a456-426614174000
-                         */
-                        product_id?: string;
-                        /**
-                         * @description string schema
-                         * @example 2023-10-01
-                         */
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                        product_id?: string | null;
+                        /** @example 2023-10-01 */
                         released_at?: string | null;
                     }[];
                 };
@@ -1169,20 +1077,11 @@ export interface components {
                         is_latest: boolean;
                         /** @example Version Name */
                         name: string;
-                        /**
-                         * @description string schema
-                         * @example 123e4567-e89b-12d3-a456-426614174000
-                         */
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
                         predecessor_id?: string | null;
-                        /**
-                         * @description string schema
-                         * @example 123e4567-e89b-12d3-a456-426614174000
-                         */
-                        product_id?: string;
-                        /**
-                         * @description string schema
-                         * @example 2023-10-01
-                         */
+                        /** @example 123e4567-e89b-12d3-a456-426614174000 */
+                        product_id?: string | null;
+                        /** @example 2023-10-01 */
                         released_at?: string | null;
                     };
                 }[];
@@ -1192,74 +1091,41 @@ export interface components {
         UpdateIdentificationHelperDTO: {
             /** @example hashes */
             category?: string;
-            /**
-             * @description string schema
-             * @example {"key":"value"}
-             */
-            metadata?: string;
+            /** @example {"key":"value"} */
+            metadata?: string | null;
             /** @example 123e4567-e89b-12d3-a456-426614174000 */
             product_version_id?: string;
         };
         /** @description UpdateProductDTO schema */
         UpdateProductDTO: {
-            /**
-             * @description string schema
-             * @example Product Description
-             */
-            description?: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
+            /** @example Product Description */
+            description?: string | null;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
             family_id?: string | null;
-            /**
-             * @description string schema
-             * @example Product Name
-             */
-            name?: string;
-            /**
-             * @description string schema
-             * @example software
-             */
-            type?: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            vendor_id?: string;
+            /** @example Product Name */
+            name?: string | null;
+            /** @example software */
+            type?: string | null;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            vendor_id?: string | null;
         };
         /** @description UpdateProductFamilyDTO schema */
         UpdateProductFamilyDTO: {
             /** @example Family Name */
             name?: string;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            parent_id?: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            parent_id?: string | null;
         };
         /** @description UpdateProductVersionDTO schema */
         UpdateProductVersionDTO: {
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
             predecessor_id?: string | null;
-            /**
-             * @description string schema
-             * @example 123e4567-e89b-12d3-a456-426614174000
-             */
-            product_id?: string;
-            /**
-             * @description string schema
-             * @example 2023-10-01
-             */
-            release_date?: string;
-            /**
-             * @description string schema
-             * @example Version Name
-             */
-            version?: string;
+            /** @example 123e4567-e89b-12d3-a456-426614174000 */
+            product_id?: string | null;
+            /** @example 2023-10-01 */
+            release_date?: string | null;
+            /** @example Version Name */
+            version?: string | null;
         };
         /** @description UpdateRelationshipDTO schema */
         UpdateRelationshipDTO: {
@@ -1273,16 +1139,10 @@ export interface components {
         };
         /** @description UpdateVendorDTO schema */
         UpdateVendorDTO: {
-            /**
-             * @description string schema
-             * @example Vendor Description
-             */
-            description?: string;
-            /**
-             * @description string schema
-             * @example Vendor Name
-             */
-            name?: string;
+            /** @example Vendor Description */
+            description?: string | null;
+            /** @example Vendor Name */
+            name?: string | null;
         };
         /** @description VendorDTO schema */
         VendorDTO: {

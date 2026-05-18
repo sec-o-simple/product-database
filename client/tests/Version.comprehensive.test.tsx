@@ -45,6 +45,8 @@ vi.mock('react-i18next', () => ({
         'product.label': options?.count === 2 ? 'Products' : 'Product',
         'version.label': options?.count === 2 ? 'Versions' : 'Version',
         'relationship.label': options?.count === 2 ? 'Relationships' : 'Relationship',
+        'relationship.outgoing.label': options?.count === 2 ? 'Outgoing Relationships' : 'Outgoing Relationship',
+        'relationship.incoming.label': options?.count === 2 ? 'Incoming Relationships' : 'Incoming Relationship',
         'common.delete': 'Delete',
         'common.confirmDeleteTitle': 'Confirm Delete',
         'common.confirmDeleteText': 'Are you sure you want to delete this {{resource}}?',
@@ -654,6 +656,29 @@ describe('Version Components', () => {
       },
     ]
 
+    const mockIncomingRelationshipsData = [
+      {
+        category: 'depends_on',
+        products: [
+          {
+            product: {
+              id: 'incoming-product-1',
+              full_name: 'Incoming Product',
+            },
+            version_relationships: [
+              {
+                id: 'incoming-rel-1',
+                version: {
+                  id: 'incoming-version-1',
+                  name: '3.0.0',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ]
+
     beforeEach(() => {
       // Mock version query
       mockClient.useQuery
@@ -668,6 +693,12 @@ describe('Version Components', () => {
           error: null,
           refetch: vi.fn(),
         })
+        .mockReturnValueOnce({
+          data: mockIncomingRelationshipsData,
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+        })
     })
 
     it('should render with complete data', () => {
@@ -678,10 +709,11 @@ describe('Version Components', () => {
       )
 
       expect(screen.getByTestId('breadcrumbs')).toBeInTheDocument()
-      expect(screen.getByTestId('data-grid')).toBeInTheDocument()
+      expect(screen.getAllByTestId('data-grid')).toHaveLength(2)
       expect(screen.getByTestId('add-relationship-button')).toBeInTheDocument()
       expect(screen.getByText('Related Product A')).toBeInTheDocument()
       expect(screen.getByText('Related Product B')).toBeInTheDocument()
+      expect(screen.getByText('Incoming Product')).toBeInTheDocument()
     })
 
     it('should hide breadcrumbs when hideBreadcrumbs is true', () => {
@@ -692,7 +724,7 @@ describe('Version Components', () => {
       )
 
       expect(screen.queryByTestId('breadcrumbs')).not.toBeInTheDocument()
-      expect(screen.getByTestId('data-grid')).toBeInTheDocument()
+      expect(screen.getAllByTestId('data-grid')).toHaveLength(2)
     })
 
     it('should return null when version data is missing', () => {
@@ -779,6 +811,12 @@ describe('Version Components', () => {
         })
         .mockReturnValueOnce({
           data: mockRelationshipsData,
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+        })
+        .mockReturnValueOnce({
+          data: mockIncomingRelationshipsData,
           isLoading: false,
           error: null,
           refetch: vi.fn(),
@@ -882,7 +920,7 @@ describe('Version Components', () => {
         </TestWrapper>
       )
 
-      const container = screen.getByTestId('data-grid').parentElement?.parentElement
+      const container = screen.getAllByTestId('data-grid')[0].parentElement?.parentElement
       expect(container).toHaveClass('flex', 'w-full', 'grow', 'flex-col', 'gap-4', 'p-2')
     })
 
@@ -913,6 +951,12 @@ describe('Version Components', () => {
         })
         .mockReturnValueOnce({
           data: mockRelationshipsData,
+          isLoading: false,
+          error: null,
+          refetch: vi.fn(),
+        })
+        .mockReturnValueOnce({
+          data: mockIncomingRelationshipsData,
           isLoading: false,
           error: null,
           refetch: vi.fn(),

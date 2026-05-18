@@ -906,7 +906,7 @@ func (s *Service) GetProductVersionByID(ctx context.Context, id string) (Product
 
 // Relationships
 
-func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionID string) ([]RelationshipGroupDTO, error) {
+func (s *Service) getVersionWithRelationships(ctx context.Context, versionID string) (Node, error) {
 	version, err := s.repo.GetNodeByID(ctx, versionID, WithRelationships(), WithChildren())
 	notFoundError := fuego.NotFoundError{
 		Title: "Product version not found",
@@ -914,9 +914,9 @@ func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionI
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, notFoundError
+			return Node{}, notFoundError
 		} else {
-			return nil, fuego.InternalServerError{
+			return Node{}, fuego.InternalServerError{
 				Title: "Failed to fetch product version",
 				Err:   err,
 			}
@@ -924,46 +924,47 @@ func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionI
 	}
 
 	if version.Category != ProductVersion {
-		return nil, notFoundError
+		return Node{}, notFoundError
 	}
 
-	// Group by category first, then by product within each category
+	return version, nil
+}
+
+func buildRelationshipGroups(
+	relationships []Relationship,
+	getRelatedVersion func(rel Relationship) *Node,
+) []RelationshipGroupDTO {
 	categoryGroups := make(map[string]map[string]*RelationshipGroupItemDTO)
 
-	for _, rel := range version.SourceRelationships {
-		// We need to make sure the target node and its parent exist
-		if rel.TargetNode == nil || rel.TargetNode.Parent == nil {
+	for _, rel := range relationships {
+		relatedVersion := getRelatedVersion(rel)
+		if relatedVersion == nil || relatedVersion.Parent == nil {
 			continue
 		}
 
 		category := string(rel.Category)
-		productID := rel.TargetNode.Parent.ID
+		productID := relatedVersion.Parent.ID
 
-		// Initialize category map if it doesn't exist
 		if categoryGroups[category] == nil {
 			categoryGroups[category] = make(map[string]*RelationshipGroupItemDTO)
 		}
 
-		// Get or create the product group item
 		if categoryGroups[category][productID] == nil {
 			categoryGroups[category][productID] = &RelationshipGroupItemDTO{
-				Product:              NodeToProductDTO(*rel.TargetNode.Parent),
+				Product:              NodeToProductDTO(*relatedVersion.Parent),
 				VersionRelationships: []ProductionVersionRelationshipDTO{},
 			}
 		}
 
-		// Add the version relationship to the existing product group
-		versionRelationship := ProductionVersionRelationshipDTO{
-			RelationshipID: rel.ID,
-			Version:        NodeToProductVersionDTO(*rel.TargetNode),
-		}
 		categoryGroups[category][productID].VersionRelationships = append(
 			categoryGroups[category][productID].VersionRelationships,
-			versionRelationship,
+			ProductionVersionRelationshipDTO{
+				RelationshipID: rel.ID,
+				Version:        NodeToProductVersionDTO(*relatedVersion),
+			},
 		)
 	}
 
-	// Convert the nested maps to the final result structure
 	var result []RelationshipGroupDTO
 	for category, productGroups := range categoryGroups {
 		var products []RelationshipGroupItemDTO
@@ -977,7 +978,31 @@ func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionI
 		})
 	}
 
-	return result, nil
+	return result
+}
+
+func (s *Service) GetRelationshipsByProductVersion(ctx context.Context, versionID string) ([]RelationshipGroupDTO, error) {
+	version, err := s.getVersionWithRelationships(ctx, versionID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return buildRelationshipGroups(version.SourceRelationships, func(rel Relationship) *Node {
+		return rel.TargetNode
+	}), nil
+}
+
+func (s *Service) GetIncomingRelationshipsByProductVersion(ctx context.Context, versionID string) ([]RelationshipGroupDTO, error) {
+	version, err := s.getVersionWithRelationships(ctx, versionID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return buildRelationshipGroups(version.TargetRelationships, func(rel Relationship) *Node {
+		return rel.SourceNode
+	}), nil
 }
 
 func (s *Service) CreateRelationship(ctx context.Context, create CreateRelationshipDTO) error {

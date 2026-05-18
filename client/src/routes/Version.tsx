@@ -16,6 +16,47 @@ import { useParams } from 'react-router-dom'
 import { useProductQuery } from './Product'
 import { useVendorQuery } from './Vendor'
 
+type VersionRelationshipGroup = {
+  category: string
+  products: {
+    product: {
+      id: string
+      full_name: string
+    }
+    version_relationships: {
+      id: string
+      version: {
+        id: string
+        name: string
+      }
+    }[]
+  }[]
+}
+
+type RelationshipQueryRequest = {
+  params: {
+    path: {
+      id: string
+    }
+    query: {
+      direction: 'incoming' | 'outgoing'
+    }
+  }
+}
+
+type RelationshipQueryResult = {
+  data?: VersionRelationshipGroup[]
+  refetch: () => void
+}
+
+type RelationshipQueryClient = {
+  useQuery: (
+    method: 'get',
+    path: '/api/v1/product-versions/{id}/relationships',
+    request: RelationshipQueryRequest,
+  ) => RelationshipQueryResult
+}
+
 export function useVersionQuery(versionId?: string) {
   const request = client.useQuery(
     'get',
@@ -163,11 +204,12 @@ export default function Version({
   const { versionId } = useParams()
   const { t } = useTranslation()
   const { navigateToModal, navigate } = useRouter()
+  const relationshipQueryClient = client as unknown as RelationshipQueryClient
 
   const { data: version } = useVersionQuery(versionId)
   const { data: product } = useProductQuery(version?.product_id)
   const { data: vendor } = useVendorQuery(product?.vendor_id)
-  const relationshipRequest = client.useQuery(
+  const outgoingRelationshipRequest = relationshipQueryClient.useQuery(
     'get',
     `/api/v1/product-versions/{id}/relationships`,
     {
@@ -175,11 +217,117 @@ export default function Version({
         path: {
           id: versionId || '',
         },
+        query: {
+          direction: 'outgoing',
+        },
       },
     },
   )
-  useRefetchQuery(relationshipRequest)
-  const relationships = relationshipRequest.data
+  const incomingRelationshipRequest = relationshipQueryClient.useQuery(
+    'get',
+    `/api/v1/product-versions/{id}/relationships`,
+    {
+      params: {
+        path: {
+          id: versionId || '',
+        },
+        query: {
+          direction: 'incoming',
+        },
+      },
+    },
+  )
+
+  useRefetchQuery(outgoingRelationshipRequest)
+  useRefetchQuery(incomingRelationshipRequest)
+
+  const outgoingRelationships =
+    (outgoingRelationshipRequest.data as
+      | VersionRelationshipGroup[]
+      | undefined) ?? []
+  const incomingRelationships =
+    (incomingRelationshipRequest.data as
+      | VersionRelationshipGroup[]
+      | undefined) ?? []
+
+  const renderRelationshipGroups = ({
+    groups,
+    includeHeaderActions,
+  }: {
+    groups: typeof outgoingRelationships
+    includeHeaderActions?: boolean
+  }) =>
+    groups.map((relationship) => (
+      <ListGroup
+        title={t(`relationship.category.${relationship.category}`)}
+        key={relationship.category}
+        headerActions={
+          includeHeaderActions ? (
+            <div className="flex gap-1">
+              <IconButton
+                icon={faEdit}
+                onPress={() => {
+                  navigateToModal(
+                    `/product-versions/${versionId}/relationships/${relationship.category}/edit`,
+                    `/product-versions/${versionId}`,
+                  )
+                }}
+              />
+
+              <DeleteRelationshipGroup
+                group={relationship}
+                version={{ id: version?.id ?? '' }}
+                onDelete={() => {
+                  outgoingRelationshipRequest.refetch()
+                  incomingRelationshipRequest.refetch()
+                }}
+              />
+            </div>
+          ) : undefined
+        }
+      >
+        {relationship.products
+          .slice()
+          .sort((a, b) =>
+            a.product.full_name.localeCompare(b.product.full_name),
+          )
+          .map((product, index) => (
+            <div
+              key={`${relationship.category}-${product.product.id}`}
+              className={cn(
+                'flex flex-col w-full gap-2 bg-white px-4 py-2 border-1 border-default-200',
+                relationship.products.length - 1 === index
+                  ? 'rounded-b-lg'
+                  : '',
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className={cn('text-lg font-semibold')}>
+                    {product.product.full_name}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pb-1">
+                {product.version_relationships?.map((versionRel) => (
+                  <Chip
+                    key={versionRel.id}
+                    variant="solid"
+                    radius="md"
+                    className="cursor-pointer hover:underline"
+                    onClick={() => {
+                      navigate(`/product-versions/${versionRel.version.id}`)
+                    }}
+                  >
+                    {versionRel.version.name}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+          ))}
+      </ListGroup>
+    ))
 
   if (!version || !product || !vendor) {
     return null
@@ -208,7 +356,7 @@ export default function Version({
 
       <div className="flex w-full flex-col items-center gap-4">
         <DataGrid
-          title={`${t('relationship.label', { count: 2 })}`}
+          title={`${t('relationship.outgoing.label', { count: 2 })}`}
           addButton={
             <AddRelationshipButton
               versionId={version.id}
@@ -216,76 +364,14 @@ export default function Version({
             />
           }
         >
-          {relationships?.map((relationship) => (
-            <ListGroup
-              title={t(`relationship.category.${relationship.category}`)}
-              key={relationship.category}
-              headerActions={
-                <div className="flex gap-1">
-                  <IconButton
-                    icon={faEdit}
-                    onPress={() => {
-                      navigateToModal(
-                        `/product-versions/${versionId}/relationships/${relationship.category}/edit`,
-                        `/product-versions/${versionId}`,
-                      )
-                    }}
-                  />
+          {renderRelationshipGroups({
+            groups: outgoingRelationships,
+            includeHeaderActions: true,
+          })}
+        </DataGrid>
 
-                  <DeleteRelationshipGroup
-                    group={relationship}
-                    version={version}
-                    onDelete={() => {
-                      relationshipRequest.refetch()
-                    }}
-                  />
-                </div>
-              }
-            >
-              {relationship.products
-                .slice()
-                .sort((a, b) =>
-                  a.product.full_name.localeCompare(b.product.full_name),
-                )
-                .map((product, index) => (
-                  <div
-                    key={`${relationship.category}-${product.product.id}`}
-                    className={cn(
-                      'flex flex-col w-full gap-2 bg-white px-4 py-2 border-1 border-default-200',
-                      relationship.products.length - 1 === index
-                        ? 'rounded-b-lg'
-                        : '',
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className={cn('text-lg font-semibold')}>
-                          {product.product.full_name}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 pb-1">
-                      {product.version_relationships?.map((versionRel) => (
-                        <Chip
-                          key={versionRel.id}
-                          variant="solid"
-                          radius="md"
-                          className="cursor-pointer hover:underline"
-                          onClick={() => {
-                            navigate(
-                              `/product-versions/${versionRel.version.id}`,
-                            )
-                          }}
-                        >
-                          {versionRel.version.name}
-                        </Chip>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-            </ListGroup>
-          ))}
+        <DataGrid title={`${t('relationship.incoming.label', { count: 2 })}`}>
+          {renderRelationshipGroups({ groups: incomingRelationships })}
         </DataGrid>
       </div>
     </div>
