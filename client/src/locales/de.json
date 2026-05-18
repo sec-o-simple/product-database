@@ -118,6 +118,13 @@
       "hashValues": "Hash-Werte",
       "namespace": "Namespace",
       "noDataYet": "Noch keine {{type}} hinzugefügt. Klicken Sie auf \"{{buttonText}}\", um zu beginnen.",
+        "validation": {
+          "invalidCpe": "Bitte geben Sie einen g\u00fcltigen CPE-String ein.",
+          "invalidPurl": "Bitte geben Sie einen g\u00fcltigen PURL-String ein.",
+          "invalidSbomUrl": "Bitte geben Sie g\u00fcltige HTTP/HTTPS-SBOM-URLs ein.",
+          "incompleteUri": "Jede URI-Zeile ben\u00f6tigt sowohl Namespace als auch URI.",
+          "invalidGenericUri": "Bitte geben Sie g\u00fcltige URI-Werte ein (z. B. urn:, mailto: oder https:)."
+        },
       "fields": {
         "cpeString": "CPE-String",
         "purlString": "PURL-String",

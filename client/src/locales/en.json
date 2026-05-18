@@ -119,6 +119,13 @@
       "hashValues": "Hash Values",
       "namespace": "Namespace",
       "noDataYet": "No {{type}} added yet. Click \"{{buttonText}}\" to get started.",
+      "validation": {
+        "invalidCpe": "Please enter a valid CPE string.",
+        "invalidPurl": "Please enter a valid PURL string.",
+        "invalidSbomUrl": "Please enter valid HTTP/HTTPS SBOM URL(s).",
+        "incompleteUri": "Each URI row requires both namespace and URI.",
+        "invalidGenericUri": "Please enter valid URI values (for example urn:, mailto:, or https:)."
+      },
       "fields": {
         "cpeString": "CPE String",
         "purlString": "PURL String",
